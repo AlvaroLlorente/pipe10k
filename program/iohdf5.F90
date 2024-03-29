@@ -45,7 +45,7 @@
 ! ------------------------- HDF5 -------------------------------
 
    integer:: info,ierr
-   integer(hid_t):: fid,pid, dset_id,dspace_id, fphysid
+   integer(hid_t):: fid,pid, dset_id,dspace_id
    integer:: h5err
    integer(hsize_t),dimension(3):: dims
    integer(hsize_t),dimension(1):: hdims,maxdims
@@ -399,7 +399,7 @@
       integer(hid_t) :: G1, G2
       character(len=20) ::cadena, nombre_dataset1, nombre_dataset2, nombre_dataset3
 
-      call vel_sta()
+      call vel_sta
 
       write(extc,'(I4.4)') extn
 
@@ -407,6 +407,85 @@
       fnamephys=trim(dirinp)//trim(filinp)//'.'//extc//'.'//'spp'
 
 
+      if (mpi_rnk==0) then
+      write(*,*) 'Writing the file ...',trim(fnamephys)
+      end if
+
+      ! Save header, only master do this.
+
+      call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+
+      call h5pcreate_f(H5P_FILE_ACCESS_F,pid,h5err)
+      call h5pset_fapl_mpio_f(pid,MPI_COMM_WORLD,info,h5err)
+      call h5pset_sieve_buf_size_f(pid, siever, h5err)
+      call h5fcreate_f(trim(fnamephys),H5F_ACC_TRUNC_F,fid,h5err,H5P_DEFAULT_F,pid)
+      call h5gcreate_f(fid, '/radial', G1, h5err)
+      call h5gcreate_f(fid, '/axial', G2, h5err)
+      call h5pclose_f(pid,h5err)
+
+      call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+
+      hdims2=(/i_Th,i_pN/) !Dimensiones plano radial
+      strow=1  !Creo que no sirve para nada, de momento
+
+      
+         write(cadena, '(I1)') 1
+         nombre_dataset1="/radial/vel_r_"//cadena
+         nombre_dataset2="/radial/vel_t_"//cadena
+         nombre_dataset3="/radial/vel_z_"//cadena
+         call h5dump_parallel(G1,nombre_dataset1,2, hdims_phys_r,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(i_pZ/2,:,:),h5err)
+         call h5dump_parallel(G1,nombre_dataset2,2, hdims_phys_r,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(i_pZ/2,:,:),h5err)
+         call h5dump_parallel(G1,nombre_dataset3,2, hdims_phys_r,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_z%Re(i_pZ/2,:,:),h5err)
+      
+
+      hdims2=(/i_pZ,i_pN/) !Dimensiones plano axial
+
+      
+         write(cadena, '(I1)') 1
+         nombre_dataset1="/axial/vel_r_"//cadena
+         nombre_dataset2="/axial/vel_t_"//cadena
+         nombre_dataset3="/axial/vel_z_"//cadena
+         call h5dump_parallel(G2,nombre_dataset1,2,hdims_phys_a,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(:,1,:),h5err)
+         call h5dump_parallel(G2,nombre_dataset2,2,hdims_phys_a,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(:,1,:),h5err)
+         call h5dump_parallel(G2,nombre_dataset3,2,hdims_phys_a,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_z%Re(:,1,:),h5err)
+
+         write(cadena, '(I1)') 2
+         nombre_dataset1="/axial/vel_r_"//cadena
+         nombre_dataset2="/axial/vel_t_"//cadena
+         nombre_dataset3="/axial/vel_z_"//cadena
+         call h5dump_parallel(G2,nombre_dataset1,2,hdims_phys_a,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(:,(i_Th/2)+1,:),h5err)
+         call h5dump_parallel(G2,nombre_dataset2,2,hdims_phys_a,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(:,(i_Th/2)+1,:),h5err)
+         call h5dump_parallel(G2,nombre_dataset3,2,hdims_phys_a,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_z%Re(:,(i_Th/2)+1,:),h5err)
+      
+
+      call h5gclose_f(G1,h5err)
+      call h5gclose_f(G2,h5err)
+
+      call h5fclose_f(fid,h5err)
+       
+      if(mpi_rnk==0) then
+
+        call h5fopen_f(fnamephys,H5F_ACC_RDWR_F,fid,h5err)
+        hdims = (/1/)
+        call h5ltmake_dataset_double_f(fid,"time",1,hdims,(/tim_t/),h5err)
+        call h5ltmake_dataset_double_f(fid,"Re",1,hdims,(/d_Re/),h5err)
+        call h5ltmake_dataset_double_f(fid,"alpha",1,hdims,(/d_alpha/),h5err)
+
+        call h5ltmake_dataset_int_f(fid,"N" ,1,hdims,(/i_N/),h5err)
+        call h5ltmake_dataset_int_f(fid,"M" ,1,hdims,(/i_M/),h5err)
+        call h5ltmake_dataset_int_f(fid,"K" ,1,hdims,(/i_K/),h5err)
+        call h5ltmake_dataset_int_f(fid,"Mp",1,hdims,(/i_Mp/),h5err)
+        
+        call h5ltmake_dataset_double_f(fid,"dt"   ,1,hdims,(/tim_dt/),h5err)
+
+        hdims = (/i_N/)
+        call h5ltmake_dataset_double_f(fid,"r"   ,1,hdims,mes_D%r(1:i_N,1),h5err)
+        call h5fclose_f(fid,h5err)
+      end if
+
+      call MPI_BARRIER(MPI_COMM_WORLD,ierr) 
+   
+   end subroutine io_save_phys
 
 
 
