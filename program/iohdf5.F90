@@ -47,7 +47,7 @@
    integer:: info,ierr
    integer(hid_t):: fid,pid, dset_id,dspace_id
    integer:: h5err
-   integer(hsize_t),dimension(3):: dims
+   integer(hsize_t),dimension(3):: hdims3
    integer(hsize_t),dimension(1):: hdims,maxdims
    integer(hsize_t),dimension(2):: hdims2
    
@@ -145,7 +145,8 @@
      
       if(modulo(tim_step,i_save_rate1)==0) then
          call io_save_state()
-         call io_save_phys()
+         call io_save_phys_plane()
+         !call io_save_phys_field()
          fnameima=trim(filstt)//'.'//extc//'.'//'sth'
          call saveStats(fnameima)
          ! call io_save_spectrum()
@@ -390,10 +391,10 @@
    end subroutine io_save_state
 
 !--------------------------------------------------------------------------
-!  Guardar campo de velocidades radial y axial
+!  Guardar plano de velocidades radial y axial
 !--------------------------------------------------------------------------
 
-   subroutine io_save_phys()
+   subroutine io_save_phys_plane()
       integer :: info
       integer :: ii, strow
       integer(hid_t) :: G1, G2
@@ -485,8 +486,83 @@
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr) 
    
-   end subroutine io_save_phys
+   end subroutine io_save_phys_plane
 
+!--------------------------------------------------------------------------
+!  Guardar campo de velocidades radial y axial
+!--------------------------------------------------------------------------
+
+   subroutine io_save_phys_field()
+      integer :: info
+      integer :: ii, strow
+      integer(hid_t) :: G1, G2
+      
+
+      call vel_sta()
+
+      write(extc,'(I4.4)') extn
+
+      info = MPI_INFO_NULL
+      fnamephys=trim(dirinp)//trim(filinp)//'.'//extc//'.'//'sppf'
+
+
+      if (mpi_rnk==0) then
+      write(*,*) 'Writing the file ...',trim(fnamephys)
+      end if
+
+      ! Save header, only master do this.
+
+      call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+
+      call h5pcreate_f(H5P_FILE_ACCESS_F,pid,h5err)
+      call h5pset_fapl_mpio_f(pid,MPI_COMM_WORLD,info,h5err)
+      call h5pset_sieve_buf_size_f(pid, siever, h5err)
+      call h5fcreate_f(trim(fnamephys),H5F_ACC_TRUNC_F,fid,h5err,H5P_DEFAULT_F,pid)
+      call h5gcreate_f(fid, '/sta', G1, h5err)
+      call h5pclose_f(pid,h5err)
+
+      call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+
+      hdims3=(/i_pZ,i_Th,i_pN/) !Dimensiones campo completo
+      strow=1  !Creo que no sirve para nada, de momento
+
+         
+         call h5dump_parallel(G1,"/sta/vel_r",3, hdims3,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(:,:,:),h5err)
+         call h5dump_parallel(G1,"/sta/vel_t",3, hdims3,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(:,:,:),h5err)
+         call h5dump_parallel(G1,"/sta/vel_z",3, hdims3,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_z%Re(:,:,:),h5err)
+      
+
+      call h5gclose_f(G1,h5err)
+      
+
+      call h5fclose_f(fid,h5err)
+       
+      if(mpi_rnk==0) then
+
+        call h5fopen_f(fnamephys,H5F_ACC_RDWR_F,fid,h5err)
+        call h5gcreate_f(fid, '/header', G2, h5err)
+        hdims = (/1/)
+        call h5ltmake_dataset_double_f(fid,"time",1,hdims,(/tim_t/),h5err)
+        call h5ltmake_dataset_double_f(fid,"Re",1,hdims,(/d_Re/),h5err)
+        call h5ltmake_dataset_double_f(fid,"alpha",1,hdims,(/d_alpha/),h5err)
+
+        call h5ltmake_dataset_int_f(fid,"N" ,1,hdims,(/i_N/),h5err)
+        call h5ltmake_dataset_int_f(fid,"M" ,1,hdims,(/i_M/),h5err)
+        call h5ltmake_dataset_int_f(fid,"K" ,1,hdims,(/i_K/),h5err)
+        call h5ltmake_dataset_int_f(fid,"Mp",1,hdims,(/i_Mp/),h5err)
+        
+        call h5ltmake_dataset_double_f(fid,"dt"   ,1,hdims,(/tim_dt/),h5err)
+
+        hdims = (/i_N/)
+        call h5ltmake_dataset_double_f(fid,"r"   ,1,hdims,mes_D%r(1:i_N,1),h5err)
+        call h5gclose_f(G2,h5err)
+        call h5fclose_f(fid,h5err)
+      end if
+      
+      
+      call MPI_BARRIER(MPI_COMM_WORLD,ierr) 
+   
+   end subroutine io_save_phys_field
 
 
 !--------------------------------------------------------------------------
