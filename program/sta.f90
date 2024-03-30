@@ -45,7 +45,7 @@
    double precision :: piz(i_N), pit(i_N), pir(i_N)
    double precision :: duzdz(i_N), dutdt(i_N), durdr(i_N), duzsqdz2(i_N), dutsqdz2(i_N), dursqdz2(i_N),uzsqur(i_N), utsqur(i_N), urcub(i_N)
    double precision :: dissr(i_N,3),disst(i_N,3),dissz(i_N,3), diss(i_N,3) !, dzduzsq(i_N), dzduzcub(i_N)
-   double precision :: PDT(i_N)
+   double precision :: PDT2(i_N),TDT2(i_N),DT1(i_N)
    double precision :: factor
 
    !double precision :: d(i_N) !,dd(i_n,10) ! auxiliary mem
@@ -323,7 +323,7 @@ end subroutine pressure
 subroutine compute_turb_budget()
    implicit none
    integer :: n,n_
-
+   _loop_km_vars
 !!--------Turbulent kinetic energy budget-------!!
 
 !!  Pressure difussion term
@@ -331,14 +331,56 @@ subroutine compute_turb_budget()
 p1%Re = p2%Re*vel_r%Re  !presion · vel radial fisico
 
 do n = 1, mes_D%pN
-n_ = mes_D%pNi + n - 1
-PDT(n_)  = PDT(n_)  + sum(p1%Re(:,:,n)) ! saco la distribucion radial
-PDT(n_)  = mes_D%r(n_,1) * PDT(n_) ! multiplico por r
+   n_ = mes_D%pNi + n - 1
+   PDT2(n_)  = PDT2(n_)  + sum(p1%Re(:,:,n)) ! saco la distribucion radial
+   PDT2(n_)  = mes_D%r(n_,1) * PDT(n_) ! multiplico por r
 
 end do
 !En matlab derivar en r y dividir por r
 
 !!  Turbulent difussion term 
+
+p1%Re=vel_r%Re*(vel_r%Re**2+vel_t%Re**2+vel_z%Re**2)
+
+do n = 1, mes_D%pN
+   n_ = mes_D%pNi + n - 1
+   TDT2(n_)  = PDT(n_)  + sum(p1%Re(:,:,n)) ! saco la distribucion radial
+   TDT2(n_)  = mes_D%r(n_,1) * PDT(n_) ! multiplico por r
+end do
+!En matlab derivar en r y dividir por r
+
+!!  Viscous difussion term 
+
+!Todos los terminos en matlab
+
+!!  Production term
+
+!Todos los terminos en matlab
+
+!!Dissipation term
+
+
+do n = 1, mes_D%pN
+   n_ = mes_D%pNi + n - 1
+      p1%Re(:,:,n)=p1%Re(:,:,n)+vel_U(n_)
+enddo
+
+call tra_phys2coll1d(p1,c1)
+
+_loop_km_begin
+
+c2%Im(:,nh) = -c1%Im(:,nh)*ad_k1a1(k)
+c2%Re(:,nh) =  c1%Re(:,nh)*ad_k1a1(k)
+
+_loop_km_begin
+
+call tra_coll2phys1d(c2,p1)
+
+do n = 1, mes_D%pN
+   n_ = mes_D%pNi + n - 1
+   DT1(n_)=DT1(n_)+sum(p1%Re(:,:,n)**2)
+enddo
+DT1=2*DT1
 
 end subroutine compute_turb_budget
 
