@@ -128,6 +128,7 @@
    !       enddo
    !    enddo
    end do
+   call compute_turb_budget()
    csta = csta + 1
 
    call mpi_barrier(mpi_comm_world, mpi_er)
@@ -316,9 +317,12 @@ type (phys), intent(inout)    :: p1,p2
 end subroutine pressure
 
 ! !------------------------------------------------------------------------
-! !  Derivatives:
+! !  Derivatives & Turbulent budget:
 ! !     vel r,vel t, vel z     
 ! !------------------------------------------------------------------------
+subroutine compute_turb_budget()
+   implicit none
+   integer :: n,n_
 
 !!--------Turbulent kinetic energy budget-------!!
 
@@ -335,6 +339,8 @@ end do
 !En matlab derivar en r y dividir por r
 
 !!  Turbulent difussion term 
+
+end subroutine compute_turb_budget
 
 
 ! !------------------------------------------------------------------------
