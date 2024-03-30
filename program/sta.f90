@@ -333,7 +333,7 @@ p1%Re = p2%Re*vel_r%Re  !presion · vel radial fisico
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
    PDT2(n_)  = PDT2(n_)  + sum(p1%Re(:,:,n)) ! saco la distribucion radial
-   PDT2(n_)  = mes_D%r(n_,1) * PDT(n_) ! multiplico por r
+   PDT2(n_)  = mes_D%r(n_,1) * PDT2(n_) ! multiplico por r
 
 end do
 !En matlab derivar en r y dividir por r
@@ -372,7 +372,7 @@ _loop_km_begin
 c2%Im(:,nh) = -c1%Im(:,nh)*ad_k1a1(k)
 c2%Re(:,nh) =  c1%Re(:,nh)*ad_k1a1(k)
 
-_loop_km_begin
+_loop_km_end
 
 call tra_coll2phys1d(c2,p1)
 
@@ -889,7 +889,9 @@ implicit none
    pit  = 0d0
    piz  = 0d0
 
-   PDT = 0d0
+   PDT2 = 0d0
+   TDT2 = 0d0
+   DT1 = 0d0
 
    uzsqur    = 0d0
    utsqur    = 0d0
