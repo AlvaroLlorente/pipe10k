@@ -344,8 +344,8 @@ p1%Re=vel_r%Re*(vel_r%Re**2+vel_t%Re**2+vel_z%Re**2)
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-   TDT2(n_)  = PDT(n_)  + sum(p1%Re(:,:,n)) ! saco la distribucion radial
-   TDT2(n_)  = mes_D%r(n_,1) * PDT(n_) ! multiplico por r
+   TDT2(n_)  = TDT2(n_)  + sum(p1%Re(:,:,n)) ! saco la distribucion radial
+   TDT2(n_)  = mes_D%r(n_,1) * TDT2(n_) ! multiplico por r
 end do
 !En matlab derivar en r y dividir por r
 
@@ -970,9 +970,9 @@ implicit none
        mpi_sum, 0, mpi_comm_world, mpi_er)
     pir = d
 
-      call mpi_reduce(PDT, d, i_N, mpi_double_precision,  &
+      call mpi_reduce(PDT2, d, i_N, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
-      PDT = d
+      PDT2 = d
 
 
       call mpi_reduce(uzsqur, d, i_N, mpi_double_precision,  &
@@ -1069,7 +1069,7 @@ implicit none
        call h5ltmake_dataset_double_f(sta_id,"piz",1,hdims,piz,h5err)
        call h5ltmake_dataset_double_f(sta_id,"pit",1,hdims,pit,h5err) 
 
-       call h5ltmake_dataset_double_f(sta_id,"pdt",1,hdims,PDT,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"pdt",1,hdims,PDT2,h5err)
 
        call h5ltmake_dataset_double_f(sta_id,"uzsqur",1,hdims,uzsqur,h5err)
        call h5ltmake_dataset_double_f(sta_id,"utsqur",1,hdims,utsqur,h5err)
