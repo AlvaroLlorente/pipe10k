@@ -42,14 +42,10 @@
    ! double precision :: mom_uz(i_N,10)
    double precision :: mean_p(i_N), stdv_p(i_N)
 
-
-
-
-
-
-   
-   double precision :: piz(i_N), pit(i_N), pir(i_N), duzdz(i_N), dutdt(i_N), durdr(i_N), pur(i_N), duzsqdz2(i_N), dutsqdz2(i_N), dursqdz2(i_N),uzsqur(i_N), utsqur(i_N), urcub(i_N)
+   double precision :: piz(i_N), pit(i_N), pir(i_N)
+   double precision :: duzdz(i_N), dutdt(i_N), durdr(i_N), duzsqdz2(i_N), dutsqdz2(i_N), dursqdz2(i_N),uzsqur(i_N), utsqur(i_N), urcub(i_N)
    double precision :: dissr(i_N,3),disst(i_N,3),dissz(i_N,3), diss(i_N,3) !, dzduzsq(i_N), dzduzcub(i_N)
+   double precision :: PDT(i_N)
    double precision :: factor
 
    !double precision :: d(i_N) !,dd(i_n,10) ! auxiliary mem
@@ -92,13 +88,11 @@
 
 
       call vel_sta()
-      ! call vel_adjPPE(3)
 
       call pressure(c1,c2,c3,p1,p2)
 
-      call var_coll_dissp(c1,c2,c3,c4)
-      !  call pressure(c1,c2,c3,p1,p2)
-      ! call vel_sta()  
+      !call var_coll_dissp(c1,c2,c3,c4)
+       
 
 
          ! En físico
@@ -321,6 +315,26 @@ type (phys), intent(inout)    :: p1,p2
 
 end subroutine pressure
 
+! !------------------------------------------------------------------------
+! !  Derivatives:
+! !     vel r,vel t, vel z     
+! !------------------------------------------------------------------------
+
+!!--------Turbulent kinetic energy budget-------!!
+
+!!  Pressure difussion term
+
+p1%Re = p2%Re*vel_r%Re  !presion · vel radial fisico
+
+do n = 1, mes_D%pN
+n_ = mes_D%pNi + n - 1
+PDT(n_)  = PDT(n_)  + sum(p1%Re(:,:,n)) ! saco la distribucion radial
+PDT(n_)  = mes_D%r(n_,1) * PDT(n_) ! multiplico por r
+
+end do
+!En matlab derivar en r y dividir por r
+
+!!  Turbulent difussion term 
 
 
 ! !------------------------------------------------------------------------
@@ -551,26 +565,6 @@ end subroutine pressure
    ! _loop_km_end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-
-
-! Pressure diffusion term
-   
-      p1%Re = p2%Re*vel_r%Re 
-
-      do n = 1, mes_D%pN
-      n_ = mes_D%pNi + n - 1
-      p1%Re(:,:,n)  = p1%Re(:,:,n) * mes_D%r(n_,1) ! multiplico por r
-      end do
-
-      call tra_phys2coll1d(p1,c1) ! paso a fourier para derivar
-      call var_coll_meshmult(1,mes_D%dr(1),c1, c2) ! r simple derivative
-      call tra_coll2phys1d(c2,p1) !paso a fisico
-
-      do n = 1, mes_D%pN
-      n_ = mes_D%pNi + n - 1
-      p1%Re(:,:,n) = -2d0 * mes_D%r(n_,-1) * p1%Re(:,:,n) ! multiplico por 2 y divido entre r
-      pur(n_)  = pur(n_)  + sum(p1%Re(:,:,n)) ! saco la distribucion radial
-      end do
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
          !!!!!!!!!!!!!!!!!!!     DERIVATIVES       !!!!!!!!!!!!!!!!!!!
@@ -847,7 +841,7 @@ implicit none
    pit  = 0d0
    piz  = 0d0
 
-   pur = 0d0
+   PDT = 0d0
 
    uzsqur    = 0d0
    utsqur    = 0d0
@@ -926,9 +920,9 @@ implicit none
        mpi_sum, 0, mpi_comm_world, mpi_er)
     pir = d
 
-      call mpi_reduce(pur, d, i_N, mpi_double_precision,  &
+      call mpi_reduce(PDT, d, i_N, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
-      pur = d
+      PDT = d
 
 
       call mpi_reduce(uzsqur, d, i_N, mpi_double_precision,  &
@@ -1025,7 +1019,7 @@ implicit none
        call h5ltmake_dataset_double_f(sta_id,"piz",1,hdims,piz,h5err)
        call h5ltmake_dataset_double_f(sta_id,"pit",1,hdims,pit,h5err) 
 
-       call h5ltmake_dataset_double_f(sta_id,"pur",1,hdims,pur,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"pdt",1,hdims,PDT,h5err)
 
        call h5ltmake_dataset_double_f(sta_id,"uzsqur",1,hdims,uzsqur,h5err)
        call h5ltmake_dataset_double_f(sta_id,"utsqur",1,hdims,utsqur,h5err)
