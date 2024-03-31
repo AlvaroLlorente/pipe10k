@@ -28,7 +28,7 @@
    integer,     private  :: io_KE, io_ID, io_dt, io_pt, io_fr, io_hre, io_cf
    
    double precision, private :: wk(i_N, 0:i_pH1) ! PAsar luego por cabecera a la rutina o a través de un modulo.
-   double precision :: v1(0:i_Th-1, i_pN) 
+   !double precision :: v1(0:i_Th-1, i_pN) 
    
    ! type (coll), private  :: c1!,c2,c3 ! Three colls are defined here. Why! They are really big. 
                                      ! They are defined as private. They cannot be used anywhere else
@@ -431,7 +431,7 @@
       strow=1  !Creo que no sirve para nada, de momento
      
          do ii = 1, mes_D%pN
-         v1(:,:)=vel_z%Re(i_pZ/2,:,ii)+vel_U(ii)
+         p1%Re(i_pZ/2,:,:)=vel_z%Re(i_pZ/2,:,ii)+vel_U(ii)
          enddo
          write(cadena, '(I1)') 1
          nombre_dataset1="/radial/vel_r_"//cadena
@@ -439,7 +439,7 @@
          nombre_dataset3="/radial/vel_z_"//cadena
          call h5dump_parallel(G1,nombre_dataset1,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(i_pZ/2,:,:),h5err)
          call h5dump_parallel(G1,nombre_dataset2,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(i_pZ/2,:,:),h5err)
-         call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,v1(:,:),h5err)
+         call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,p1%Re(i_pZ/2,:,:),h5err)
          
 
       hdims2=(/i_pZ,i_pN/) !Dimensiones plano axial
