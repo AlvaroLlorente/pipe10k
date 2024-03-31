@@ -430,8 +430,8 @@
       hdims2=(/i_Th,i_pN/) !Dimensiones plano radial
       strow=1  !Creo que no sirve para nada, de momento
      
-         do n = 1, mes_D%pN
-         v1(:,:)=vel_z%Re(i_pZ/2,:,n)+vel_U(n)
+         do ii = 1, mes_D%pN
+         v1(:,:)=vel_z%Re(i_pZ/2,:,ii)+vel_U(ii)
          enddo
          write(cadena, '(I1)') 1
          nombre_dataset1="/radial/vel_r_"//cadena
