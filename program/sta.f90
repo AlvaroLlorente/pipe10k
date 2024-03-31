@@ -362,7 +362,7 @@ end do
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-      p1%Re(:,:,n)=p1%Re(:,:,n)+vel_U(n_)
+      p1%Re(:,:,n)=p1%Re(:,:,n) !+vel_U(n_) No se si se suma este termino
 enddo
 
 call tra_phys2coll1d(p1,c1)
