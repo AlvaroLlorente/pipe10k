@@ -397,7 +397,7 @@
 
    subroutine io_save_phys_plane()
       integer :: info
-      integer :: ii, strow
+      integer :: n, n_, strow
       integer(hid_t) :: G1, G2
       character(len=20) ::cadena, nombre_dataset1, nombre_dataset2, nombre_dataset3
 
@@ -430,9 +430,11 @@
       hdims2=(/i_Th,i_pN/) !Dimensiones plano radial
       strow=1  !Creo que no sirve para nada, de momento
      
-         do ii = 1, mes_D%pN
-         p1%Re(i_pZ/2,:,:)=vel_z%Re(i_pZ/2,:,ii)+vel_U(ii)
+         do n = 1, mes_D%pN
+            n_ = mes_D%pNi + n - 1	
+               p1%Re(i_pZ/2,:,n)=vel_z%Re(i_pZ/2,:,n)+vel_U(n_)
          enddo
+
          write(cadena, '(I1)') 1
          nombre_dataset1="/radial/vel_r_"//cadena
          nombre_dataset2="/radial/vel_t_"//cadena
@@ -460,7 +462,7 @@
          nombre_dataset3="/axial/vel_z_"//cadena
          call h5dump_parallel(G2,nombre_dataset1,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(:,(i_Th/2)+1,:),h5err)
          call h5dump_parallel(G2,nombre_dataset2,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(:,(i_Th/2)+1,:),h5err)
-         call h5dump_parallel(G2,nombre_dataset3,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_z%Re(:,(i_Th/2)+1,ii),h5err)
+         call h5dump_parallel(G2,nombre_dataset3,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_z%Re(:,(i_Th/2)+1,:),h5err)
          
 
       call h5gclose_f(G1,h5err)
@@ -498,7 +500,7 @@
 
    subroutine io_save_phys_field()
       integer :: info
-      integer :: ii, strow
+      integer :: strow
       integer(hid_t) :: G1, G2
       
 
@@ -533,9 +535,8 @@
          
          call h5dump_parallel(G1,"/sta/vel_r",3, hdims3,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(:,:,:),h5err)
          call h5dump_parallel(G1,"/sta/vel_t",3, hdims3,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(:,:,:),h5err)
-         do ii = 1, mes_D%pN
-         call h5dump_parallel(G1,"/sta/vel_z",3, hdims3,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_z%Re(:,:,ii)+vel_U(ii),h5err)
-         enddo
+         call h5dump_parallel(G1,"/sta/vel_z",3, hdims3,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_z%Re(:,:,:),h5err)
+         
 
       call h5gclose_f(G1,h5err)
       
