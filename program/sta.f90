@@ -44,7 +44,7 @@
 
    double precision :: piz(i_N), pit(i_N), pir(i_N)
    double precision :: durdr(i_N,n_sta), durdt(i_N,n_sta), durdz(i_N), duzsqdz2(i_N), dutsqdz2(i_N), dursqdz2(i_N),uzsqur(i_N), utsqur(i_N), urcub(i_N)
-   double precision :: dutdt(n_,csta), dutdt(n_,csta), dutdz(n_,csta)
+   double precision :: dutdr(n_,csta), dutdt(n_,csta), dutdz(n_,csta)
    double precision :: duzdr(n_,csta), duzdt(n_,csta), duzdz(n_,csta)
    double precision :: dissr(i_N,3),disst(i_N,3),dissz(i_N,3), diss(i_N,3) !, dzduzsq(i_N), dzduzcub(i_N)
    double precision :: PDT2(i_N),TDT2(i_N),DT1(i_N,csta), DT4(i_N,csta), DT5(i_N,csta) , DT6(i_N,csta), DT7(i_N,csta)
@@ -331,7 +331,7 @@ subroutine compute_turb_budget()
 !!--------Derivatives-------!!
 
 !!   vel_r
-var_coll_grad(vel_ur,  c1, c2, c3)
+call var_coll_grad(vel_ur,  c1, c2, c3)
 
 call tra_coll2phys1d(c1,p1) !durdr
 call tra_coll2phys1d(c1,p3) !durdt
@@ -347,7 +347,7 @@ do n = 1, mes_D%pN
 end do
 
 !   vel_t
-var_coll_grad(vel_ut,  c1, c2, c3)
+call var_coll_grad(vel_ut,  c1, c2, c3)
 
 call tra_coll2phys1d(c1,p1) !dutdr
 call tra_coll2phys1d(c1,p3) !dutdt
@@ -355,14 +355,14 @@ call tra_coll2phys1d(c3,p4) !dutdz
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-   dutdt(n_,csta) = durdt(n_,csta) + sum(p1%Re(:,:,n)) 
+   dutdr(n_,csta) = dutdr(n_,csta) + sum(p1%Re(:,:,n)) 
    dutdt(n_,csta) = dutdt(n_,csta) + sum(p3%Re(:,:,n)) 
    dutdz(n_,csta) = dutdz(n_,csta) + sum(p4%Re(:,:,n)) 
 
 end do
 
 !   vel_z
-var_coll_grad(vel_uz,  c1, c2,c3)
+call var_coll_grad(vel_uz,  c1, c2,c3)
 
 call tra_coll2phys1d(c1,p1) !duzdr
 call tra_coll2phys1d(c2,p3) !duzdt
@@ -946,10 +946,10 @@ implicit none
    durdr = 0d0
    durdt = 0d0
    durdz = 0d0
-   dutdt = 0d0
+   dutdr = 0d0
    dutdt = 0d0
    dutdz = 0d0
-   duzdr = 0d0
+   duzdr = 0d0   
    duzdt = 0d0
    duzdz = 0d0
 
