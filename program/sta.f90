@@ -30,7 +30,7 @@
 
    double precision, private :: uclm, utaum,ucl, utau, Ub
    double precision, private :: aa, bb, cc
-   integer :: csta
+   
 
 ! ------------------------- stats  -------------------------------
 
@@ -45,14 +45,14 @@
 
    double precision :: piz(i_N), pit(i_N), pir(i_N)
    double precision :: durdr(i_N,n_sta), durdt(i_N,n_sta), durdz(i_N), duzsqdz2(i_N), dutsqdz2(i_N), dursqdz2(i_N),uzsqur(i_N), utsqur(i_N), urcub(i_N)
-   double precision :: dutdr(i_N,csta), dutdt(i_N,csta), dutdz(i_N,csta)
-   double precision :: duzdr(i_N,csta), duzdt(i_N,csta), duzdz(i_N,csta)
+   double precision :: dutdr(i_N,n_sta), dutdt(i_N,n_sta), dutdz(i_N,n_sta)
+   double precision :: duzdr(i_N,n_sta), duzdt(i_N,n_sta), duzdz(i_N,n_sta)
    double precision :: dissr(i_N,3),disst(i_N,3),dissz(i_N,3), diss(i_N,3) !, dzduzsq(i_N), dzduzcub(i_N)
-   double precision :: PDT2(i_N),TDT2(i_N),DT1(i_N,csta), DT4(i_N,csta), DT5(i_N,csta) , DT6(i_N,csta), DT7(i_N,csta)
+   double precision :: PDT2(i_N),TDT2(i_N),DT1(i_N,n_sta), DT4(i_N,n_sta), DT5(i_N,n_sta) , DT6(i_N,n_sta), DT7(i_N,n_sta)
    double precision :: factor
 
    double precision :: d(i_N) ,dd(i_N,n_sta) ! auxiliary mem
-   
+   integer :: csta
    
 ! ------------------------- HDF5 -------------------------------
 
