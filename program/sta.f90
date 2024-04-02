@@ -366,7 +366,6 @@ call tra_coll2phys1d(c4,p4) !durdz
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
 
-   
    durdt(n_,csta) = durdt(n_,csta) + sum(p3%Re(:,:,n)) 
    durdz(n_,csta) = durdz(n_,csta) + sum(p4%Re(:,:,n)) 
 
@@ -374,48 +373,48 @@ end do
 
 !   vel_t
 
-_loop_km_begin
-
- c3%Im(:,nh) = -vel_ut%Im(:,nh)*ad_k1a1(k)
- c3%Re(:,nh) =  vel_ut%Re(:,nh)*ad_k1a1(k)
-
- c4%Im(:,nh) = -vel_ut%Im(:,nh)*ad_m1r1(:,m)
- c4%Re(:,nh) =  vel_ut%Re(:,nh)*ad_m1r1(:,m)
-
-_loop_km_end
-
-call tra_coll2phys1d(c1,p3) !dutdt
-call tra_coll2phys1d(c3,p4) !dutdz
-
-do n = 1, mes_D%pN
-   n_ = mes_D%pNi + n - 1
-    
-   dutdt(n_,csta) = dutdt(n_,csta) + sum(p3%Re(:,:,n)) 
-   dutdz(n_,csta) = dutdz(n_,csta) + sum(p4%Re(:,:,n)) 
-
-end do
-
-!   vel_z
-
-_loop_km_begin
-
- c3%Im(:,nh) = -vel_uz%Im(:,nh)*ad_k1a1(k)
- c3%Re(:,nh) =  vel_uz%Re(:,nh)*ad_k1a1(k)
-
- c4%Im(:,nh) = -vel_uz%Im(:,nh)*ad_m1r1(:,m)
- c4%Re(:,nh) =  vel_uz%Re(:,nh)*ad_m1r1(:,m)
-
-_loop_km_end
-
-call tra_coll2phys1d(c2,p3) !duzdt
-call tra_coll2phys1d(c2,p4) !duzdz
-
-do n = 1, mes_D%pN
-   n_ = mes_D%pNi + n - 1
-   duzdt(n_,csta) = duzdt(n_,csta) + sum(p3%Re(:,:,n)) 
-   duzdz(n_,csta) = duzdz(n_,csta) + sum(p4%Re(:,:,n)) 
-
-end do
+!_loop_km_begin
+!
+! c3%Im(:,nh) = -vel_ut%Im(:,nh)*ad_k1a1(k)
+! c3%Re(:,nh) =  vel_ut%Re(:,nh)*ad_k1a1(k)
+!
+! c4%Im(:,nh) = -vel_ut%Im(:,nh)*ad_m1r1(:,m)
+! c4%Re(:,nh) =  vel_ut%Re(:,nh)*ad_m1r1(:,m)
+!
+!_loop_km_end
+!
+!call tra_coll2phys1d(c1,p3) !dutdt
+!call tra_coll2phys1d(c3,p4) !dutdz
+!
+!do n = 1, mes_D%pN
+!   n_ = mes_D%pNi + n - 1
+!    
+!   dutdt(n_,csta) = dutdt(n_,csta) + sum(p3%Re(:,:,n)) 
+!   dutdz(n_,csta) = dutdz(n_,csta) + sum(p4%Re(:,:,n)) 
+!
+!end do
+!
+!!   vel_z
+!
+!_loop_km_begin
+!
+! c3%Im(:,nh) = -vel_uz%Im(:,nh)*ad_k1a1(k)
+! c3%Re(:,nh) =  vel_uz%Re(:,nh)*ad_k1a1(k)
+!
+! c4%Im(:,nh) = -vel_uz%Im(:,nh)*ad_m1r1(:,m)
+! c4%Re(:,nh) =  vel_uz%Re(:,nh)*ad_m1r1(:,m)
+!
+!_loop_km_end
+!
+!call tra_coll2phys1d(c2,p3) !duzdt
+!call tra_coll2phys1d(c2,p4) !duzdz
+!
+!do n = 1, mes_D%pN
+!   n_ = mes_D%pNi + n - 1
+!   duzdt(n_,csta) = duzdt(n_,csta) + sum(p3%Re(:,:,n)) 
+!   duzdz(n_,csta) = duzdz(n_,csta) + sum(p4%Re(:,:,n)) 
+!
+!end do
 !!--------Turbulent kinetic energy budget-------!!
 !!  Pressure difussion term
 !p1%Re = p2%Re*vel_r%Re  !presion · vel radial fisico
