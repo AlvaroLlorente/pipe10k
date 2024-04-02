@@ -373,7 +373,7 @@ end do
 
 !   vel_t
 
-!_loop_km_begin
+! _loop_km_begin
 !
 ! c3%Im(:,nh) = -vel_ut%Im(:,nh)*ad_k1a1(k)
 ! c3%Re(:,nh) =  vel_ut%Re(:,nh)*ad_k1a1(k)
