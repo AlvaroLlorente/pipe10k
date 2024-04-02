@@ -416,8 +416,8 @@ do n = 1, mes_D%pN
    duzdz(n_,csta) = duzdz(n_,csta) + sum(p4%Re(:,:,n)) 
 
 end do
---------Turbulent kinetic energy budget-------!!
-  Pressure difussion term
+!--------Turbulent kinetic energy budget-------!!
+!  Pressure difussion term
 p1%Re = p2%Re*vel_r%Re  !presion · vel radial fisico
 
 do n = 1, mes_D%pN
