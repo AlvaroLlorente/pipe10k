@@ -361,16 +361,16 @@ _loop_km_begin
 _loop_km_end
 
 
-!all tra_coll2phys1d(c3,p3) !durdt
-!all tra_coll2phys1d(c4,p4) !durdz
+call tra_coll2phys1d(c3,p3) !durdt
+call tra_coll2phys1d(c4,p4) !durdz
+
+!do n = 1, mes_D%pN
+!   n_ = mes_D%pNi + n - 1
 !
-!o n = 1, mes_D%pN
-!  n_ = mes_D%pNi + n - 1
+!   durdt(n_,csta) = durdt(n_,csta) + sum(p3%Re(:,:,n)) 
+!   durdz(n_,csta) = durdz(n_,csta) + sum(p4%Re(:,:,n)) 
 !
-!  durdt(n_,csta) = durdt(n_,csta) + sum(p3%Re(:,:,n)) 
-!  durdz(n_,csta) = durdz(n_,csta) + sum(p4%Re(:,:,n)) 
-!
-!nd do
+!end do
 
 !   vel_t
 
