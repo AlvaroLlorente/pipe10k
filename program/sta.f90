@@ -30,13 +30,14 @@
 
    double precision, private :: uclm, utaum,ucl, utau, Ub
    double precision, private :: aa, bb, cc
+   integer :: csta
 
 ! ------------------------- stats  -------------------------------
 
    double precision :: mean_ur(i_N,n_sta), stdv_ur(i_N,n_sta)
    double precision :: mean_ut(i_N,n_sta), stdv_ut(i_N,n_sta)
    double precision :: mean_uz(i_N,n_sta), stdv_uz(i_N,n_sta)
-   double precision :: stdv_rz(i_N),n_sta, stdv_rt(i_N,n_sta), stdv_tz(i_N,n_sta)
+   double precision :: stdv_rz(i_N,n_sta), stdv_rt(i_N,n_sta), stdv_tz(i_N,n_sta)
    ! double precision :: mom_ur(i_N,10)
    ! double precision :: mom_ut(i_N,10)
    ! double precision :: mom_uz(i_N,10)
@@ -44,14 +45,14 @@
 
    double precision :: piz(i_N), pit(i_N), pir(i_N)
    double precision :: durdr(i_N,n_sta), durdt(i_N,n_sta), durdz(i_N), duzsqdz2(i_N), dutsqdz2(i_N), dursqdz2(i_N),uzsqur(i_N), utsqur(i_N), urcub(i_N)
-   double precision :: dutdr(n_,csta), dutdt(n_,csta), dutdz(n_,csta)
-   double precision :: duzdr(n_,csta), duzdt(n_,csta), duzdz(n_,csta)
+   double precision :: dutdr(i_N,csta), dutdt(i_N,csta), dutdz(i_N,csta)
+   double precision :: duzdr(i_N,csta), duzdt(i_N,csta), duzdz(i_N,csta)
    double precision :: dissr(i_N,3),disst(i_N,3),dissz(i_N,3), diss(i_N,3) !, dzduzsq(i_N), dzduzcub(i_N)
    double precision :: PDT2(i_N),TDT2(i_N),DT1(i_N,csta), DT4(i_N,csta), DT5(i_N,csta) , DT6(i_N,csta), DT7(i_N,csta)
    double precision :: factor
 
    double precision :: d(i_N) ,dd(i_N,n_sta) ! auxiliary mem
-   integer :: csta
+   
    
 ! ------------------------- HDF5 -------------------------------
 
