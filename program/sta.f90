@@ -335,16 +335,16 @@ subroutine compute_turb_budget()
 
 !!   vel_r
 
-!_loop_km_begin
-!
-! c2%Im(:,nh) = -vel_ur%Im(:,nh)*ad_k1a1(k)
-! c2%Re(:,nh) =  vel_ur%Re(:,nh)*d_alpha*k
-!
-! c3%Im(:,nh) = -vel_ur%Im(:,nh)*m*i_Mp
-! c3%Re(:,nh) =  vel_ur%Re(:,nh)*m*i_Mp
-!
-! _loop_km_end
-call var_coll_grad(vel_ur,  c1, c2, c3)
+_loop_km_begin
+
+ c2%Im(:,nh) = -vel_ur%Im(:,nh)*ad_k1a1(k)
+ c2%Re(:,nh) =  vel_ur%Re(:,nh)*ad_k1a1(k)
+
+ c3%Im(:,nh) = -vel_ur%Im(:,nh)*ad_m1r1(:,m)
+ c3%Re(:,nh) =  vel_ur%Re(:,nh)*ad_m1r1(:,m)
+
+_loop_km_end
+!call var_coll_grad(vel_ur,  c1, c2, c3)
 
 !call tra_coll2phys1d(c1,p1) !durdr
 !call tra_coll2phys1d(c2,p3) !durdt
