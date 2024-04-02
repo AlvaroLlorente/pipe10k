@@ -334,7 +334,8 @@ subroutine compute_turb_budget()
 !!--------Derivatives-------!!
 
 !!   vel_r
-call var_coll_grad(vel_ur,  c1, c2, c3)
+call var_coll_copy(vel_ur,c4)
+call var_coll_grad(c4,  c1, c2, c3)
 
 !call tra_coll2phys1d(c1,p1) !durdr
 !call tra_coll2phys1d(c1,p3) !durdt
