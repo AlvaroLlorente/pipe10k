@@ -327,7 +327,7 @@ subroutine compute_turb_budget()
    implicit none
    integer :: n,n_
    !Estoy reservando p2 para el coll del campo de presiones
-   _loop_km_vars
+   
 
 !!--------Derivatives-------!!
 
