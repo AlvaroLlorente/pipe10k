@@ -211,6 +211,10 @@ type (phys), intent(inout)    :: p1,p2
          !durdr
          call var_coll_meshmult(1,mes_D%dr(1),vel_ur,c1)
          call tra_coll2phys1d(c1,p1)
+         do n = 1, mes_D%pN
+            n_ = mes_D%pNi + n - 1
+            durdr(n_,csta) = durdr(n_,csta) + sum(p1%Re(:,:,n))
+         enddo 
          p2%Re=vel_r%Re*p1%Re
       
          ! 1/r(durdt-ut)
@@ -327,7 +331,7 @@ subroutine compute_turb_budget()
    
    implicit none
    integer :: n,n_
-   type(coll)  :: c1
+
    _loop_km_vars
    !Estoy reservando p2 para el coll del campo de presiones
    
@@ -336,7 +340,7 @@ subroutine compute_turb_budget()
 
 !!   vel_r
    
-call var_coll_meshmult(1,mes_D%dr(1),vel_ur, c1)
+!call var_coll_meshmult(1,mes_D%dr(1),vel_ur, c1)
 _loop_km_begin
 
  c3%Im(:,nh) = -vel_ur%Im(:,nh)*ad_k1a1(k)
