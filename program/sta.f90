@@ -33,24 +33,26 @@
 
 ! ------------------------- stats  -------------------------------
 
-   double precision :: mean_ur(i_N), stdv_ur(i_N)
-   double precision :: mean_ut(i_N), stdv_ut(i_N)
-   double precision :: mean_uz(i_N), stdv_uz(i_N)
-   double precision :: stdv_rz(i_N), stdv_rt(i_N), stdv_tz(i_N)
+   double precision :: mean_ur(i_N,n_sta), stdv_ur(i_N,n_sta)
+   double precision :: mean_ut(i_N,n_sta), stdv_ut(i_N,n_sta)
+   double precision :: mean_uz(i_N,n_sta), stdv_uz(i_N,n_sta)
+   double precision :: stdv_rz(i_N),n_sta, stdv_rt(i_N,n_sta), stdv_tz(i_N,n_sta)
    ! double precision :: mom_ur(i_N,10)
    ! double precision :: mom_ut(i_N,10)
    ! double precision :: mom_uz(i_N,10)
-   double precision :: mean_p(i_N), stdv_p(i_N)
+   double precision :: mean_p(i_N,n_sta), stdv_p(i_N,n_sta)
 
    double precision :: piz(i_N), pit(i_N), pir(i_N)
-   double precision :: duzdz(i_N), dutdt(i_N), durdr(i_N), duzsqdz2(i_N), dutsqdz2(i_N), dursqdz2(i_N),uzsqur(i_N), utsqur(i_N), urcub(i_N)
+   double precision :: durdr(i_N,n_sta), durdt(i_N,n_sta), durdz(i_N), duzsqdz2(i_N), dutsqdz2(i_N), dursqdz2(i_N),uzsqur(i_N), utsqur(i_N), urcub(i_N)
+   double precision :: dutdt(n_,csta), dutdt(n_,csta), dutdz(n_,csta)
+   double precision :: duzdr(n_,csta), duzdt(n_,csta), duzdz(n_,csta)
    double precision :: dissr(i_N,3),disst(i_N,3),dissz(i_N,3), diss(i_N,3) !, dzduzsq(i_N), dzduzcub(i_N)
-   double precision :: PDT2(i_N),TDT2(i_N),DT1(i_N)
+   double precision :: PDT2(i_N),TDT2(i_N),DT1(i_N,csta), DT4(i_N,csta), DT5(i_N,csta) , DT6(i_N,csta), DT7(i_N,csta)
    double precision :: factor
 
-   !double precision :: d(i_N) !,dd(i_n,10) ! auxiliary mem
+   double precision :: d(i_N) ,dd(i_N,n_sta) ! auxiliary mem
    integer :: csta
-
+   
 ! ------------------------- HDF5 -------------------------------
 
    integer:: info,ierr
@@ -101,15 +103,15 @@
 
    do n = 1, mes_D%pN
       n_ = mes_D%pNi + n - 1
-      mean_ur(n_) = mean_ur(n_) + sum(vel_r%Re(:,:,n))
-      stdv_ur(n_) = stdv_ur(n_) + sum(vel_r%Re(:,:,n)**2)
-      mean_ut(n_) = mean_ut(n_) + sum(vel_t%Re(:,:,n))
-      stdv_ut(n_) = stdv_ut(n_) + sum(vel_t%Re(:,:,n)**2)
-      mean_uz(n_) = mean_uz(n_) + sum(vel_z%Re(:,:,n))
-      stdv_uz(n_) = stdv_uz(n_) + sum(vel_z%Re(:,:,n)**2)
-      stdv_rz(n_) = stdv_rz(n_) + sum(vel_z%Re(:,:,n)*vel_r%Re(:,:,n))
-      stdv_rt(n_) = stdv_rz(n_) + sum(vel_r%Re(:,:,n)*vel_t%Re(:,:,n))
-      stdv_tz(n_) = stdv_rz(n_) + sum(vel_t%Re(:,:,n)*vel_z%Re(:,:,n))
+      mean_ur(n_,csta) = mean_ur(n_,csta) + sum(vel_r%Re(:,:,n))
+      stdv_ur(n_,csta) = stdv_ur(n_,csta) + sum(vel_r%Re(:,:,n)**2)
+      mean_ut(n_,csta) = mean_ut(n_,csta) + sum(vel_t%Re(:,:,n))
+      stdv_ut(n_,csta) = stdv_ut(n_,csta) + sum(vel_t%Re(:,:,n)**2)
+      mean_uz(n_,csta) = mean_uz(n_,csta) + sum(vel_z%Re(:,:,n))
+      stdv_uz(n_,csta) = stdv_uz(n_,csta) + sum(vel_z%Re(:,:,n)**2)
+      stdv_rz(n_,csta) = stdv_rz(n_,csta) + sum(vel_z%Re(:,:,n)*vel_r%Re(:,:,n))
+      stdv_rt(n_,csta) = stdv_rz(n_,csta) + sum(vel_r%Re(:,:,n)*vel_t%Re(:,:,n))
+      stdv_tz(n_,csta) = stdv_rz(n_,csta) + sum(vel_t%Re(:,:,n)*vel_z%Re(:,:,n))
 
 
    !    do kk =  0,i_Th-1
@@ -323,7 +325,58 @@ end subroutine pressure
 subroutine compute_turb_budget()
    implicit none
    integer :: n,n_
+   !Estoy reservando p2 para el coll del campo de presiones
    _loop_km_vars
+
+!!--------Derivatives-------!!
+
+!!   vel_r
+var_coll_grad(vel_ur,  c1, c2, c3)
+
+call tra_coll2phys1d(c1,p1) !durdr
+call tra_coll2phys1d(c1,p3) !durdt
+call tra_coll2phys1d(c2,p4) !durdz
+
+do n = 1, mes_D%pN
+   n_ = mes_D%pNi + n - 1
+
+   durdr(n_,csta) = durdr(n_,csta) + sum(p1%Re(:,:,n)) 
+   durdt(n_,csta) = durdt(n_,csta) + sum(p3%Re(:,:,n)) 
+   durdz(n_,csta) = durdz(n_,csta) + sum(p4%Re(:,:,n)) 
+
+end do
+
+!   vel_t
+var_coll_grad(vel_ut,  c1, c2, c3)
+
+call tra_coll2phys1d(c1,p1) !dutdr
+call tra_coll2phys1d(c1,p3) !dutdt
+call tra_coll2phys1d(c3,p4) !dutdz
+
+do n = 1, mes_D%pN
+   n_ = mes_D%pNi + n - 1
+   dutdt(n_,csta) = durdt(n_,csta) + sum(p1%Re(:,:,n)) 
+   dutdt(n_,csta) = dutdt(n_,csta) + sum(p3%Re(:,:,n)) 
+   dutdz(n_,csta) = dutdz(n_,csta) + sum(p4%Re(:,:,n)) 
+
+end do
+
+!   vel_z
+var_coll_grad(vel_uz,  c1, c2,c3)
+
+call tra_coll2phys1d(c1,p1) !duzdr
+call tra_coll2phys1d(c2,p3) !duzdt
+call tra_coll2phys1d(c2,p4) !duzdz
+
+do n = 1, mes_D%pN
+   n_ = mes_D%pNi + n - 1
+   duzdr(n_,csta) = duzdr(n_,csta) + sum(p1%Re(:,:,n)) 
+   duzdt(n_,csta) = duzdt(n_,csta) + sum(p3%Re(:,:,n)) 
+   duzdz(n_,csta) = duzdz(n_,csta) + sum(p4%Re(:,:,n)) 
+
+end do
+
+
 !!--------Turbulent kinetic energy budget-------!!
 
 !!  Pressure difussion term
@@ -333,7 +386,7 @@ p1%Re = p2%Re*vel_r%Re  !presion · vel radial fisico
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
    PDT2(n_)  = PDT2(n_)  + sum(p1%Re(:,:,n)) ! saco la distribucion radial
-   PDT2(n_)  = mes_D%r(n_,1) * PDT2(n_) ! multiplico por r
+   
 
 end do
 !En matlab derivar en r y dividir por r
@@ -345,7 +398,7 @@ p1%Re=vel_r%Re*(vel_r%Re**2+vel_t%Re**2+vel_z%Re**2)
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
    TDT2(n_)  = TDT2(n_)  + sum(p1%Re(:,:,n)) ! saco la distribucion radial
-   TDT2(n_)  = mes_D%r(n_,1) * TDT2(n_) ! multiplico por r
+   TDT2(n_)  = TDT2(n_)*mes_D%r(n_,1) ! multiplico por r
 end do
 !En matlab derivar en r y dividir por r
 
@@ -357,30 +410,39 @@ end do
 
 !Todos los terminos en matlab
 
-!!Dissipation term
+!!   Dissipation term
+
+!---Termino 1
+
+   DT1(:,csta)=DT1(:,csta)+sum(duzdz(:,csta)**2)
+
+!---Termino 4
+
+   DT4(:,csta)=DT4(:,csta)+(dutdt(:,csta)*mes_D%r(:,-1))**2
+
+!---Terno 5
+
+   DT5(:,csta)=DT5(:,csta)+(durdz(:,csta)+duzdr(:,csta))**2
+
+!---Termino 6
 
 
-do n = 1, mes_D%pN
+ p1%Re=vel_t*mes_D%r(:,-1)
+ call var_coll_meshmult(0,mes_D%dr(1),p1, c1) !Derivar con respecto a r
+
+ call tra_coll2phys1d(c1,p1) !pasar a fisico
+
+ do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-      p1%Re(:,:,n)=p1%Re(:,:,n) !+vel_U(n_) No se si se suma este termino
-enddo
+   dd(n_,csta)=dd(n_,csta)+sum(p1(:,:,n))
+   enddo
 
-call tra_phys2coll1d(p1,c1)
+   DT6(:,csta)=DT6(:,csta)+(durdt(:,csta)*mes_D%r(:,-1))+(dd(:,csta)*mes_D%r(:,1))
 
-_loop_km_begin
+!---Termino 7
 
-c2%Im(:,nh) = -c1%Im(:,nh)*ad_k1a1(k)
-c2%Re(:,nh) =  c1%Re(:,nh)*ad_k1a1(k)
+   DT7(:,csta)=DT7(:,csta)+(dutdz(:,csta)+mes_D%r(:,-1)*duzdt(:,csta))
 
-_loop_km_end
-
-call tra_coll2phys1d(c2,p1)
-
-do n = 1, mes_D%pN
-   n_ = mes_D%pNi + n - 1
-   DT1(n_)=DT1(n_)+sum(p1%Re(:,:,n)**2)
-enddo
-DT1=2*DT1
 
 end subroutine compute_turb_budget
 
@@ -881,9 +943,16 @@ implicit none
 
    diss   = 0d0
 
-   ! duzdz  = 0d0
-   ! dutdt  = 0d0
-   ! durdr  = 0d0
+   durdr = 0d0
+   durdt = 0d0
+   durdz = 0d0
+   dutdt = 0d0
+   dutdt = 0d0
+   dutdz = 0d0
+   duzdr = 0d0
+   duzdt = 0d0
+   duzdz = 0d0
+
 
    pir  = 0d0
    pit  = 0d0
@@ -892,7 +961,11 @@ implicit none
    PDT2 = 0d0
    TDT2 = 0d0
    DT1 = 0d0
-
+   DT4 = 0d0
+   DT5 = 0d0
+   DT6 = 0d0
+   DT7 = 0d0
+   
    uzsqur    = 0d0
    utsqur    = 0d0
    urcub     = 0d0
@@ -905,40 +978,40 @@ subroutine saveStats(fnameima)
 implicit none
 
     character(len = 256):: fnameima
-    call mpi_reduce(mean_ur, d, i_N, mpi_double_precision,  &
+    call mpi_reduce(mean_ur, dd, i_N*n_sta, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
-    mean_ur = d
-    call mpi_reduce(stdv_ur, d, i_N, mpi_double_precision,  &
+    mean_ur = dd
+    call mpi_reduce(stdv_ur, dd, i_N*n_sta, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
-    stdv_ur = d
-    call mpi_reduce(mean_ut, d, i_N, mpi_double_precision,  &
+    stdv_ur = dd
+    call mpi_reduce(mean_ut, dd, i_N*n_sta, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
-    mean_ut = d
-    call mpi_reduce(stdv_ut, d, i_N, mpi_double_precision,  &
+    mean_ut = dd
+    call mpi_reduce(stdv_ut, dd, i_N*n_sta, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
-    stdv_ut = d
-    call mpi_reduce(mean_uz, d, i_N, mpi_double_precision,  &
+    stdv_ut = dd
+    call mpi_reduce(mean_uz, dd, i_N*n_sta, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
-    mean_uz = d
-    call mpi_reduce(stdv_uz, d, i_N, mpi_double_precision,  &
+    mean_uz = dd
+    call mpi_reduce(stdv_uz, dd, i_N*n_sta, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
-    stdv_uz = d
-    call mpi_reduce(stdv_rz, d, i_N, mpi_double_precision,  &
+    stdv_uz = dd
+    call mpi_reduce(stdv_rz, dd, i_N*n_sta, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
-    stdv_rz = d
-    call mpi_reduce(stdv_rt, d, i_N, mpi_double_precision,  &
+    stdv_rz = dd
+    call mpi_reduce(stdv_rt, dd, i_N*n_sta, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
-    stdv_rt = d
-    call mpi_reduce(stdv_tz, d, i_N, mpi_double_precision,  &
+    stdv_rt = dd
+    call mpi_reduce(stdv_tz, dd, i_N*n_sta, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
-    stdv_tz = d
+    stdv_tz = dd
 
-    call mpi_reduce(mean_p, d, i_N, mpi_double_precision,  &
+    call mpi_reduce(mean_p, dd, i_N*n_sta, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
     mean_p = d
-    call mpi_reduce(stdv_p, d, i_N, mpi_double_precision,  &
+    call mpi_reduce(stdv_p, dd, i_N*n_sta, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
-    stdv_p = d
+    stdv_p = dd
 
    !! Dissipation
        diss(:,1) = dissr(:,1) + disst(:,1) + dissz(:,1)
@@ -972,8 +1045,25 @@ implicit none
 
       call mpi_reduce(PDT2, d, i_N, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
-      PDT2 = d
-
+    PDT2 = d
+      call mpi_reduce(TDT2, d, i_N, mpi_double_precision,  &
+       mpi_sum, 0, mpi_comm_world, mpi_er)
+    TDT2 = d
+      call mpi_reduce(DT1, dd, i_N*n_sta, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+    DT1 = d
+      call mpi_reduce(DT4, dd, i_N*n_sta, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+    DT4 = d
+      call mpi_reduce(DT5, dd, i_N*n_sta, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+    DT5 = d
+      call mpi_reduce(DT6, dd, i_N*n_sta, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+    DT6 = d
+      call mpi_reduce(DT7, dd, i_N*n_sta, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+    DT7 = d
 
       call mpi_reduce(uzsqur, d, i_N, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
@@ -1046,19 +1136,19 @@ implicit none
        hdims = (/i_N/)
        call h5ltmake_dataset_double_f(header_id,"r"   ,1,hdims,mes_D%r(1:i_N,1),h5err)
 
-       call h5ltmake_dataset_double_f(sta_id,"mean_ur",1,hdims,mean_ur,h5err)
-       call h5ltmake_dataset_double_f(sta_id,"mean_uz",1,hdims,mean_uz,h5err)
-       call h5ltmake_dataset_double_f(sta_id,"mean_ut",1,hdims,mean_ut,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"mean_ur",2,hdims,mean_ur,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"mean_uz",2,hdims,mean_uz,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"mean_ut",2,hdims,mean_ut,h5err)
 
-       call h5ltmake_dataset_double_f(sta_id,"stdv_ur",1,hdims,stdv_ur,h5err)
-       call h5ltmake_dataset_double_f(sta_id,"stdv_ut",1,hdims,stdv_ut,h5err)
-       call h5ltmake_dataset_double_f(sta_id,"stdv_uz",1,hdims,stdv_uz,h5err)
-       call h5ltmake_dataset_double_f(sta_id,"stdv_rz",1,hdims,stdv_rz,h5err)
-       call h5ltmake_dataset_double_f(sta_id,"stdv_rt",1,hdims,stdv_rt,h5err)
-       call h5ltmake_dataset_double_f(sta_id,"stdv_tz",1,hdims,stdv_tz,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"stdv_ur",2,hdims,stdv_ur,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"stdv_ut",2,hdims,stdv_ut,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"stdv_uz",2,hdims,stdv_uz,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"stdv_rz",2,hdims,stdv_rz,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"stdv_rt",2,hdims,stdv_rt,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"stdv_tz",2,hdims,stdv_tz,h5err)
 
-       call h5ltmake_dataset_double_f(sta_id,"stdv_p",1,hdims,stdv_p,h5err)
-       call h5ltmake_dataset_double_f(sta_id,"mean_p",1,hdims,mean_p,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"stdv_p",2,hdims,stdv_p,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"mean_p",2,hdims,mean_p,h5err)
 
        
        call h5ltmake_dataset_double_f(sta_id,"disstt",1,hdims,diss(:,2),h5err)
@@ -1069,7 +1159,13 @@ implicit none
        call h5ltmake_dataset_double_f(sta_id,"piz",1,hdims,piz,h5err)
        call h5ltmake_dataset_double_f(sta_id,"pit",1,hdims,pit,h5err) 
 
-       call h5ltmake_dataset_double_f(sta_id,"pdt",1,hdims,PDT2,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"pdt2",1,hdims,PDT2,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"tdt2",1,hdims,TDT2,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"dt1",1,hdims,DT1,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"dt4",1,hdims,DT4,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"dt5",1,hdims,DT5,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"dt6",1,hdims,DT6,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"dt7",1,hdims,DT7,h5err)
 
        call h5ltmake_dataset_double_f(sta_id,"uzsqur",1,hdims,uzsqur,h5err)
        call h5ltmake_dataset_double_f(sta_id,"utsqur",1,hdims,utsqur,h5err)
