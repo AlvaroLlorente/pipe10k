@@ -208,12 +208,19 @@ type (phys), intent(inout)    :: p1,p2
          _loop_km_end
 
          ! r equation 
-         !durdr
+         !durdr ----> Alvaro: he añadido dutdr y duzdr aqui porque en compute_turb_budget
+         !por algun motivo ocurre segmentation fault
          call var_coll_meshmult(1,mes_D%dr(1),vel_ur,c1)
          call tra_coll2phys1d(c1,p1)
+         call var_coll_meshmult(1,mes_D%dr(1),vel_ut,c3)
+         call tra_coll2phys1d(c3,p3)
+         call var_coll_meshmult(1,mes_D%dr(1),vel_uz,c4)
+         call tra_coll2phys1d(c4,p4)
          do n = 1, mes_D%pN
             n_ = mes_D%pNi + n - 1
             durdr(n_,csta) = durdr(n_,csta) + sum(p1%Re(:,:,n))
+            dutdr(n_,csta) = dutdr(n_,csta) + sum(p3%Re(:,:,n))
+            duzdr(n_,csta) = duzdr(n_,csta) + sum(p4%Re(:,:,n))
          enddo 
          p2%Re=vel_r%Re*p1%Re
       
