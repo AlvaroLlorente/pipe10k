@@ -1014,7 +1014,7 @@ implicit none
 
     call mpi_reduce(mean_p, dd, i_N*n_sta, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
-    mean_p = d
+    mean_p = dd
     call mpi_reduce(stdv_p, dd, i_N*n_sta, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
     stdv_p = dd
@@ -1057,19 +1057,19 @@ implicit none
     TDT2 = d
       call mpi_reduce(DT1, dd, i_N*n_sta, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
-    DT1 = d
+    DT1 = dd
       call mpi_reduce(DT4, dd, i_N*n_sta, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
-    DT4 = d
+    DT4 = dd
       call mpi_reduce(DT5, dd, i_N*n_sta, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
-    DT5 = d
+    DT5 = dd
       call mpi_reduce(DT6, dd, i_N*n_sta, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
-    DT6 = d
+    DT6 = dd
       call mpi_reduce(DT7, dd, i_N*n_sta, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
-    DT7 = d
+    DT7 = dd
 
       call mpi_reduce(uzsqur, d, i_N, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
