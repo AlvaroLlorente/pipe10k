@@ -336,9 +336,9 @@ subroutine compute_turb_budget()
 !!   vel_r
 call var_coll_grad(vel_ur,  c1, c2, c3)
 
-call tra_coll2phys1d(c1,p1) !durdr
-call tra_coll2phys1d(c1,p3) !durdt
-call tra_coll2phys1d(c2,p4) !durdz
+!call tra_coll2phys1d(c1,p1) !durdr
+!call tra_coll2phys1d(c1,p3) !durdt
+!call tra_coll2phys1d(c2,p4) !durdz
 
 !do n = 1, mes_D%pN
 !   n_ = mes_D%pNi + n - 1
