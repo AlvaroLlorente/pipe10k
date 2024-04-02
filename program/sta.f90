@@ -339,7 +339,7 @@ subroutine compute_turb_budget()
    
    implicit none
    integer :: n,n_
-   type (phys), intent(inout)    :: p1,p3,p4
+   type (phys) :: p1,p3,p4
    _loop_km_vars
    !call var_precompute()
    
