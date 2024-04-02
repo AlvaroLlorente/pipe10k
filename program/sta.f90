@@ -324,18 +324,19 @@ end subroutine pressure
 ! !     vel r,vel t, vel z     
 ! !------------------------------------------------------------------------
 subroutine compute_turb_budget()
-   use transform
+   
    use variables
    implicit none
    integer :: n,n_
+   _loop_km_vars
    !Estoy reservando p2 para el coll del campo de presiones
    
 
 !!--------Derivatives-------!!
 
 !!   vel_r
-call var_coll_copy(vel_ur,c4)
-call var_coll_grad(c4,  c1, c2, c3)
+
+call var_coll_grad(vel_ur,  c1, c2, c3)
 
 !call tra_coll2phys1d(c1,p1) !durdr
 !call tra_coll2phys1d(c1,p3) !durdt
