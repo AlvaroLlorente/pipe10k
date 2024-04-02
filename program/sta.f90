@@ -131,7 +131,7 @@
    !       enddo
    !    enddo
    end do
-   !call compute_turb_budget()
+   call compute_turb_budget()
    csta = csta + 1
 
    call mpi_barrier(mpi_comm_world, mpi_er)
@@ -324,6 +324,8 @@ end subroutine pressure
 ! !     vel r,vel t, vel z     
 ! !------------------------------------------------------------------------
 subroutine compute_turb_budget()
+   use transform
+   use variables
    implicit none
    integer :: n,n_
    !Estoy reservando p2 para el coll del campo de presiones
@@ -338,44 +340,44 @@ call tra_coll2phys1d(c1,p1) !durdr
 call tra_coll2phys1d(c1,p3) !durdt
 call tra_coll2phys1d(c2,p4) !durdz
 
-do n = 1, mes_D%pN
-   n_ = mes_D%pNi + n - 1
+!do n = 1, mes_D%pN
+!   n_ = mes_D%pNi + n - 1
+!
+!   durdr(n_,csta) = durdr(n_,csta) + sum(p1%Re(:,:,n)) 
+!   durdt(n_,csta) = durdt(n_,csta) + sum(p3%Re(:,:,n)) 
+!   durdz(n_,csta) = durdz(n_,csta) + sum(p4%Re(:,:,n)) 
+!
+!end do
 
-   durdr(n_,csta) = durdr(n_,csta) + sum(p1%Re(:,:,n)) 
-   durdt(n_,csta) = durdt(n_,csta) + sum(p3%Re(:,:,n)) 
-   durdz(n_,csta) = durdz(n_,csta) + sum(p4%Re(:,:,n)) 
-
-end do
-
-!   vel_t
-call var_coll_grad(vel_ut,  c1, c2, c3)
-
-call tra_coll2phys1d(c1,p1) !dutdr
-call tra_coll2phys1d(c1,p3) !dutdt
-call tra_coll2phys1d(c3,p4) !dutdz
-
-do n = 1, mes_D%pN
-   n_ = mes_D%pNi + n - 1
-   dutdr(n_,csta) = dutdr(n_,csta) + sum(p1%Re(:,:,n)) 
-   dutdt(n_,csta) = dutdt(n_,csta) + sum(p3%Re(:,:,n)) 
-   dutdz(n_,csta) = dutdz(n_,csta) + sum(p4%Re(:,:,n)) 
-
-end do
-
-!   vel_z
-call var_coll_grad(vel_uz,  c1, c2,c3)
-
-call tra_coll2phys1d(c1,p1) !duzdr
-call tra_coll2phys1d(c2,p3) !duzdt
-call tra_coll2phys1d(c2,p4) !duzdz
-
-do n = 1, mes_D%pN
-   n_ = mes_D%pNi + n - 1
-   duzdr(n_,csta) = duzdr(n_,csta) + sum(p1%Re(:,:,n)) 
-   duzdt(n_,csta) = duzdt(n_,csta) + sum(p3%Re(:,:,n)) 
-   duzdz(n_,csta) = duzdz(n_,csta) + sum(p4%Re(:,:,n)) 
-
-end do
+!!   vel_t
+!call var_coll_grad(vel_ut,  c1, c2, c3)
+!
+!call tra_coll2phys1d(c1,p1) !dutdr
+!call tra_coll2phys1d(c1,p3) !dutdt
+!call tra_coll2phys1d(c3,p4) !dutdz
+!
+!do n = 1, mes_D%pN
+!   n_ = mes_D%pNi + n - 1
+!   dutdr(n_,csta) = dutdr(n_,csta) + sum(p1%Re(:,:,n)) 
+!   dutdt(n_,csta) = dutdt(n_,csta) + sum(p3%Re(:,:,n)) 
+!   dutdz(n_,csta) = dutdz(n_,csta) + sum(p4%Re(:,:,n)) 
+!
+!end do
+!
+!!   vel_z
+!call var_coll_grad(vel_uz,  c1, c2,c3)
+!
+!call tra_coll2phys1d(c1,p1) !duzdr
+!call tra_coll2phys1d(c2,p3) !duzdt
+!call tra_coll2phys1d(c2,p4) !duzdz
+!
+!do n = 1, mes_D%pN
+!   n_ = mes_D%pNi + n - 1
+!   duzdr(n_,csta) = duzdr(n_,csta) + sum(p1%Re(:,:,n)) 
+!   duzdt(n_,csta) = duzdt(n_,csta) + sum(p3%Re(:,:,n)) 
+!   duzdz(n_,csta) = duzdz(n_,csta) + sum(p4%Re(:,:,n)) 
+!
+!end do
 
 
 !!--------Turbulent kinetic energy budget-------!!
