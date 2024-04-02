@@ -44,14 +44,14 @@
    double precision :: mean_p(i_N,n_sta), stdv_p(i_N,n_sta)
 
    double precision :: piz(i_N), pit(i_N), pir(i_N)
-   double precision :: durdr(i_N,n_sta), durdt(i_N,n_sta), durdz(i_N), duzsqdz2(i_N), dutsqdz2(i_N), dursqdz2(i_N),uzsqur(i_N), utsqur(i_N), urcub(i_N)
+   double precision :: durdr(i_N,n_sta), durdt(i_N,n_sta), durdz(i_N,n_sta), duzsqdz2(i_N), dutsqdz2(i_N), dursqdz2(i_N),uzsqur(i_N), utsqur(i_N), urcub(i_N)
    double precision :: dutdr(i_N,n_sta), dutdt(i_N,n_sta), dutdz(i_N,n_sta)
    double precision :: duzdr(i_N,n_sta), duzdt(i_N,n_sta), duzdz(i_N,n_sta)
    double precision :: dissr(i_N,3),disst(i_N,3),dissz(i_N,3), diss(i_N,3) !, dzduzsq(i_N), dzduzcub(i_N)
    double precision :: PDT2(i_N),TDT2(i_N),DT1(i_N,n_sta), DT4(i_N,n_sta), DT5(i_N,n_sta) , DT6(i_N,n_sta), DT7(i_N,n_sta)
    double precision :: factor
 
-   double precision :: d(i_N) ,dd(i_N,n_sta) ! auxiliary mem
+   double precision, private :: d(i_N) ,dd(i_N,n_sta) ! auxiliary mem
    integer :: csta
    
 ! ------------------------- HDF5 -------------------------------
@@ -311,8 +311,8 @@ type (phys), intent(inout)    :: p1,p2
 
    do n = 1, mes_D%pN
       n_ = mes_D%pNi + n - 1
-      mean_p(n_)  = mean_p(n_)  + sum(p2%Re(:,:,n))
-      stdv_p(n_)  = stdv_p(n_)  + sum(p2%Re(:,:,n)**2) 
+      mean_p(n_,csta)  = mean_p(n_,csta)  + sum(p2%Re(:,:,n))
+      stdv_p(n_,csta)  = stdv_p(n_,csta)  + sum(p2%Re(:,:,n)**2) 
    end do
 
   
@@ -427,8 +427,10 @@ end do
 
 !---Termino 6
 
-
- p1%Re=vel_t*mes_D%r(:,-1)
+do n = 1, mes_D%pN
+   n_ = mes_D%pNi + n - 1
+   p1%Re=vel_t(:,:,n)*mes_D%r(n_,-1)
+enddo
  call var_coll_meshmult(0,mes_D%dr(1),p1, c1) !Derivar con respecto a r
 
  call tra_coll2phys1d(c1,p1) !pasar a fisico
