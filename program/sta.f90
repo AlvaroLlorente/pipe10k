@@ -910,7 +910,7 @@ end do
 !    _loop_km_end 
 
 
- end subroutine var_coll_dissp
+end subroutine var_coll_dissp
 
 
 
