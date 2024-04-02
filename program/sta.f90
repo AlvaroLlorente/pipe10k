@@ -51,7 +51,7 @@
    double precision :: PDT2(i_N),TDT2(i_N),DT1(i_N,n_sta), DT4(i_N,n_sta), DT5(i_N,n_sta) , DT6(i_N,n_sta), DT7(i_N,n_sta)
    double precision :: factor
 
-   double precision, private :: d(i_N) ,dd(i_N,n_sta) ! auxiliary mem
+   !double precision, private :: d(i_N) ,dd(i_N,n_sta) ! auxiliary mem
    integer :: csta
    
 ! ------------------------- HDF5 -------------------------------
@@ -429,7 +429,7 @@ end do
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-   p1%Re=vel_t(:,:,n)*mes_D%r(n_,-1)
+   p1%Re=vel_t%Re(:,:,n)*mes_D%r(n_,-1)
 enddo
  call var_coll_meshmult(0,mes_D%dr(1),p1, c1) !Derivar con respecto a r
 
