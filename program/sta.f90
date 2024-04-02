@@ -340,7 +340,7 @@ subroutine compute_turb_budget()
    implicit none
    integer :: n,n_
    _loop_km_vars
-   call var_precompute()
+   !call var_precompute()
    
    !Estoy reservando p2 para el coll del campo de presiones
    
@@ -352,11 +352,11 @@ subroutine compute_turb_budget()
 
 _loop_km_begin
 
- c3%Im(:,nh) = -vel_ur%Im(:,nh)*ad_k1a1(k)
- c3%Re(:,nh) =  vel_ur%Re(:,nh)*ad_k1a1(k)
+ c3%Im(:,nh) = -vel_ur%Im(:,nh)*d_alpha*k
+ c3%Re(:,nh) =  vel_ur%Re(:,nh)*d_alpha*k
 
- c4%Im(:,nh) = -vel_ur%Im(:,nh)*ad_m1r1(:,m)
- c4%Re(:,nh) =  vel_ur%Re(:,nh)*ad_m1r1(:,m)
+ c4%Im(:,nh) = -vel_ur%Im(:,nh)*m*i_Mp
+ c4%Re(:,nh) =  vel_ur%Re(:,nh)*m*i_Mp
 
 _loop_km_end
 
