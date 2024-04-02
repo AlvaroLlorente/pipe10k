@@ -92,7 +92,7 @@
       
       call vel_sta()
 
-      call pressure(c1,c2,c3,p1,p2)
+      
 
       !call var_coll_dissp(c1,c2,c3,c4)
        
@@ -339,10 +339,10 @@ subroutine compute_turb_budget()
    
    implicit none
    integer :: n,n_
-   type (phys) :: p1,p3,p4
+   
    _loop_km_vars
    !call var_precompute()
-   
+   call pressure(c1,c2,c3,p1,p2)
    !Estoy reservando p2 para el coll del campo de presiones
    
 
