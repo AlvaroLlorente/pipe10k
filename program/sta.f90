@@ -341,7 +341,7 @@ subroutine compute_turb_budget()
    integer :: n,n_
    
    _loop_km_vars
-   !call var_precompute()
+   call var_precompute()
    call pressure(c1,c2,c3,p1,p2)
    !Estoy reservando p2 para el coll del campo de presiones
    
@@ -353,17 +353,17 @@ subroutine compute_turb_budget()
 
 _loop_km_begin
 
- c3%Im(:,nh) = -vel_ur%Im(:,nh)*d_alpha*k
- c3%Re(:,nh) =  vel_ur%Re(:,nh)*d_alpha*k
+ c3%Im(:,nh) = -vel_ur%Im(:,nh)*ad_k1a1(k)         !*d_alpha*k
+ c3%Re(:,nh) =  vel_ur%Re(:,nh)*ad_k1a1(k)         !*d_alpha*k
 
- c4%Im(:,nh) = -vel_ur%Im(:,nh)*m*i_Mp
- c4%Re(:,nh) =  vel_ur%Re(:,nh)*m*i_Mp
+ c4%Im(:,nh) = -vel_ur%Im(:,nh)*ad_m1r1(:,m)
+ c4%Re(:,nh) =  vel_ur%Re(:,nh)*ad_m1r1(:,m)
 
 _loop_km_end
 
 
-call tra_coll2phys1d(c3,p3) !durdt
-call tra_coll2phys1d(c4,p4) !durdz
+!call tra_coll2phys1d(c3,p3) !durdt
+!call tra_coll2phys1d(c4,p4) !durdz
 
 !do n = 1, mes_D%pN
 !   n_ = mes_D%pNi + n - 1
