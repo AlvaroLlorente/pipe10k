@@ -429,15 +429,18 @@ end do
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-   p1%Re=vel_t%Re(:,:,n)*mes_D%r(n_,-1)
+   p1%Re(:,:,n)=vel_t%Re(:,:,n)*mes_D%r(n_,-1)
 enddo
- call var_coll_meshmult(0,mes_D%dr(1),p1, c1) !Derivar con respecto a r
 
- call tra_coll2phys1d(c1,p1) !pasar a fisico
+ call tra_phys2coll1d(p1,c1) !pasar a coll
+
+ call var_coll_meshmult(0,mes_D%dr(1),c1, c2) !Derivar con respecto a r
+
+ call tra_coll2phys1d(c2,p1) !pasar a fisico
 
  do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-   dd(n_,csta)=dd(n_,csta)+sum(p1(:,:,n))
+   dd(n_,csta)=dd(n_,csta)+sum(p1%Re(:,:,n))
    enddo
 
    DT6(:,csta)=DT6(:,csta)+(durdt(:,csta)*mes_D%r(:,-1))+(dd(:,csta)*mes_D%r(:,1))
