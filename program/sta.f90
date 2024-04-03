@@ -352,18 +352,18 @@ subroutine compute_turb_budget(c3,c4,p3,p4)
 !!   vel_r
    
 
-_loop_km_begin
+!_loop_km_begin
+!
+! c3%Im(:,nh) = -vel_ur%Im(:,nh)*ad_k1a1(k)
+! c3%Re(:,nh) =  vel_ur%Re(:,nh)*ad_k1a1(k)
+!
+! c4%Im(:,nh) = -vel_ur%Im(:,nh)*ad_m1r1(:,m)
+! c4%Re(:,nh) =  vel_ur%Re(:,nh)*ad_m1r1(:,m)
+!
+!_loop_km_end
 
- c3%Im(:,nh) = -vel_ur%Im(:,nh)*ad_k1a1(k)
- c3%Re(:,nh) =  vel_ur%Re(:,nh)*ad_k1a1(k)
 
- c4%Im(:,nh) = -vel_ur%Im(:,nh)*ad_m1r1(:,m)
- c4%Re(:,nh) =  vel_ur%Re(:,nh)*ad_m1r1(:,m)
-
-_loop_km_end
-
-
-call tra_coll2phys1d(c3,p3) !durdt
+call tra_coll2phys1d(vel_ur,p3) !durdt
 !call tra_coll2phys1d(c4,p4) !durdz
 
 !do n = 1, mes_D%pN
