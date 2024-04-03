@@ -94,7 +94,7 @@
 
       write(*,*) 'compute_sta'
       
-      !call pressure(c1,c2,c3,p1,p2)
+      call pressure(c1,c2,c3,p1,p2)
       !call var_coll_dissp(c1,c2,c3,c4)
        
 
@@ -132,7 +132,7 @@
    !       enddo
    !    enddo
    enddo
-   call compute_turb_budget(c3,c4,p3,p4)
+   !call compute_turb_budget(c3,c4,p3,p4)
    if (mpi_rnk ==0 ) then
    csta = csta + 1
    endif
