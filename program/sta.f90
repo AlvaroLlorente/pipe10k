@@ -363,7 +363,7 @@ _loop_km_begin
 _loop_km_end
 
 
-!call tra_coll2phys1d(c3,p3) !durdt
+call tra_coll2phys1d(c3,p3) !durdt
 !call tra_coll2phys1d(c4,p4) !durdz
 
 !do n = 1, mes_D%pN
