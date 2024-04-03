@@ -131,7 +131,7 @@
    !       enddo
    !    enddo
    enddo
-   call compute_turb_budget(c1,c3,c4,p1,p3,p4)
+   call compute_turb_budget(c3,c4,p3,p4)
    csta = csta + 1
 
    call mpi_barrier(mpi_comm_world, mpi_er)
@@ -335,14 +335,14 @@ end subroutine pressure
 ! !  Derivatives & Turbulent budget:
 ! !     vel r,vel t, vel z     
 ! !------------------------------------------------------------------------
-subroutine compute_turb_budget(c1,c3,c4,p1,p3,p4)
+subroutine compute_turb_budget(c3,c4,p3,p4)
    
    implicit none
    integer :: n,n_
    _loop_km_vars
-   type (coll), intent(inout)    :: c1,c3,c4
-   type (phys), intent(inout)    :: p1,p3,p4
-   call var_precompute()
+   type (coll), intent(inout)    :: c3,c4
+   type (phys), intent(inout)    :: p3,p4
+   !call var_precompute()
    
    !Estoy reservando p2 para el coll del campo de presiones
    
