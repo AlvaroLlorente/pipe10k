@@ -337,8 +337,6 @@ end subroutine pressure
 ! !------------------------------------------------------------------------
 subroutine compute_turb_budget(c1,c3,c4,p1,p3,p4)
    
-   use transform
-   use wksp
    implicit none
    integer :: n,n_
    _loop_km_vars
