@@ -57,7 +57,7 @@
    integer, private :: csta
    
 ! ------------------------- HDF5 -------------------------------
-
+!desde el nuevo portatil
    integer:: info,ierr
    integer(hid_t):: fid,pid, dset_id,dspace_id
    integer:: h5err
