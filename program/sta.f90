@@ -92,7 +92,7 @@
       
       call vel_sta()
 
-      write(*,*) 'Memoria de csta 1',csta   
+      write(*,*) 'compute_sta'
       
       !call pressure(c1,c2,c3,p1,p2)
       !call var_coll_dissp(c1,c2,c3,c4)
@@ -135,7 +135,7 @@
    call compute_turb_budget(c3,c4,p3,p4)
 
    csta = csta + 1
-   write(*,*) 'Memoria de csta 2',csta
+   write(*,*) 'se suma un paso, csta=',csta
    call mpi_barrier(mpi_comm_world, mpi_er)
 
 end subroutine compute_sta
@@ -329,7 +329,7 @@ type (phys), intent(inout)    :: p1,p2
       stdv_p(n_,csta)  = stdv_p(n_,csta)  + sum(p2%Re(:,:,n)**2) 
    end do
 
-  
+   write(*,*) 'se ha calculado la P'
 
 end subroutine pressure
 
@@ -353,22 +353,23 @@ subroutine compute_turb_budget(c3,c4,p3,p4)
 
 !!   vel_r
    
+   write(*,*) 'estoy en compute_turb'
+_loop_km_begin
 
-!_loop_km_begin
-!
-! c3%Im(:,nh) = -vel_ur%Im(:,nh)*ad_k1a1(k)
-! c3%Re(:,nh) =  vel_ur%Re(:,nh)*ad_k1a1(k)
-!
-! c4%Im(:,nh) = -vel_ur%Im(:,nh)*ad_m1r1(:,m)
-! c4%Re(:,nh) =  vel_ur%Re(:,nh)*ad_m1r1(:,m)
-!
-!_loop_km_end
+ c3%Im(:,nh) = -vel_ur%Im(:,nh)*ad_k1a1(k)
+ c3%Re(:,nh) =  vel_ur%Re(:,nh)*ad_k1a1(k)
+
+ c4%Im(:,nh) = -vel_ur%Im(:,nh)*ad_m1r1(:,m)
+ c4%Re(:,nh) =  vel_ur%Re(:,nh)*ad_m1r1(:,m)
 
 
-call tra_coll2phys1d(c1,p1) !durdt
+
+
+call tra_coll2phys1d(c3,p3) !durdt
 !write(*,*) 'Memoria c3',c3%Re(end,end)
-write(*,*) 'Memoria de nsta',n_sta
-write(*,*) 'Memoria de csta',csta
+
+write(*,*) 'se ha pasado a phys' p3%Re(i_pZ-1, i_Th-1, i_pN)
+_loop_km_end
 !call tra_coll2phys1d(c4,p4) !durdz
 
 !do n = 1, mes_D%pN
