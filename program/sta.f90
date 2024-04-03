@@ -131,7 +131,7 @@
    !       enddo
    !    enddo
    enddo
-   call compute_turb_budget()
+   call compute_turb_budget(c1,c3,c4,p1,p3,p4)
    csta = csta + 1
 
    call mpi_barrier(mpi_comm_world, mpi_er)
