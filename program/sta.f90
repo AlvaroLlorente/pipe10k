@@ -52,7 +52,7 @@
    double precision :: factor
 
    !double precision, private :: d(i_N) ,dd(i_N,n_sta) ! auxiliary mem
-   integer :: csta
+   integer, private :: csta
    
 ! ------------------------- HDF5 -------------------------------
 
@@ -133,8 +133,9 @@
    !    enddo
    enddo
    call compute_turb_budget(c3,c4,p3,p4)
-
+   if (mpi_rnk ==0 ) then
    csta = csta + 1
+   endif
    write(*,*) 'se suma un paso, csta=',csta
    call mpi_barrier(mpi_comm_world, mpi_er)
 
