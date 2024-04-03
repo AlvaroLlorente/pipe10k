@@ -51,6 +51,7 @@
    double precision :: dissr(i_N,3),disst(i_N,3),dissz(i_N,3), diss(i_N,3) !, dzduzsq(i_N), dzduzcub(i_N)
    double precision :: PDT2(i_N),TDT2(i_N),DT1(i_N,n_sta), DT4(i_N,n_sta), DT5(i_N,n_sta) , DT6(i_N,n_sta), DT7(i_N,n_sta)
    double precision :: factor
+   double precision :: time_sta(n_sta), utauv(n_sta)
 
    !double precision, private :: d(i_N) ,dd(i_N,n_sta) ! auxiliary mem
    integer, private :: csta
@@ -81,6 +82,7 @@
    ! Compute friction velocity
 
    if (mpi_rnk ==0 ) then
+      time_sta(csta) = tim_t
       ucl = 1d0 + dot_product(vel_uz%Re(1:1+i_KL,0),mes_D%dr0(:,0))
       utau = dot_product(vel_uz%Re(i_N-i_KL:i_N,0),mes_D%dr1(:,1))
       utau = dsqrt(dabs((Utau-2d0)/d_Re))
@@ -88,6 +90,7 @@
       ! add statistics
       uclm = uclm + ucl
       utaum = utaum + utau 
+      utauv(csta) = utau 
    endif
 
       
@@ -115,24 +118,8 @@
       stdv_rz(n_,csta) = stdv_rz(n_,csta) + sum(vel_z%Re(:,:,n)*vel_r%Re(:,:,n))
       stdv_rt(n_,csta) = stdv_rz(n_,csta) + sum(vel_r%Re(:,:,n)*vel_t%Re(:,:,n))
       stdv_tz(n_,csta) = stdv_rz(n_,csta) + sum(vel_t%Re(:,:,n)*vel_z%Re(:,:,n))
-
-
-   !    do kk =  0,i_Th-1
-   !       do jj =  0,i_pZ-1
-   !          aa = 1d0
-   !          bb = 1d0
-   !          cc = 1d0
-   !          do ii = 1,10
-   !             aa = aa * vel_r%Re(jj,kk,n)
-   !             bb = bb * vel_t%Re(jj,kk,n)
-   !             cc = cc * vel_z%Re(jj,kk,n)
-   !             mom_ur(n_,ii) =  mom_ur(n_,ii) + aa
-   !             mom_ut(n_,ii) =  mom_ut(n_,ii) + bb
-   !             mom_uz(n_,ii) =  mom_uz(n_,ii) + cc
-   !          enddo
-   !       enddo
-   !    enddo
    enddo
+
    !call compute_turb_budget(c3,c4,p3,p4)
    if (mpi_rnk ==0 ) then
    csta = csta + 1
@@ -968,7 +955,7 @@ end subroutine compute_turb_budget
 subroutine initialiseSTD()
 
 implicit none
-   csta = 0
+   csta = 1
    utaum   = 0d0
    uclm    = 0d0
    mean_ur = 0d0
