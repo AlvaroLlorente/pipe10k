@@ -23,6 +23,7 @@
    use h5lt
    use hdf5
    use transform
+   use parameters
 
    implicit none
    save
