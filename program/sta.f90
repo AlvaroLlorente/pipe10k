@@ -365,9 +365,9 @@ subroutine compute_turb_budget(c3,c4,p3,p4)
 !_loop_km_end
 
 
-call tra_coll2phys1d(c1,p3) !durdt
+call tra_coll2phys1d(c1,vel_r) !durdt
 !write(*,*) 'Memoria c3',c3%Re(end,end)
-write(*,*) 'Memoria de p3',p3%Re(i_pZ-1, i_Th-1, i_pN)
+write(*,*) 'Memoria de p3',ve_r%Re(i_pZ-1, i_Th-1, i_pN)
 !call tra_coll2phys1d(c4,p4) !durdz
 
 !do n = 1, mes_D%pN
