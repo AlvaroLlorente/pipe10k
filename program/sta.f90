@@ -368,7 +368,7 @@ _loop_km_end
 call tra_coll2phys1d(c3,p3) !durdt
 !write(*,*) 'Memoria c3',c3%Re(end,end)
 
-write(*,*) 'se ha pasado a phys', 
+write(*,*) 'se ha pasado a phys'
 
 !call tra_coll2phys1d(c4,p4) !durdz
 
