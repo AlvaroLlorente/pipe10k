@@ -199,7 +199,7 @@ type (phys), intent(inout)    :: p1,p2
 
 ! Necesitamos: 3 colls, 2 phys
 ! Primer cambio
-
+write(*,*) 'conozco la csta=',csta
 
 
          call var_coll_curl(vel_ur,vel_ut,vel_uz, c1,c2,c3)
