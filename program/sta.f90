@@ -362,14 +362,14 @@ _loop_km_begin
  c4%Im(:,nh) = -vel_ur%Im(:,nh)*ad_m1r1(:,m)
  c4%Re(:,nh) =  vel_ur%Re(:,nh)*ad_m1r1(:,m)
 
-
+ _loop_km_end
 
 
 call tra_coll2phys1d(c3,p3) !durdt
 !write(*,*) 'Memoria c3',c3%Re(end,end)
 
 write(*,*) 'se ha pasado a phys' p3%Re(i_pZ-1, i_Th-1, i_pN)
-_loop_km_end
+
 !call tra_coll2phys1d(c4,p4) !durdz
 
 !do n = 1, mes_D%pN
