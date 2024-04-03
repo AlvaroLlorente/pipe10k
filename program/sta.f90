@@ -98,7 +98,7 @@
 
       write(*,*) 'compute_sta'
       
-      !call pressure(c1,c2,c3,p1,p2)
+      call pressure(c1,c2,c3,p1,p2)
       !call var_coll_dissp(c1,c2,c3,c4)
        
 
