@@ -92,7 +92,7 @@
       
       call vel_sta()
 
-      
+      write(*,*) 'Memoria de csta 1',csta   
       
       !call pressure(c1,c2,c3,p1,p2)
       !call var_coll_dissp(c1,c2,c3,c4)
@@ -135,7 +135,7 @@
    call compute_turb_budget(c3,c4,p3,p4)
 
    csta = csta + 1
-
+   write(*,*) 'Memoria de csta 2',csta
    call mpi_barrier(mpi_comm_world, mpi_er)
 
 end subroutine compute_sta
@@ -365,7 +365,7 @@ subroutine compute_turb_budget(c3,c4,p3,p4)
 !_loop_km_end
 
 
-call tra_coll2phys1d(c1,vel_r) !durdt
+call tra_coll2phys1d(c1,p1) !durdt
 !write(*,*) 'Memoria c3',c3%Re(end,end)
 write(*,*) 'Memoria de nsta',n_sta
 write(*,*) 'Memoria de csta',csta
