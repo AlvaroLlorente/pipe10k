@@ -1006,40 +1006,42 @@ end subroutine initialiseSTD
 
 subroutine saveStats(fnameima)
 implicit none
+integer:: tam
+character(len = 256):: fnameima
+tam = i_N*n_sta
 
-    character(len = 256):: fnameima
-    call mpi_reduce(mean_ur, dd, i_N*n_sta, mpi_double_precision,  &
+    call mpi_reduce(mean_ur, dd, tam, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
     mean_ur = dd
-    call mpi_reduce(stdv_ur, dd, i_N*n_sta, mpi_double_precision,  &
+    call mpi_reduce(stdv_ur, dd, tam, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
     stdv_ur = dd
-    call mpi_reduce(mean_ut, dd, i_N*n_sta, mpi_double_precision,  &
+    call mpi_reduce(mean_ut, dd, tam, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
     mean_ut = dd
-    call mpi_reduce(stdv_ut, dd, i_N*n_sta, mpi_double_precision,  &
+    call mpi_reduce(stdv_ut, dd, tam, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
     stdv_ut = dd
-    call mpi_reduce(mean_uz, dd, i_N*n_sta, mpi_double_precision,  &
+    call mpi_reduce(mean_uz, dd, tam, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
     mean_uz = dd
-    call mpi_reduce(stdv_uz, dd, i_N*n_sta, mpi_double_precision,  &
+    call mpi_reduce(stdv_uz, dd, tam, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
     stdv_uz = dd
-    call mpi_reduce(stdv_rz, dd, i_N*n_sta, mpi_double_precision,  &
+    call mpi_reduce(stdv_rz, dd, tam, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
     stdv_rz = dd
-    call mpi_reduce(stdv_rt, dd, i_N*n_sta, mpi_double_precision,  &
+    call mpi_reduce(stdv_rt, dd, tam, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
     stdv_rt = dd
-    call mpi_reduce(stdv_tz, dd, i_N*n_sta, mpi_double_precision,  &
+    call mpi_reduce(stdv_tz, dd, tam, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
     stdv_tz = dd
 
-    call mpi_reduce(mean_p, dd, i_N*n_sta, mpi_double_precision,  &
+    call mpi_reduce(mean_p, dd, tam, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
     mean_p = dd
-    call mpi_reduce(stdv_p, dd, i_N*n_sta, mpi_double_precision,  &
+    call mpi_reduce(stdv_p, dd, tam, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
     stdv_p = dd
 
@@ -1079,47 +1081,47 @@ implicit none
       call mpi_reduce(TDT2, d, i_N, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
     TDT2 = d
-      call mpi_reduce(DT1, dd, i_N*n_sta, mpi_double_precision,  &
+      call mpi_reduce(DT1, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
     DT1 = dd
-      call mpi_reduce(DT4, dd, i_N*n_sta, mpi_double_precision,  &
+      call mpi_reduce(DT4, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
     DT4 = dd
-      call mpi_reduce(DT5, dd, i_N*n_sta, mpi_double_precision,  &
+      call mpi_reduce(DT5, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
     DT5 = dd
-      call mpi_reduce(DT6, dd, i_N*n_sta, mpi_double_precision,  &
+      call mpi_reduce(DT6, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
     DT6 = dd
-      call mpi_reduce(DT7, dd, i_N*n_sta, mpi_double_precision,  &
+      call mpi_reduce(DT7, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
     DT7 = dd
     
-      call mpi_reduce(durdr, dd, i_N*n_sta, mpi_double_precision,  &
+      call mpi_reduce(durdr, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    durdr = dd
-      call mpi_reduce(durdt, dd, i_N*n_sta, mpi_double_precision,  &
+      call mpi_reduce(durdt, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    durdt = dd
-      call mpi_reduce(durdz, dd, i_N*n_sta, mpi_double_precision,  &
+      call mpi_reduce(durdz, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    durdz = dd
-      call mpi_reduce(dutdr, dd, i_N*n_sta, mpi_double_precision,  &
+      call mpi_reduce(dutdr, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    dutdr = dd
-      call mpi_reduce(dutdt, dd, i_N*n_sta, mpi_double_precision,  &
+      call mpi_reduce(dutdt, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    dutdt = dd
-      call mpi_reduce(dutdz, dd, i_N*n_sta, mpi_double_precision,  &
+      call mpi_reduce(dutdz, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    dutdz = dd
-      call mpi_reduce(duzdr, dd, i_N*n_sta, mpi_double_precision,  &
+      call mpi_reduce(duzdr, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    duzdr = dd
-      call mpi_reduce(duzdt, dd, i_N*n_sta, mpi_double_precision,  &
+      call mpi_reduce(duzdt, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    duzdt = dd
-      call mpi_reduce(duzdz, dd, i_N*n_sta, mpi_double_precision,  &
+      call mpi_reduce(duzdz, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    duzdz = dd
 
@@ -1257,7 +1259,7 @@ implicit none
       !  call h5ltmake_dataset_double_f(sta_id,"mom_ut",2,hdims2,mom_ut,h5err)
 
        call h5gclose_f(header_id,h5err)
-       call h5gclose_f(sta_id,h5err)
+       call h5gclose_f(sta_id,   h5err)
        call h5gclose_f(budget_id,h5err)
 
        call h5fclose_f(fid,h5err)
