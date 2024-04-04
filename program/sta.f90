@@ -57,7 +57,7 @@
    integer :: csta
    
 ! ------------------------- HDF5 -------------------------------
-!desde el nuevo portatil
+
    integer:: info,ierr
    integer(hid_t):: fid,pid, dset_id,dspace_id
    integer:: h5err
@@ -1196,6 +1196,9 @@ implicit none
        call h5ltmake_dataset_double_f(header_id,"dt"   ,1,hdims,(/tim_dt/),h5err)
        hdims = (/i_N/)
        call h5ltmake_dataset_double_f(header_id,"r"   ,1,hdims,mes_D%r(1:i_N,1),h5err)
+       hdims = (/n_sta/)
+       call h5ltmake_dataset_double_f(header_id,"timev",1,hdims,time_sta,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"utauv",1,hdims,utauv,h5err)
       
        hdims2 = (/i_N,n_sta/)
        call h5ltmake_dataset_double_f(sta_id,"mean_ur",2,hdims2,mean_ur,h5err)
