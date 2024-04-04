@@ -1181,7 +1181,8 @@ tam = i_N*n_sta
        call h5gcreate_f(fid, '/header', header_id, h5err)
        call h5gcreate_f(fid, '/sta'   , sta_id   , h5err)
        call h5gcreate_f(fid, '/budget', budget_id ,h5err)
-
+       call h5gcreate_f(fid, '/derivatives', derivative_id ,h5err)
+       
        hdims = (/1/)
        call h5ltmake_dataset_double_f(header_id,"time",1,hdims,(/tim_t/),h5err)
        call h5ltmake_dataset_double_f(header_id,"Re",1,hdims,(/d_Re/),h5err)
@@ -1262,6 +1263,7 @@ tam = i_N*n_sta
        call h5gclose_f(header_id,h5err)
        call h5gclose_f(sta_id,   h5err)
        call h5gclose_f(budget_id,h5err)
+       call h5gclose_f(derivative_id ,h5err)
        call h5fclose_f(fid,h5err)
 
    endif
