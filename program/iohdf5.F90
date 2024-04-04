@@ -433,6 +433,8 @@
          do n = 1, mes_D%pN
             n_ = mes_D%pNi + n - 1	
                p1%Re(i_pZ/2,:,n)=vel_z%Re(i_pZ/2,:,n)+vel_U(n_)
+               p2%Re(:,1,n)=vel_z%Re(:,1,n)+vel_U(n_)
+               p3%Re(:,(i_Th/2)+1,n)=vel_z%Re(:,1(i_Th/2)+1,n)+vel_U(n_)
          enddo
 
          write(cadena, '(I1)') 1
@@ -446,14 +448,14 @@
 
       hdims2=(/i_pZ,i_pN/) !Dimensiones plano axial
 
-      
+
          write(cadena, '(I1)') 1
          nombre_dataset1="/axial/vel_r_"//cadena
          nombre_dataset2="/axial/vel_t_"//cadena
          nombre_dataset3="/axial/vel_z_"//cadena
          call h5dump_parallel(G2,nombre_dataset1,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(:,1,:),h5err)
          call h5dump_parallel(G2,nombre_dataset2,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(:,1,:),h5err)
-         call h5dump_parallel(G2,nombre_dataset3,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_z%Re(:,1,:),h5err)
+         call h5dump_parallel(G2,nombre_dataset3,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,p2%Re(:,1,:),h5err)
          
 
          write(cadena, '(I1)') 2
@@ -462,7 +464,7 @@
          nombre_dataset3="/axial/vel_z_"//cadena
          call h5dump_parallel(G2,nombre_dataset1,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(:,(i_Th/2)+1,:),h5err)
          call h5dump_parallel(G2,nombre_dataset2,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(:,(i_Th/2)+1,:),h5err)
-         call h5dump_parallel(G2,nombre_dataset3,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_z%Re(:,(i_Th/2)+1,:),h5err)
+         call h5dump_parallel(G2,nombre_dataset3,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,p3%Re(:,(i_Th/2)+1,:),h5err)
          
 
       call h5gclose_f(G1,h5err)
