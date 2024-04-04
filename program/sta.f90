@@ -466,10 +466,10 @@ enddo
 
  do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-   dd(n_,csta)=dd(n_,csta)+sum(p1%Re(:,:,n))
+   !dd(n_,csta)=dd(n_,csta)+sum(p1%Re(:,:,n))
    enddo
 
-   DT6(:,csta)=DT6(:,csta)+(durdt(:,csta)*mes_D%r(:,-1))+(dd(:,csta)*mes_D%r(:,1))
+   !DT6(:,csta)=DT6(:,csta)+(durdt(:,csta)*mes_D%r(:,-1))+(dd(:,csta)*mes_D%r(:,1))
 
 !---Termino 7
 
