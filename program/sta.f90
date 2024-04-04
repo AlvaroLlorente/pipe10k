@@ -466,10 +466,10 @@ enddo
 
  do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-   !dd(n_,csta)=dd(n_,csta)+sum(p1%Re(:,:,n))
+   dd(n_,csta)=dd(n_,csta)+sum(p1%Re(:,:,n))
    enddo
 
-   !DT6(:,csta)=DT6(:,csta)+(durdt(:,csta)*mes_D%r(:,-1))+(dd(:,csta)*mes_D%r(:,1))
+   DT6(:,csta)=DT6(:,csta)+(durdt(:,csta)*mes_D%r(:,-1))+(dd(:,csta)*mes_D%r(:,1))
 
 !---Termino 7
 
@@ -1179,7 +1179,7 @@ tam = i_N*n_sta
        call h5fcreate_f(trim(fnameima),H5F_ACC_TRUNC_F,fid,h5err)
        call h5gcreate_f(fid, '/header', header_id, h5err)
        call h5gcreate_f(fid, '/sta'   , sta_id   , h5err)
-       call h5gcreate_f(fid, '/budget', budget_id ,h5err)
+       !call h5gcreate_f(fid, '/budget', budget_id ,h5err)
 
        hdims = (/1/)
        call h5ltmake_dataset_double_f(header_id,"time",1,hdims,(/tim_t/),h5err)
@@ -1226,23 +1226,23 @@ tam = i_N*n_sta
       ! call h5ltmake_dataset_double_f(sta_id,"piz",1,hdims,piz,h5err)
       ! call h5ltmake_dataset_double_f(sta_id,"pit",1,hdims,pit,h5err) 
 
-       call h5ltmake_dataset_double_f(budget_id,"pdt2",2,hdims2,PDT2,h5err)
-       call h5ltmake_dataset_double_f(budget_id,"tdt2",2,hdims2,TDT2,h5err)
-       call h5ltmake_dataset_double_f(budget_id,"dt1",2,hdims2,DT1,h5err)
-       call h5ltmake_dataset_double_f(budget_id,"dt4",2,hdims2,DT4,h5err)
-       call h5ltmake_dataset_double_f(budget_id,"dt5",2,hdims2,DT5,h5err)
-       call h5ltmake_dataset_double_f(budget_id,"dt6",2,hdims2,DT6,h5err)
-       call h5ltmake_dataset_double_f(budget_id,"dt7",2,hdims2,DT7,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"pdt2",2,hdims2,PDT2,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"tdt2",2,hdims2,TDT2,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"dt1",2,hdims2,DT1,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"dt4",2,hdims2,DT4,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"dt5",2,hdims2,DT5,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"dt6",2,hdims2,DT6,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"dt7",2,hdims2,DT7,h5err)
       
-      call h5ltmake_dataset_double_f(budget_id,"dt7",2,hdims2,durdr,h5err)
-      call h5ltmake_dataset_double_f(budget_id,"dt7",2,hdims2,durdt,h5err)
-      call h5ltmake_dataset_double_f(budget_id,"dt7",2,hdims2,durdz,h5err)
-      call h5ltmake_dataset_double_f(budget_id,"dt7",2,hdims2,dutdr,h5err)
-      call h5ltmake_dataset_double_f(budget_id,"dt7",2,hdims2,dutdt,h5err)
-      call h5ltmake_dataset_double_f(budget_id,"dt7",2,hdims2,dutdz,h5err)
-      call h5ltmake_dataset_double_f(budget_id,"dt7",2,hdims2,duzdr,h5err)
-      call h5ltmake_dataset_double_f(budget_id,"dt7",2,hdims2,duzdt,h5err)
-      call h5ltmake_dataset_double_f(budget_id,"dt7",2,hdims2,duzdz,h5err)
+      call h5ltmake_dataset_double_f(sta_id,"dt7",2,hdims2,durdr,h5err)
+      call h5ltmake_dataset_double_f(sta_id,"dt7",2,hdims2,durdt,h5err)
+      call h5ltmake_dataset_double_f(sta_id,"dt7",2,hdims2,durdz,h5err)
+      call h5ltmake_dataset_double_f(sta_id,"dt7",2,hdims2,dutdr,h5err)
+      call h5ltmake_dataset_double_f(sta_id,"dt7",2,hdims2,dutdt,h5err)
+      call h5ltmake_dataset_double_f(sta_id,"dt7",2,hdims2,dutdz,h5err)
+      call h5ltmake_dataset_double_f(sta_id,"dt7",2,hdims2,duzdr,h5err)
+      call h5ltmake_dataset_double_f(sta_id,"dt7",2,hdims2,duzdt,h5err)
+      call h5ltmake_dataset_double_f(sta_id,"dt7",2,hdims2,duzdz,h5err)
 
 
 
@@ -1260,7 +1260,7 @@ tam = i_N*n_sta
 
        call h5gclose_f(header_id,h5err)
        call h5gclose_f(sta_id,   h5err)
-       call h5gclose_f(budget_id,h5err)
+      ! call h5gclose_f(budget_id,h5err)
 
        call h5fclose_f(fid,h5err)
    endif
