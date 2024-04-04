@@ -65,7 +65,7 @@
    integer(hsize_t),dimension(1):: hdims,maxdims
    integer(hsize_t),dimension(2):: hdims2
    
-   integer(hid_t) :: header_id,sta_id, budget_id ! Group identifiers
+   integer(hid_t) :: header_id,sta_id, budget_id, derivative_id ! Group identifiers
    integer(size_t)::siever
    parameter (siever = 4*1024*1024)
 
@@ -1235,15 +1235,15 @@ tam = i_N*n_sta
        call h5ltmake_dataset_double_f(budget_id,"dt6",2,hdims2,DT6,h5err)
        call h5ltmake_dataset_double_f(budget_id,"dt7",2,hdims2,DT7,h5err)
       
-      call h5ltmake_dataset_double_f(budget_id,"/deriv/durdr",2,hdims2,durdr,h5err)
-      call h5ltmake_dataset_double_f(budget_id,"/deriv/durdt",2,hdims2,durdt,h5err)
-      call h5ltmake_dataset_double_f(budget_id,"/deriv/durdz",2,hdims2,durdz,h5err)
-      call h5ltmake_dataset_double_f(budget_id,"/deriv/dutdr",2,hdims2,dutdr,h5err)
-      call h5ltmake_dataset_double_f(budget_id,"/deriv/dutdt",2,hdims2,dutdt,h5err)
-      call h5ltmake_dataset_double_f(budget_id,"/deriv/dutdz",2,hdims2,dutdz,h5err)
-      call h5ltmake_dataset_double_f(budget_id,"/deriv/duzdr",2,hdims2,duzdr,h5err)
-      call h5ltmake_dataset_double_f(budget_id,"/deriv/duzdt",2,hdims2,duzdt,h5err)
-      call h5ltmake_dataset_double_f(budget_id,"/deriv/duzdz",2,hdims2,duzdz,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"durdr",2,hdims2,durdr,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"durdt",2,hdims2,durdt,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"durdz",2,hdims2,durdz,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"dutdr",2,hdims2,dutdr,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"dutdt",2,hdims2,dutdt,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"dutdz",2,hdims2,dutdz,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"duzdr",2,hdims2,duzdr,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"duzdt",2,hdims2,duzdt,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"duzdz",2,hdims2,duzdz,h5err)
 
 
 
