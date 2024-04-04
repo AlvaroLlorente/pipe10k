@@ -120,7 +120,7 @@
       stdv_tz(n_,csta) = stdv_rz(n_,csta) + sum(vel_t%Re(:,:,n)*vel_z%Re(:,:,n))
    enddo
 
-   !call compute_turb_budget(c3,c4,p3,p4)
+   call compute_turb_budget()
    if (mpi_rnk ==0 ) then
    csta = csta + 1
    endif
@@ -326,14 +326,12 @@ end subroutine pressure
 ! !  Derivatives & Turbulent budget:
 ! !     vel r,vel t, vel z     
 ! !------------------------------------------------------------------------
-subroutine compute_turb_budget(c3,c4,p3,p4)
+subroutine compute_turb_budget()
    
    implicit none
    integer :: n,n_
    _loop_km_vars
-   type (coll), intent(inout)    :: c3,c4
-   type (phys), intent(inout)    :: p3,p4
-   
+
    
    !Estoy reservando p2 para el coll del campo de presiones
    
@@ -359,15 +357,15 @@ call tra_coll2phys1d(c3,p3) !durdt
 
 write(*,*) 'se ha pasado a phys'
 
-!call tra_coll2phys1d(c4,p4) !durdz
+call tra_coll2phys1d(c4,p4) !durdz
 
-!do n = 1, mes_D%pN
-!   n_ = mes_D%pNi + n - 1
-!
-!   durdt(n_,csta) = durdt(n_,csta) + sum(p3%Re(:,:,n)) 
-!   durdz(n_,csta) = durdz(n_,csta) + sum(p4%Re(:,:,n)) 
-!
-!end do
+do n = 1, mes_D%pN
+   n_ = mes_D%pNi + n - 1
+
+   durdt(n_,csta) = durdt(n_,csta) + sum(p3%Re(:,:,n)) 
+   durdz(n_,csta) = durdz(n_,csta) + sum(p4%Re(:,:,n)) 
+
+end do
 
 !   vel_t
 
