@@ -1177,9 +1177,10 @@ tam = i_N*n_sta
     if(mpi_rnk==0)  then
 
        call h5fcreate_f(trim(fnameima),H5F_ACC_TRUNC_F,fid,h5err)
+       call h5gcreate_f(fid, '/budget', budget_id ,h5err)
        call h5gcreate_f(fid, '/header', header_id, h5err)
        call h5gcreate_f(fid, '/sta'   , sta_id   , h5err)
-       call h5gcreate_f(fid, '/budget', budget_id ,h5err)
+       
 
        hdims = (/1/)
        call h5ltmake_dataset_double_f(header_id,"time",1,hdims,(/tim_t/),h5err)
@@ -1257,10 +1258,10 @@ tam = i_N*n_sta
       !  call h5ltmake_dataset_double_f(sta_id,"mom_ur",2,hdims2,mom_ur,h5err)
       !  call h5ltmake_dataset_double_f(sta_id,"mom_uz",2,hdims2,mom_uz,h5err)
       !  call h5ltmake_dataset_double_f(sta_id,"mom_ut",2,hdims2,mom_ut,h5err)
-
+       
+       call h5gclose_f(budget_id,h5err)
        call h5gclose_f(header_id,h5err)
        call h5gclose_f(sta_id,   h5err)
-       call h5gclose_f(budget_id,h5err)
 
        call h5fclose_f(fid,h5err)
    endif
