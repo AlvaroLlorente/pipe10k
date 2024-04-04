@@ -1177,10 +1177,10 @@ tam = i_N*n_sta
     if(mpi_rnk==0)  then
 
        call h5fcreate_f(trim(fnameima),H5F_ACC_TRUNC_F,fid,h5err)
-       call h5gcreate_f(fid, '/budget', budget_id ,h5err)
+       
        call h5gcreate_f(fid, '/header', header_id, h5err)
        call h5gcreate_f(fid, '/sta'   , sta_id   , h5err)
-       
+       call h5gcreate_f(fid, '/budget', budget_id ,h5err)
 
        hdims = (/1/)
        call h5ltmake_dataset_double_f(header_id,"time",1,hdims,(/tim_t/),h5err)
@@ -1235,15 +1235,15 @@ tam = i_N*n_sta
        call h5ltmake_dataset_double_f(budget_id,"dt6",2,hdims2,DT6,h5err)
        call h5ltmake_dataset_double_f(budget_id,"dt7",2,hdims2,DT7,h5err)
       
-      call h5ltmake_dataset_double_f(budget_id,"durdr",2,hdims2,durdr,h5err)
-      call h5ltmake_dataset_double_f(budget_id,"durdt",2,hdims2,durdt,h5err)
-      call h5ltmake_dataset_double_f(budget_id,"durdz",2,hdims2,durdz,h5err)
-      call h5ltmake_dataset_double_f(budget_id,"dutdr",2,hdims2,dutdr,h5err)
-      call h5ltmake_dataset_double_f(budget_id,"dutdt",2,hdims2,dutdt,h5err)
-      call h5ltmake_dataset_double_f(budget_id,"dutdz",2,hdims2,dutdz,h5err)
-      call h5ltmake_dataset_double_f(budget_id,"duzdr",2,hdims2,duzdr,h5err)
-      call h5ltmake_dataset_double_f(budget_id,"duzdt",2,hdims2,duzdt,h5err)
-      call h5ltmake_dataset_double_f(budget_id,"duzdz",2,hdims2,duzdz,h5err)
+      call h5ltmake_dataset_double_f(budget_id,"/deriv/durdr",2,hdims2,durdr,h5err)
+      call h5ltmake_dataset_double_f(budget_id,"/deriv/durdt",2,hdims2,durdt,h5err)
+      call h5ltmake_dataset_double_f(budget_id,"/deriv/durdz",2,hdims2,durdz,h5err)
+      call h5ltmake_dataset_double_f(budget_id,"/deriv/dutdr",2,hdims2,dutdr,h5err)
+      call h5ltmake_dataset_double_f(budget_id,"/deriv/dutdt",2,hdims2,dutdt,h5err)
+      call h5ltmake_dataset_double_f(budget_id,"/deriv/dutdz",2,hdims2,dutdz,h5err)
+      call h5ltmake_dataset_double_f(budget_id,"/deriv/duzdr",2,hdims2,duzdr,h5err)
+      call h5ltmake_dataset_double_f(budget_id,"/deriv/duzdt",2,hdims2,duzdt,h5err)
+      call h5ltmake_dataset_double_f(budget_id,"/deriv/duzdz",2,hdims2,duzdz,h5err)
 
 
 
@@ -1259,11 +1259,11 @@ tam = i_N*n_sta
       !  call h5ltmake_dataset_double_f(sta_id,"mom_uz",2,hdims2,mom_uz,h5err)
       !  call h5ltmake_dataset_double_f(sta_id,"mom_ut",2,hdims2,mom_ut,h5err)
        
-       call h5gclose_f(budget_id,h5err)
        call h5gclose_f(header_id,h5err)
        call h5gclose_f(sta_id,   h5err)
-
+       call h5gclose_f(budget_id,h5err)
        call h5fclose_f(fid,h5err)
+
    endif
    ! Once saved, initialise e verything to 0 again. 
    call initialiseSTD()
