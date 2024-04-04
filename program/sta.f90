@@ -1177,7 +1177,7 @@ implicit none
        call h5fcreate_f(trim(fnameima),H5F_ACC_TRUNC_F,fid,h5err)
        call h5gcreate_f(fid, '/header', header_id, h5err)
        call h5gcreate_f(fid, '/sta'   , sta_id   , h5err)
-       call h5gcreate_f(fid, '/budget', budget_id ,5err)
+       call h5gcreate_f(fid, '/budget', budget_id ,h5err)
 
        hdims = (/1/)
        call h5ltmake_dataset_double_f(header_id,"time",1,hdims,(/tim_t/),h5err)
