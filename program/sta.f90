@@ -96,8 +96,6 @@
       
       call vel_sta()
 
-      write(*,*) 'compute_sta'
-      
       call pressure(c1,c2,c3,p1,p2)
       !call var_coll_dissp(c1,c2,c3,c4)
        
@@ -121,10 +119,9 @@
    enddo
 
    call compute_turb_budget()
-   if (mpi_rnk ==0 ) then
+
    csta = csta + 1
-   endif
-   write(*,*) 'se suma un paso, csta=',csta
+  
    call mpi_barrier(mpi_comm_world, mpi_er)
 
 end subroutine compute_sta
@@ -318,7 +315,7 @@ write(*,*) 'conozco la csta=',csta
       stdv_p(n_,csta)  = stdv_p(n_,csta)  + sum(p2%Re(:,:,n)**2) 
    end do
 
-   write(*,*) 'se ha calculado la P'
+
 
 end subroutine pressure
 
@@ -340,7 +337,7 @@ subroutine compute_turb_budget()
 
 !!   vel_r
    
-   write(*,*) 'estoy en compute_turb'
+
 _loop_km_begin
 
  c3%Im(:,nh) = -vel_ur%Im(:,nh)*ad_k1a1(k)
@@ -369,116 +366,116 @@ end do
 
 !   vel_t
 
-! _loop_km_begin
-!
-! c3%Im(:,nh) = -vel_ut%Im(:,nh)*ad_k1a1(k)
-! c3%Re(:,nh) =  vel_ut%Re(:,nh)*ad_k1a1(k)
-!
-! c4%Im(:,nh) = -vel_ut%Im(:,nh)*ad_m1r1(:,m)
-! c4%Re(:,nh) =  vel_ut%Re(:,nh)*ad_m1r1(:,m)
-!
-!_loop_km_end
-!
-!call tra_coll2phys1d(c1,p3) !dutdt
-!call tra_coll2phys1d(c3,p4) !dutdz
-!
-!do n = 1, mes_D%pN
-!   n_ = mes_D%pNi + n - 1
-!    
-!   dutdt(n_,csta) = dutdt(n_,csta) + sum(p3%Re(:,:,n)) 
-!   dutdz(n_,csta) = dutdz(n_,csta) + sum(p4%Re(:,:,n)) 
-!
-!end do
-!
-!!   vel_z
-!
-!_loop_km_begin
-!
-! c3%Im(:,nh) = -vel_uz%Im(:,nh)*ad_k1a1(k)
-! c3%Re(:,nh) =  vel_uz%Re(:,nh)*ad_k1a1(k)
-!
-! c4%Im(:,nh) = -vel_uz%Im(:,nh)*ad_m1r1(:,m)
-! c4%Re(:,nh) =  vel_uz%Re(:,nh)*ad_m1r1(:,m)
-!
-!_loop_km_end
-!
-!call tra_coll2phys1d(c2,p3) !duzdt
-!call tra_coll2phys1d(c2,p4) !duzdz
-!
-!do n = 1, mes_D%pN
-!   n_ = mes_D%pNi + n - 1
-!   duzdt(n_,csta) = duzdt(n_,csta) + sum(p3%Re(:,:,n)) 
-!   duzdz(n_,csta) = duzdz(n_,csta) + sum(p4%Re(:,:,n)) 
-!
-!end do
-!!--------Turbulent kinetic energy budget-------!!
-!!  Pressure difussion term
-!p1%Re = p2%Re*vel_r%Re  !presion · vel radial fisico
-!
-!do n = 1, mes_D%pN
-!   n_ = mes_D%pNi + n - 1
-!   PDT2(n_)  = PDT2(n_)  + sum(p1%Re(:,:,n)) ! saco la distribucion radial
-!   
-!
-!end do
-!!En matlab derivar en r y dividir por r
-!
-!!!  Turbulent difussion term 
-!
-!p1%Re=vel_r%Re*(vel_r%Re**2+vel_t%Re**2+vel_z%Re**2)
-!
-!do n = 1, mes_D%pN
-!   n_ = mes_D%pNi + n - 1
-!   TDT2(n_)  = TDT2(n_)  + sum(p1%Re(:,:,n)) ! saco la distribucion radial
-!   TDT2(n_)  = TDT2(n_)*mes_D%r(n_,1) ! multiplico por r
-!end do
-!!En matlab derivar en r y dividir por r
-!
-!!!  Viscous difussion term 
-!
-!!Todos los terminos en matlab
-!
-!!!  Production term
-!
-!!Todos los terminos en matlab
-!
-!!!   Dissipation term
-!
-!!---Termino 1
-!
-!   DT1(:,csta)=DT1(:,csta)+sum(duzdz(:,csta)**2)
-!
-!!---Termino 4
-!
-!   DT4(:,csta)=DT4(:,csta)+(dutdt(:,csta)*mes_D%r(:,-1))**2
-!
-!!---Terno 5
-!
-!   DT5(:,csta)=DT5(:,csta)+(durdz(:,csta)+duzdr(:,csta))**2
-!
-!!---Termino 6
-!
-!do n = 1, mes_D%pN
-!   n_ = mes_D%pNi + n - 1
-!   p1%Re(:,:,n)=vel_t%Re(:,:,n)*mes_D%r(n_,-1)
-!enddo
-!
-! call tra_phys2coll1d(p1,c1) !pasar a coll
-!
-! call var_coll_meshmult(0,mes_D%dr(1),c1, c2) !Derivar con respecto a r
-!
-! call tra_coll2phys1d(c2,p1) !pasar a fisico
-!
-! do n = 1, mes_D%pN
-!   n_ = mes_D%pNi + n - 1
-!   dd(n_,csta)=dd(n_,csta)+sum(p1%Re(:,:,n))
-!   enddo
-!
-!   DT6(:,csta)=DT6(:,csta)+(durdt(:,csta)*mes_D%r(:,-1))+(dd(:,csta)*mes_D%r(:,1))
-!
-!!---Termino 7
-!
-!   DT7(:,csta)=DT7(:,csta)+(dutdz(:,csta)+mes_D%r(:,-1)*duzdt(:,csta))
+ _loop_km_begin
+
+ c3%Im(:,nh) = -vel_ut%Im(:,nh)*ad_k1a1(k)
+ c3%Re(:,nh) =  vel_ut%Re(:,nh)*ad_k1a1(k)
+
+ c4%Im(:,nh) = -vel_ut%Im(:,nh)*ad_m1r1(:,m)
+ c4%Re(:,nh) =  vel_ut%Re(:,nh)*ad_m1r1(:,m)
+
+_loop_km_end
+
+call tra_coll2phys1d(c1,p3) !dutdt
+call tra_coll2phys1d(c3,p4) !dutdz
+
+do n = 1, mes_D%pN
+   n_ = mes_D%pNi + n - 1
+    
+   dutdt(n_,csta) = dutdt(n_,csta) + sum(p3%Re(:,:,n)) 
+   dutdz(n_,csta) = dutdz(n_,csta) + sum(p4%Re(:,:,n)) 
+
+end do
+
+!   vel_z
+
+_loop_km_begin
+
+ c3%Im(:,nh) = -vel_uz%Im(:,nh)*ad_k1a1(k)
+ c3%Re(:,nh) =  vel_uz%Re(:,nh)*ad_k1a1(k)
+
+ c4%Im(:,nh) = -vel_uz%Im(:,nh)*ad_m1r1(:,m)
+ c4%Re(:,nh) =  vel_uz%Re(:,nh)*ad_m1r1(:,m)
+
+_loop_km_end
+
+call tra_coll2phys1d(c2,p3) !duzdt
+call tra_coll2phys1d(c2,p4) !duzdz
+
+do n = 1, mes_D%pN
+   n_ = mes_D%pNi + n - 1
+   duzdt(n_,csta) = duzdt(n_,csta) + sum(p3%Re(:,:,n)) 
+   duzdz(n_,csta) = duzdz(n_,csta) + sum(p4%Re(:,:,n)) 
+
+end do
+!--------Turbulent kinetic energy budget-------!!
+!  Pressure difussion term
+p1%Re = p2%Re*vel_r%Re  !presion · vel radial fisico
+
+do n = 1, mes_D%pN
+   n_ = mes_D%pNi + n - 1
+   PDT2(n_)  = PDT2(n_)  + sum(p1%Re(:,:,n)) ! saco la distribucion radial
+   
+
+end do
+!En matlab derivar en r y dividir por r
+
+!!  Turbulent difussion term 
+
+p1%Re=vel_r%Re*(vel_r%Re**2+vel_t%Re**2+vel_z%Re**2)
+
+do n = 1, mes_D%pN
+   n_ = mes_D%pNi + n - 1
+   TDT2(n_)  = TDT2(n_)  + sum(p1%Re(:,:,n)) ! saco la distribucion radial
+   TDT2(n_)  = TDT2(n_)*mes_D%r(n_,1) ! multiplico por r
+end do
+!En matlab derivar en r y dividir por r
+
+!!  Viscous difussion term 
+
+!Todos los terminos en matlab
+
+!!  Production term
+
+!Todos los terminos en matlab
+
+!!   Dissipation term
+
+!---Termino 1
+
+   DT1(:,csta)=DT1(:,csta)+sum(duzdz(:,csta)**2)
+
+!---Termino 4
+
+   DT4(:,csta)=DT4(:,csta)+(dutdt(:,csta)*mes_D%r(:,-1))**2
+
+!---Terno 5
+
+   DT5(:,csta)=DT5(:,csta)+(durdz(:,csta)+duzdr(:,csta))**2
+
+!---Termino 6
+
+do n = 1, mes_D%pN
+   n_ = mes_D%pNi + n - 1
+   p1%Re(:,:,n)=vel_t%Re(:,:,n)*mes_D%r(n_,-1)
+enddo
+
+ call tra_phys2coll1d(p1,c1) !pasar a coll
+
+ call var_coll_meshmult(0,mes_D%dr(1),c1, c2) !Derivar con respecto a r
+
+ call tra_coll2phys1d(c2,p1) !pasar a fisico
+
+ do n = 1, mes_D%pN
+   n_ = mes_D%pNi + n - 1
+   dd(n_,csta)=dd(n_,csta)+sum(p1%Re(:,:,n))
+   enddo
+
+   DT6(:,csta)=DT6(:,csta)+(durdt(:,csta)*mes_D%r(:,-1))+(dd(:,csta)*mes_D%r(:,1))
+
+!---Termino 7
+
+   DT7(:,csta)=DT7(:,csta)+(dutdz(:,csta)+mes_D%r(:,-1)*duzdt(:,csta))
 
 
 end subroutine compute_turb_budget
