@@ -44,17 +44,17 @@
    ! double precision :: mom_uz(i_N,10)
    double precision :: mean_p(i_N,n_sta), stdv_p(i_N,n_sta)
 
-   double precision :: piz(i_N), pit(i_N), pir(i_N)
-   double precision :: durdr(i_N,n_sta), durdt(i_N,n_sta), durdz(i_N,n_sta), duzsqdz2(i_N), dutsqdz2(i_N), dursqdz2(i_N),uzsqur(i_N), utsqur(i_N), urcub(i_N)
+   !double precision :: piz(i_N), pit(i_N), pir(i_N)
+   double precision :: durdr(i_N,n_sta), durdt(i_N,n_sta), durdz(i_N,n_sta)
    double precision :: dutdr(i_N,n_sta), dutdt(i_N,n_sta), dutdz(i_N,n_sta)
    double precision :: duzdr(i_N,n_sta), duzdt(i_N,n_sta), duzdz(i_N,n_sta)
-   double precision :: dissr(i_N,3),disst(i_N,3),dissz(i_N,3), diss(i_N,3) !, dzduzsq(i_N), dzduzcub(i_N)
+   !double precision :: dissr(i_N,3),disst(i_N,3),dissz(i_N,3), diss(i_N,3) !, dzduzsq(i_N), dzduzcub(i_N)
    double precision :: PDT2(i_N),TDT2(i_N),DT1(i_N,n_sta), DT4(i_N,n_sta), DT5(i_N,n_sta) , DT6(i_N,n_sta), DT7(i_N,n_sta)
    double precision :: factor
    double precision :: time_sta(n_sta), utauv(n_sta)
 
    !double precision, private :: d(i_N) ,dd(i_N,n_sta) ! auxiliary mem
-   integer, private :: csta
+   integer :: csta
    
 ! ------------------------- HDF5 -------------------------------
 !desde el nuevo portatil
@@ -65,7 +65,7 @@
    integer(hsize_t),dimension(1):: hdims,maxdims
    integer(hsize_t),dimension(2):: hdims2
    
-   integer(hid_t) :: header_id,sta_id ! Group identifiers
+   integer(hid_t) :: header_id,sta_id, budget_id ! Group identifiers
    integer(size_t)::siever
    parameter (siever = 4*1024*1024)
 
@@ -184,7 +184,7 @@ type (phys), intent(inout)    :: p1,p2
 
 ! Necesitamos: 3 colls, 2 phys
 ! Primer cambio
-write(*,*) 'conozco la csta=',csta
+
 
 
          call var_coll_curl(vel_ur,vel_ut,vel_uz, c1,c2,c3)
@@ -350,9 +350,7 @@ _loop_km_end
 
 
 call tra_coll2phys1d(c3,p3) !durdt
-!write(*,*) 'Memoria c3',c3%Re(end,end)
 
-write(*,*) 'se ha pasado a phys'
 
 call tra_coll2phys1d(c4,p4) !durdz
 
@@ -967,15 +965,15 @@ implicit none
    ! mom_uz = 0d0
    ! mom_ut = 0d0
 
-   dissr = 0d0
-   disst = 0d0
-   dissz = 0d0
+   !dissr = 0d0
+   !disst = 0d0
+   !dissz = 0d0
 
    !urf = 0d0
    mean_p = 0d0
    stdv_p = 0d0
 
-   diss   = 0d0
+   !diss   = 0d0
 
    durdr = 0d0
    durdt = 0d0
@@ -987,10 +985,10 @@ implicit none
    duzdt = 0d0
    duzdz = 0d0
 
-
-   pir  = 0d0
-   pit  = 0d0
-   piz  = 0d0
+!
+   !pir  = 0d0
+   !pit  = 0d0
+   !piz  = 0d0
 
    PDT2 = 0d0
    TDT2 = 0d0
@@ -1000,9 +998,7 @@ implicit none
    DT6 = 0d0
    DT7 = 0d0
    
-   uzsqur    = 0d0
-   utsqur    = 0d0
-   urcub     = 0d0
+
 
 
 end subroutine initialiseSTD
@@ -1048,34 +1044,34 @@ implicit none
     stdv_p = dd
 
    !! Dissipation
-       diss(:,1) = dissr(:,1) + disst(:,1) + dissz(:,1)
-       diss(:,2) = dissr(:,2) + disst(:,2) + dissz(:,2)
-       diss(:,3) = dissr(:,3) + disst(:,3) + dissz(:,3)
+   !    diss(:,1) = dissr(:,1) + disst(:,1) + dissz(:,1)
+   !    diss(:,2) = dissr(:,2) + disst(:,2) + dissz(:,2)
+   !    diss(:,3) = dissr(:,3) + disst(:,3) + dissz(:,3)
 
    ! call mpi_reduce(diss, dissr, 3*i_N, mpi_double_precision,  & ! Usammos dissr que ya está usada y el no. de elementos a escribir es 3*i_N
    !     mpi_sum, 0, mpi_comm_world, mpi_er)
    !  diss = dissr
 
-   call mpi_reduce(diss(1,1), d, i_N, mpi_double_precision,  &
-       mpi_sum, 0, mpi_comm_world, mpi_er)
-    diss(:,1) = d
+   !call mpi_reduce(diss(1,1), d, i_N, mpi_double_precision,  &
+   !    mpi_sum, 0, mpi_comm_world, mpi_er)
+   ! diss(:,1) = d
 
-    call mpi_reduce(diss(1,2), d, i_N, mpi_double_precision,  &
-    mpi_sum, 0, mpi_comm_world, mpi_er)
-    diss(:,2) = d
-    call mpi_reduce(diss(1,3), d, i_N, mpi_double_precision,  &
-    mpi_sum, 0, mpi_comm_world, mpi_er)
-    diss(:,3) = d
+   ! call mpi_reduce(diss(1,2), d, i_N, mpi_double_precision,  &
+   ! mpi_sum, 0, mpi_comm_world, mpi_er)
+   ! diss(:,2) = d
+   ! call mpi_reduce(diss(1,3), d, i_N, mpi_double_precision,  &
+   ! mpi_sum, 0, mpi_comm_world, mpi_er)
+   ! diss(:,3) = d
 
-     call mpi_reduce(piz, d, i_N, mpi_double_precision,  &
-       mpi_sum, 0, mpi_comm_world, mpi_er)
-    piz = d
-      call mpi_reduce(pit, d, i_N, mpi_double_precision,  &
-       mpi_sum, 0, mpi_comm_world, mpi_er)
-    pit = d
-      call mpi_reduce(pir, d, i_N, mpi_double_precision,  &
-       mpi_sum, 0, mpi_comm_world, mpi_er)
-    pir = d
+   !  call mpi_reduce(piz, d, i_N, mpi_double_precision,  &
+   !    mpi_sum, 0, mpi_comm_world, mpi_er)
+   ! piz = d
+   !   call mpi_reduce(pit, d, i_N, mpi_double_precision,  &
+   !    mpi_sum, 0, mpi_comm_world, mpi_er)
+   ! pit = d
+   !   call mpi_reduce(pir, d, i_N, mpi_double_precision,  &
+   !    mpi_sum, 0, mpi_comm_world, mpi_er)
+   ! pir = d
 
       call mpi_reduce(PDT2, d, i_N, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
@@ -1098,16 +1094,46 @@ implicit none
       call mpi_reduce(DT7, dd, i_N*n_sta, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
     DT7 = dd
+    
+      call mpi_reduce(durdr, dd, i_N*n_sta, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   durdr = dd
+      call mpi_reduce(durdt, dd, i_N*n_sta, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   durdt = dd
+      call mpi_reduce(durdz, dd, i_N*n_sta, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   durdz = dd
+      call mpi_reduce(dutdr, dd, i_N*n_sta, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   dutdr = dd
+      call mpi_reduce(dutdt, dd, i_N*n_sta, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   dutdt = dd
+      call mpi_reduce(dutdz, dd, i_N*n_sta, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   dutdz = dd
+      call mpi_reduce(duzdr, dd, i_N*n_sta, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   duzdr = dd
+      call mpi_reduce(duzdt, dd, i_N*n_sta, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   duzdt = dd
+      call mpi_reduce(duzdz, dd, i_N*n_sta, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   duzdz = dd
 
-      call mpi_reduce(uzsqur, d, i_N, mpi_double_precision,  &
-       mpi_sum, 0, mpi_comm_world, mpi_er)
-      uzsqur = d
-      call mpi_reduce(utsqur, d, i_N, mpi_double_precision,  &
-       mpi_sum, 0, mpi_comm_world, mpi_er)
-      utsqur = d
-      call mpi_reduce(urcub, d, i_N, mpi_double_precision,  &
-       mpi_sum, 0, mpi_comm_world, mpi_er)
-      urcub = d
+    
+
+   !   call mpi_reduce(uzsqur, d, i_N, mpi_double_precision,  &
+   !    mpi_sum, 0, mpi_comm_world, mpi_er)
+   !   uzsqur = d
+   !   call mpi_reduce(utsqur, d, i_N, mpi_double_precision,  &
+   !    mpi_sum, 0, mpi_comm_world, mpi_er)
+   !   utsqur = d
+   !   call mpi_reduce(urcub, d, i_N, mpi_double_precision,  &
+   !    mpi_sum, 0, mpi_comm_world, mpi_er)
+   !   urcub = d
 
 
 
@@ -1151,6 +1177,7 @@ implicit none
        call h5fcreate_f(trim(fnameima),H5F_ACC_TRUNC_F,fid,h5err)
        call h5gcreate_f(fid, '/header', header_id, h5err)
        call h5gcreate_f(fid, '/sta'   , sta_id   , h5err)
+       call h5gcreate_f(fid, '/budget', budget_id ,5err)
 
        hdims = (/1/)
        call h5ltmake_dataset_double_f(header_id,"time",1,hdims,(/tim_t/),h5err)
@@ -1169,45 +1196,58 @@ implicit none
        call h5ltmake_dataset_double_f(header_id,"dt"   ,1,hdims,(/tim_dt/),h5err)
        hdims = (/i_N/)
        call h5ltmake_dataset_double_f(header_id,"r"   ,1,hdims,mes_D%r(1:i_N,1),h5err)
+      
+       hdims2 = (/i_N,n_sta/)
+       call h5ltmake_dataset_double_f(sta_id,"mean_ur",2,hdims2,mean_ur,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"mean_uz",2,hdims2,mean_uz,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"mean_ut",2,hdims2,mean_ut,h5err)
+2
+       call h5ltmake_dataset_double_f(sta_id,"stdv_ur",2,hdims2,stdv_ur,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"stdv_ut",2,hdims2,stdv_ut,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"stdv_uz",2,hdims2,stdv_uz,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"stdv_rz",2,hdims2,stdv_rz,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"stdv_rt",2,hdims2,stdv_rt,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"stdv_tz",2,hdims2,stdv_tz,h5err)
 
-       call h5ltmake_dataset_double_f(sta_id,"mean_ur",2,hdims,mean_ur,h5err)
-       call h5ltmake_dataset_double_f(sta_id,"mean_uz",2,hdims,mean_uz,h5err)
-       call h5ltmake_dataset_double_f(sta_id,"mean_ut",2,hdims,mean_ut,h5err)
-
-       call h5ltmake_dataset_double_f(sta_id,"stdv_ur",2,hdims,stdv_ur,h5err)
-       call h5ltmake_dataset_double_f(sta_id,"stdv_ut",2,hdims,stdv_ut,h5err)
-       call h5ltmake_dataset_double_f(sta_id,"stdv_uz",2,hdims,stdv_uz,h5err)
-       call h5ltmake_dataset_double_f(sta_id,"stdv_rz",2,hdims,stdv_rz,h5err)
-       call h5ltmake_dataset_double_f(sta_id,"stdv_rt",2,hdims,stdv_rt,h5err)
-       call h5ltmake_dataset_double_f(sta_id,"stdv_tz",2,hdims,stdv_tz,h5err)
-
-       call h5ltmake_dataset_double_f(sta_id,"stdv_p",2,hdims,stdv_p,h5err)
-       call h5ltmake_dataset_double_f(sta_id,"mean_p",2,hdims,mean_p,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"stdv_p",2,hdims2,stdv_p,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"mean_p",2,hdims2,mean_p,h5err)
 
        
-       call h5ltmake_dataset_double_f(sta_id,"disstt",1,hdims,diss(:,2),h5err)
-       call h5ltmake_dataset_double_f(sta_id,"dissrr",1,hdims,diss(:,1),h5err)
-       call h5ltmake_dataset_double_f(sta_id,"disszz",1,hdims,diss(:,3),h5err) 
+      ! call h5ltmake_dataset_double_f(sta_id,"disstt",1,hdims,diss(:,2),h5err)
+      ! call h5ltmake_dataset_double_f(sta_id,"dissrr",1,hdims,diss(:,1),h5err)
+      ! call h5ltmake_dataset_double_f(sta_id,"disszz",1,hdims,diss(:,3),h5err) 
 
-       call h5ltmake_dataset_double_f(sta_id,"pir",1,hdims,pir,h5err)
-       call h5ltmake_dataset_double_f(sta_id,"piz",1,hdims,piz,h5err)
-       call h5ltmake_dataset_double_f(sta_id,"pit",1,hdims,pit,h5err) 
+      ! call h5ltmake_dataset_double_f(sta_id,"pir",1,hdims,pir,h5err)
+      ! call h5ltmake_dataset_double_f(sta_id,"piz",1,hdims,piz,h5err)
+      ! call h5ltmake_dataset_double_f(sta_id,"pit",1,hdims,pit,h5err) 
 
-       call h5ltmake_dataset_double_f(sta_id,"pdt2",1,hdims,PDT2,h5err)
-       call h5ltmake_dataset_double_f(sta_id,"tdt2",1,hdims,TDT2,h5err)
-       call h5ltmake_dataset_double_f(sta_id,"dt1",1,hdims,DT1,h5err)
-       call h5ltmake_dataset_double_f(sta_id,"dt4",1,hdims,DT4,h5err)
-       call h5ltmake_dataset_double_f(sta_id,"dt5",1,hdims,DT5,h5err)
-       call h5ltmake_dataset_double_f(sta_id,"dt6",1,hdims,DT6,h5err)
-       call h5ltmake_dataset_double_f(sta_id,"dt7",1,hdims,DT7,h5err)
+       call h5ltmake_dataset_double_f(budget_id,"pdt2",2,hdims2,PDT2,h5err)
+       call h5ltmake_dataset_double_f(budget_id,"tdt2",2,hdims2,TDT2,h5err)
+       call h5ltmake_dataset_double_f(budget_id,"dt1",2,hdims2,DT1,h5err)
+       call h5ltmake_dataset_double_f(budget_id,"dt4",2,hdims2,DT4,h5err)
+       call h5ltmake_dataset_double_f(budget_id,"dt5",2,hdims2,DT5,h5err)
+       call h5ltmake_dataset_double_f(budget_id,"dt6",2,hdims2,DT6,h5err)
+       call h5ltmake_dataset_double_f(budget_id,"dt7",2,hdims2,DT7,h5err)
+      
+      call h5ltmake_dataset_double_f(budget_id,"dt7",2,hdims2,durdr,h5err)
+      call h5ltmake_dataset_double_f(budget_id,"dt7",2,hdims2,durdt,h5err)
+      call h5ltmake_dataset_double_f(budget_id,"dt7",2,hdims2,durdz,h5err)
+      call h5ltmake_dataset_double_f(budget_id,"dt7",2,hdims2,dutdr,h5err)
+      call h5ltmake_dataset_double_f(budget_id,"dt7",2,hdims2,dutdt,h5err)
+      call h5ltmake_dataset_double_f(budget_id,"dt7",2,hdims2,dutdz,h5err)
+      call h5ltmake_dataset_double_f(budget_id,"dt7",2,hdims2,duzdr,h5err)
+      call h5ltmake_dataset_double_f(budget_id,"dt7",2,hdims2,duzdt,h5err)
+      call h5ltmake_dataset_double_f(budget_id,"dt7",2,hdims2,duzdz,h5err)
 
-       call h5ltmake_dataset_double_f(sta_id,"uzsqur",1,hdims,uzsqur,h5err)
-       call h5ltmake_dataset_double_f(sta_id,"utsqur",1,hdims,utsqur,h5err)
-       call h5ltmake_dataset_double_f(sta_id,"urcub",1,hdims,urcub,h5err)      
+
+
+       !call h5ltmake_dataset_double_f(sta_id,"uzsqur",1,hdims,uzsqur,h5err)
+       !call h5ltmake_dataset_double_f(sta_id,"utsqur",1,hdims,utsqur,h5err)
+       !call h5ltmake_dataset_double_f(sta_id,"urcub",1,hdims,urcub,h5err)      
        
          
 
-       hdims2 = (/i_N,10/)
+       
 
       !  call h5ltmake_dataset_double_f(sta_id,"mom_ur",2,hdims2,mom_ur,h5err)
       !  call h5ltmake_dataset_double_f(sta_id,"mom_uz",2,hdims2,mom_uz,h5err)
@@ -1215,6 +1255,7 @@ implicit none
 
        call h5gclose_f(header_id,h5err)
        call h5gclose_f(sta_id,h5err)
+       call h5gclose_f(budget_id,h5err)
 
        call h5fclose_f(fid,h5err)
    endif
