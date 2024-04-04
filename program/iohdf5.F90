@@ -434,7 +434,7 @@
             n_ = mes_D%pNi + n - 1	
                p1%Re(i_pZ/2,:,n)=vel_z%Re(i_pZ/2,:,n)+vel_U(n_)
                p2%Re(:,1,n)=vel_z%Re(:,1,n)+vel_U(n_)
-               p3%Re(:,(i_Th/2)+1,n)=vel_z%Re(:,1(i_Th/2)+1,n)+vel_U(n_)
+               p3%Re(:,(i_Th/2)+1,n)=vel_z%Re(:,(i_Th/2)+1,n)+vel_U(n_)
          enddo
 
          write(cadena, '(I1)') 1
