@@ -425,7 +425,6 @@ p1%Re=vel_r%Re*(vel_r%Re**2+vel_t%Re**2+vel_z%Re**2)
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
    TDT2(n_)  = TDT2(n_)  + sum(p1%Re(:,:,n)) ! saco la distribucion radial
-   TDT2(n_)  = TDT2(n_)*mes_D%r(n_,1) ! multiplico por r
 end do
 !En matlab derivar en r y dividir por r
 
