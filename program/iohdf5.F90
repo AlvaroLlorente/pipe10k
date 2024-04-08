@@ -534,10 +534,15 @@
       hdims3=(/i_pZ,i_Th,i_pN/) !Dimensiones campo completo
       strow=1  !Creo que no sirve para nada, de momento
 
+      do n = 1, mes_D%pN
+         n_ = mes_D%pNi + n - 1	
+            p1%Re(:,:,n)=vel_z%Re(:,:,n)+vel_U(n_)
+      enddo
+
          
          call h5dump_parallel(G1,"/sta/vel_r",3, hdims3,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(:,:,:),h5err)
          call h5dump_parallel(G1,"/sta/vel_t",3, hdims3,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(:,:,:),h5err)
-         call h5dump_parallel(G1,"/sta/vel_z",3, hdims3,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_z%Re(:,:,:),h5err)
+         call h5dump_parallel(G1,"/sta/vel_z",3, hdims3,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,p1%Re(:,:,:),h5err)
          
 
       call h5gclose_f(G1,h5err)
