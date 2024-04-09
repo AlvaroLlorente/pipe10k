@@ -328,7 +328,7 @@ subroutine compute_turb_budget()
 
 !!   vel_r
    
-call var_coll_meshmult(1,mes_D%dr(1),vel_ur,c1) !durdr
+call var_coll_meshmult(1,mes_D%dr(1),vel_ur,c1) !durdr de todo el campo
 call tra_coll2phys1d(c1,p1)
 
 _loop_km_begin
@@ -348,7 +348,7 @@ call tra_coll2phys1d(c4,p4) !durdz
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-   durdr(n_,csta) = durdr(n_,csta) + sum(p1%Re(:,:,n))
+   durdr(n_,csta) = durdr(n_,csta) + sum(p1%Re(:,:,n)) !suma de las derivadas, obtendré la media de las derivadas
    durdt(n_,csta) = durdt(n_,csta) + sum(p3%Re(:,:,n)) 
    durdz(n_,csta) = durdz(n_,csta) + sum(p4%Re(:,:,n)) 
 end do
