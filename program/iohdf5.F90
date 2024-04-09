@@ -502,7 +502,7 @@
 
    subroutine io_save_phys_field()
       integer :: info
-      integer :: strow
+      integer :: strow, n, n_
       integer(hid_t) :: G1, G2
       
 
