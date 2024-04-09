@@ -49,7 +49,6 @@
    double precision :: dutdr(i_N,n_sta), dutdt(i_N,n_sta), dutdz(i_N,n_sta)
    double precision :: duzdr(i_N,n_sta), duzdt(i_N,n_sta), duzdz(i_N,n_sta)
    !double precision :: dissr(i_N,3),disst(i_N,3),dissz(i_N,3), diss(i_N,3) !, dzduzsq(i_N), dzduzcub(i_N)
-   double precision :: PDT2(i_N),TDT2(i_N),DT1(i_N,n_sta), DT4(i_N,n_sta), DT5(i_N,n_sta) , DT6(i_N,n_sta), DT7(i_N,n_sta)
    double precision :: factor
    double precision :: time_sta(n_sta), utauv(n_sta)
 
@@ -196,20 +195,10 @@ type (phys), intent(inout)    :: p1,p2
          _loop_km_end
 
          ! r equation 
-         !durdr ----> Alvaro: he añadido dutdr y duzdr aqui porque en compute_turb_budget
-         !por algun motivo ocurre segmentation fault
+         !durdr 
          call var_coll_meshmult(1,mes_D%dr(1),vel_ur,c1) !durdr
          call tra_coll2phys1d(c1,p1)
-         call var_coll_meshmult(1,mes_D%dr(1),vel_ut,c3) !dutdr
-         call tra_coll2phys1d(c3,p3)
-         call var_coll_meshmult(1,mes_D%dr(1),vel_uz,c4) !duzdr
-         call tra_coll2phys1d(c4,p4)
-         do n = 1, mes_D%pN
-            n_ = mes_D%pNi + n - 1
-            durdr(n_,csta) = durdr(n_,csta) + sum(p1%Re(:,:,n))
-            dutdr(n_,csta) = dutdr(n_,csta) + sum(p3%Re(:,:,n))
-            duzdr(n_,csta) = duzdr(n_,csta) + sum(p4%Re(:,:,n))
-         enddo 
+
 
          p2%Re=vel_r%Re*p1%Re
       
@@ -335,8 +324,12 @@ subroutine compute_turb_budget()
 
 !!--------Derivatives-------!!
 
+
+
 !!   vel_r
    
+call var_coll_meshmult(1,mes_D%dr(1),vel_ur,c1) !durdr
+call tra_coll2phys1d(c1,p1)
 
 _loop_km_begin
 
@@ -351,19 +344,20 @@ _loop_km_end
 
 call tra_coll2phys1d(c3,p3) !durdt
 
-
 call tra_coll2phys1d(c4,p4) !durdz
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-
+   durdr(n_,csta) = durdr(n_,csta) + sum(p1%Re(:,:,n))
    durdt(n_,csta) = durdt(n_,csta) + sum(p3%Re(:,:,n)) 
    durdz(n_,csta) = durdz(n_,csta) + sum(p4%Re(:,:,n)) 
-
 end do
+
 
 !   vel_t
 
+call var_coll_meshmult(1,mes_D%dr(1),vel_ut,c1) !dutdr
+call tra_coll2phys1d(c1,p1)
  _loop_km_begin
 
  c3%Im(:,nh) = -vel_ut%Im(:,nh)*ad_k1a1(k)
@@ -374,19 +368,21 @@ end do
 
 _loop_km_end
 
-call tra_coll2phys1d(c1,p3) !dutdt
-call tra_coll2phys1d(c3,p4) !dutdz
+call tra_coll2phys1d(c3,p3) !dutdt
+call tra_coll2phys1d(c4,p4) !dutdz
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-    
+   dutdr(n_,csta) = dutdr(n_,csta) + sum(p1%Re(:,:,n))    
    dutdt(n_,csta) = dutdt(n_,csta) + sum(p3%Re(:,:,n)) 
    dutdz(n_,csta) = dutdz(n_,csta) + sum(p4%Re(:,:,n)) 
-
 end do
 
 !   vel_z
 
+
+call var_coll_meshmult(1,mes_D%dr(1),vel_uz,c1) !duzdr
+call tra_coll2phys1d(c1,p4)
 _loop_km_begin
 
  c3%Im(:,nh) = -vel_uz%Im(:,nh)*ad_k1a1(k)
@@ -397,83 +393,15 @@ _loop_km_begin
 
 _loop_km_end
 
-call tra_coll2phys1d(c2,p3) !duzdt
-call tra_coll2phys1d(c2,p4) !duzdz
+call tra_coll2phys1d(c3,p3) !duzdt
+call tra_coll2phys1d(c4,p4) !duzdz
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
+   duzdr(n_,csta) = duzdr(n_,csta) + sum(p4%Re(:,:,n))
    duzdt(n_,csta) = duzdt(n_,csta) + sum(p3%Re(:,:,n)) 
    duzdz(n_,csta) = duzdz(n_,csta) + sum(p4%Re(:,:,n)) 
-
 end do
-!--------Turbulent kinetic energy budget-------!!
-!  Pressure difussion term
-p1%Re = p2%Re*vel_r%Re  !presion · vel radial fisico
-
-do n = 1, mes_D%pN
-   n_ = mes_D%pNi + n - 1
-   PDT2(n_)  = PDT2(n_)  + sum(p1%Re(:,:,n)) ! saco la distribucion radial
-   
-
-end do
-!En matlab derivar en r y dividir por r
-
-!!  Turbulent difussion term 
-
-p1%Re=vel_r%Re*(vel_r%Re**2+vel_t%Re**2+vel_z%Re**2)
-
-do n = 1, mes_D%pN
-   n_ = mes_D%pNi + n - 1
-   TDT2(n_)  = TDT2(n_)  + sum(p1%Re(:,:,n)) ! saco la distribucion radial
-end do
-!En matlab derivar en r y dividir por r
-
-!!  Viscous difussion term 
-
-!Todos los terminos en matlab
-
-!!  Production term
-
-!Todos los terminos en matlab
-
-!!   Dissipation term
-
-!---Termino 1
-
-   DT1(:,csta)=DT1(:,csta)+sum(duzdz(:,csta)**2)
-
-!---Termino 4
-
-   DT4(:,csta)=DT4(:,csta)+(dutdt(:,csta)*mes_D%r(:,-1))**2
-
-!---Terno 5
-
-   DT5(:,csta)=DT5(:,csta)+(durdz(:,csta)+duzdr(:,csta))**2
-
-!---Termino 6
-
-do n = 1, mes_D%pN
-   n_ = mes_D%pNi + n - 1
-   p1%Re(:,:,n)=vel_t%Re(:,:,n)*mes_D%r(n_,-1)
-enddo
-
- call tra_phys2coll1d(p1,c1) !pasar a coll
-
- call var_coll_meshmult(0,mes_D%dr(1),c1, c2) !Derivar con respecto a r
-
- call tra_coll2phys1d(c2,p1) !pasar a fisico
-
- do n = 1, mes_D%pN
-   n_ = mes_D%pNi + n - 1
-   dd(n_,csta)=dd(n_,csta)+sum(p1%Re(:,:,n))
-   enddo
-
-   DT6(:,csta)=DT6(:,csta)+(durdt(:,csta)*mes_D%r(:,-1))+(dd(:,csta)*mes_D%r(:,1))
-
-!---Termino 7
-
-   DT7(:,csta)=DT7(:,csta)+(dutdz(:,csta)+mes_D%r(:,-1)*duzdt(:,csta))
-
 
 end subroutine compute_turb_budget
 
@@ -989,16 +917,6 @@ implicit none
    !pit  = 0d0
    !piz  = 0d0
 
-   PDT2 = 0d0
-   TDT2 = 0d0
-   DT1 = 0d0
-   DT4 = 0d0
-   DT5 = 0d0
-   DT6 = 0d0
-   DT7 = 0d0
-   
-
-
 
 end subroutine initialiseSTD
 
@@ -1074,27 +992,6 @@ tam = i_N*n_sta
    !    mpi_sum, 0, mpi_comm_world, mpi_er)
    ! pir = d
 
-      call mpi_reduce(PDT2, d, i_N, mpi_double_precision,  &
-       mpi_sum, 0, mpi_comm_world, mpi_er)
-    PDT2 = d
-      call mpi_reduce(TDT2, d, i_N, mpi_double_precision,  &
-       mpi_sum, 0, mpi_comm_world, mpi_er)
-    TDT2 = d
-      call mpi_reduce(DT1, dd, tam, mpi_double_precision,  &
-      mpi_sum, 0, mpi_comm_world, mpi_er)
-    DT1 = dd
-      call mpi_reduce(DT4, dd, tam, mpi_double_precision,  &
-      mpi_sum, 0, mpi_comm_world, mpi_er)
-    DT4 = dd
-      call mpi_reduce(DT5, dd, tam, mpi_double_precision,  &
-      mpi_sum, 0, mpi_comm_world, mpi_er)
-    DT5 = dd
-      call mpi_reduce(DT6, dd, tam, mpi_double_precision,  &
-      mpi_sum, 0, mpi_comm_world, mpi_er)
-    DT6 = dd
-      call mpi_reduce(DT7, dd, tam, mpi_double_precision,  &
-      mpi_sum, 0, mpi_comm_world, mpi_er)
-    DT7 = dd
     
       call mpi_reduce(durdr, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
@@ -1179,7 +1076,6 @@ tam = i_N*n_sta
        
        call h5gcreate_f(fid, '/header', header_id, h5err)
        call h5gcreate_f(fid, '/sta'   , sta_id   , h5err)
-       call h5gcreate_f(fid, '/budget', budget_id ,h5err)
        call h5gcreate_f(fid, '/derivatives', derivative_id ,h5err)
        
        hdims = (/1/)
@@ -1227,13 +1123,7 @@ tam = i_N*n_sta
       ! call h5ltmake_dataset_double_f(sta_id,"piz",1,hdims,piz,h5err)
       ! call h5ltmake_dataset_double_f(sta_id,"pit",1,hdims,pit,h5err) 
 
-       call h5ltmake_dataset_double_f(budget_id,"pdt2",2,hdims2,PDT2,h5err)
-       call h5ltmake_dataset_double_f(budget_id,"tdt2",2,hdims2,TDT2,h5err)
-       call h5ltmake_dataset_double_f(budget_id,"dt1",2,hdims2,DT1,h5err)
-       call h5ltmake_dataset_double_f(budget_id,"dt4",2,hdims2,DT4,h5err)
-       call h5ltmake_dataset_double_f(budget_id,"dt5",2,hdims2,DT5,h5err)
-       call h5ltmake_dataset_double_f(budget_id,"dt6",2,hdims2,DT6,h5err)
-       call h5ltmake_dataset_double_f(budget_id,"dt7",2,hdims2,DT7,h5err)
+
       
       call h5ltmake_dataset_double_f(derivative_id,"durdr",2,hdims2,durdr,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"durdt",2,hdims2,durdt,h5err)
