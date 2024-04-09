@@ -113,8 +113,8 @@
       mean_uz(n_,csta) = mean_uz(n_,csta) + sum(vel_z%Re(:,:,n))
       stdv_uz(n_,csta) = stdv_uz(n_,csta) + sum(vel_z%Re(:,:,n)**2)
       stdv_rz(n_,csta) = stdv_rz(n_,csta) + sum(vel_z%Re(:,:,n)*vel_r%Re(:,:,n))
-      stdv_rt(n_,csta) = stdv_rz(n_,csta) + sum(vel_r%Re(:,:,n)*vel_t%Re(:,:,n))
-      stdv_tz(n_,csta) = stdv_rz(n_,csta) + sum(vel_t%Re(:,:,n)*vel_z%Re(:,:,n))
+      stdv_rt(n_,csta) = stdv_rt(n_,csta) + sum(vel_r%Re(:,:,n)*vel_t%Re(:,:,n))
+      stdv_tz(n_,csta) = stdv_tz(n_,csta) + sum(vel_t%Re(:,:,n)*vel_z%Re(:,:,n))
    enddo
 
    call compute_turb_budget()
