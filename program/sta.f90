@@ -348,9 +348,9 @@ call tra_coll2phys1d(c4,p4) !durdz
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-   durdr(n_,csta) = durdr(n_,csta) + sum(p1%Re(:,:,n)) !suma de las derivadas, obtendré la media de las derivadas
-   durdt(n_,csta) = durdt(n_,csta) + sum(p3%Re(:,:,n)) 
-   durdz(n_,csta) = durdz(n_,csta) + sum(p4%Re(:,:,n)) 
+   durdr(n_,csta) = durdr(n_,csta) + sum(p1%Re(:,:,n)**2) 
+   durdt(n_,csta) = durdt(n_,csta) + sum(p3%Re(:,:,n)**2) 
+   durdz(n_,csta) = durdz(n_,csta) + sum(p4%Re(:,:,n)**2) 
 end do
 
 
@@ -373,9 +373,9 @@ call tra_coll2phys1d(c4,p4) !dutdz
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-   dutdr(n_,csta) = dutdr(n_,csta) + sum(p1%Re(:,:,n))    
-   dutdt(n_,csta) = dutdt(n_,csta) + sum(p3%Re(:,:,n)) 
-   dutdz(n_,csta) = dutdz(n_,csta) + sum(p4%Re(:,:,n)) 
+   dutdr(n_,csta) = dutdr(n_,csta) + sum(p1%Re(:,:,n)**2)    
+   dutdt(n_,csta) = dutdt(n_,csta) + sum(p3%Re(:,:,n)**2) 
+   dutdz(n_,csta) = dutdz(n_,csta) + sum(p4%Re(:,:,n)**2) 
 end do
 
 !   vel_z
@@ -398,9 +398,9 @@ call tra_coll2phys1d(c4,p4) !duzdz
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-   duzdr(n_,csta) = duzdr(n_,csta) + sum(p4%Re(:,:,n))
-   duzdt(n_,csta) = duzdt(n_,csta) + sum(p3%Re(:,:,n)) 
-   duzdz(n_,csta) = duzdz(n_,csta) + sum(p4%Re(:,:,n)) 
+   duzdr(n_,csta) = duzdr(n_,csta) + sum(p4%Re(:,:,n)**2)
+   duzdt(n_,csta) = duzdt(n_,csta) + sum(p3%Re(:,:,n)**2) 
+   duzdz(n_,csta) = duzdz(n_,csta) + sum(p4%Re(:,:,n)**2) 
 end do
 
 end subroutine compute_turb_budget
