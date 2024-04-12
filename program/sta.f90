@@ -333,15 +333,13 @@ call tra_coll2phys1d(c1,p1)
 
 _loop_km_begin
 
- c3%Im(:,nh) = -vel_ur%Im(:,nh)*ad_k1a1(k)
- c3%Re(:,nh) =  vel_ur%Re(:,nh)*ad_k1a1(k)
+ c4%Im(:,nh) = -vel_ur%Im(:,nh)*ad_k1a1(k)
+ c4%Re(:,nh) =  vel_ur%Re(:,nh)*ad_k1a1(k)
 
- c4%Im(:,nh) = -vel_ur%Im(:,nh)*ad_m1r1(:,m)
- c4%Re(:,nh) =  vel_ur%Re(:,nh)*ad_m1r1(:,m)
+ c3%Im(:,nh) = -vel_ur%Im(:,nh)*ad_m1r1(:,m)
+ c3%Re(:,nh) =  vel_ur%Re(:,nh)*ad_m1r1(:,m)
 
- print *, "Longitud del vector vel_ur 1:", size(vel_ur%Im, 1)
- print *, "Longitud del vector vel_ur 2:", size(vel_ur%Im, 2)
- print *, "Longitud del vector ad_k1a1:", size(ad_k1a1)
+
 _loop_km_end
 
 
@@ -351,9 +349,9 @@ call tra_coll2phys1d(c4,p4) !durdz
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-   durdr(n_,csta) = durdr(n_,csta) + sum(p1%Re(:,:,n)**2) 
-   durdt(n_,csta) = durdt(n_,csta) + sum(p3%Re(:,:,n)**2) 
-   durdz(n_,csta) = durdz(n_,csta) + sum(p4%Re(:,:,n)**2) 
+   durdr(n_,csta) = durdr(n_,csta) + sum(p1%Re(:,:,n)) 
+   durdt(n_,csta) = durdt(n_,csta) + sum(p3%Re(:,:,n)) 
+   durdz(n_,csta) = durdz(n_,csta) + sum(p4%Re(:,:,n)) 
 end do
 
 
@@ -363,11 +361,11 @@ call var_coll_meshmult(1,mes_D%dr(1),vel_ut,c1) !dutdr
 call tra_coll2phys1d(c1,p1)
  _loop_km_begin
 
- c3%Im(:,nh) = -vel_ut%Im(:,nh)*ad_k1a1(k)
- c3%Re(:,nh) =  vel_ut%Re(:,nh)*ad_k1a1(k)
+ c4%Im(:,nh) = -vel_ut%Im(:,nh)*ad_k1a1(k)
+ c4%Re(:,nh) =  vel_ut%Re(:,nh)*ad_k1a1(k)
 
- c4%Im(:,nh) = -vel_ut%Im(:,nh)*ad_m1r1(:,m)
- c4%Re(:,nh) =  vel_ut%Re(:,nh)*ad_m1r1(:,m)
+ c3%Im(:,nh) = -vel_ut%Im(:,nh)*ad_m1r1(:,m)
+ c3%Re(:,nh) =  vel_ut%Re(:,nh)*ad_m1r1(:,m)
 
 _loop_km_end
 
@@ -376,23 +374,23 @@ call tra_coll2phys1d(c4,p4) !dutdz
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-   dutdr(n_,csta) = dutdr(n_,csta) + sum(p1%Re(:,:,n)**2)    
-   dutdt(n_,csta) = dutdt(n_,csta) + sum(p3%Re(:,:,n)**2) 
-   dutdz(n_,csta) = dutdz(n_,csta) + sum(p4%Re(:,:,n)**2) 
+   dutdr(n_,csta) = dutdr(n_,csta) + sum(p1%Re(:,:,n))    
+   dutdt(n_,csta) = dutdt(n_,csta) + sum(p3%Re(:,:,n)) 
+   dutdz(n_,csta) = dutdz(n_,csta) + sum(p4%Re(:,:,n)) 
 end do
 
 !   vel_z
 
 
 call var_coll_meshmult(1,mes_D%dr(1),vel_uz,c1) !duzdr
-call tra_coll2phys1d(c1,p4)
+call tra_coll2phys1d(c1,p1)
 _loop_km_begin
 
- c3%Im(:,nh) = -vel_uz%Im(:,nh)*ad_k1a1(k)
- c3%Re(:,nh) =  vel_uz%Re(:,nh)*ad_k1a1(k)
+ c4%Im(:,nh) = -vel_uz%Im(:,nh)*ad_k1a1(k)
+ c4%Re(:,nh) =  vel_uz%Re(:,nh)*ad_k1a1(k)
 
- c4%Im(:,nh) = -vel_uz%Im(:,nh)*ad_m1r1(:,m)
- c4%Re(:,nh) =  vel_uz%Re(:,nh)*ad_m1r1(:,m)
+ c3%Im(:,nh) = -vel_uz%Im(:,nh)*ad_m1r1(:,m)
+ c3%Re(:,nh) =  vel_uz%Re(:,nh)*ad_m1r1(:,m)
 
 _loop_km_end
 
@@ -401,9 +399,9 @@ call tra_coll2phys1d(c4,p4) !duzdz
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-   duzdr(n_,csta) = duzdr(n_,csta) + sum(p4%Re(:,:,n)**2)
-   duzdt(n_,csta) = duzdt(n_,csta) + sum(p3%Re(:,:,n)**2) 
-   duzdz(n_,csta) = duzdz(n_,csta) + sum(p4%Re(:,:,n)**2) 
+   duzdr(n_,csta) = duzdr(n_,csta) + sum(p1%Re(:,:,n))
+   duzdt(n_,csta) = duzdt(n_,csta) + sum(p3%Re(:,:,n)) 
+   duzdz(n_,csta) = duzdz(n_,csta) + sum(p4%Re(:,:,n)) 
 end do
 
 end subroutine compute_turb_budget
@@ -1154,7 +1152,7 @@ tam = i_N*n_sta
        
        call h5gclose_f(header_id,h5err)
        call h5gclose_f(sta_id,   h5err)
-       call h5gclose_f(budget_id,h5err)
+       !call h5gclose_f(budget_id,h5err)
        call h5gclose_f(derivative_id ,h5err)
        call h5fclose_f(fid,h5err)
 
