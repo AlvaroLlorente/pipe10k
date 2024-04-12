@@ -339,7 +339,9 @@ _loop_km_begin
  c4%Im(:,nh) = -vel_ur%Im(:,nh)*ad_m1r1(:,m)
  c4%Re(:,nh) =  vel_ur%Re(:,nh)*ad_m1r1(:,m)
 
- write(*,*) k
+ print *, "Longitud del vector vel_ur 1:", size(vel_ur%Im, 1)
+ print *, "Longitud del vector vel_ur 2:", size(vel_ur%Im, 2)
+ print *, "Longitud del vector ad_k1a1:", size(ad_k1a1)
 _loop_km_end
 
 
