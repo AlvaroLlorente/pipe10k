@@ -66,6 +66,8 @@
       do n = -i_K1, i_K1
          ad_k2a2(n) = d_alpha*n * d_alpha*n
          ad_k1a1(n) = d_alpha*n
+
+         write(*,*) ad_k1a1(n)
       end do
 
    end subroutine var_precompute
