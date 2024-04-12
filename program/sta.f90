@@ -339,6 +339,7 @@ _loop_km_begin
  c4%Im(:,nh) = -vel_ur%Im(:,nh)*ad_m1r1(:,m)
  c4%Re(:,nh) =  vel_ur%Re(:,nh)*ad_m1r1(:,m)
 
+ write(*,*) k
 _loop_km_end
 
 
