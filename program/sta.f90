@@ -39,16 +39,15 @@
    double precision :: mean_ut(i_N,n_sta), stdv_ut(i_N,n_sta)
    double precision :: mean_uz(i_N,n_sta), stdv_uz(i_N,n_sta)
    double precision :: stdv_rz(i_N,n_sta), stdv_rt(i_N,n_sta), stdv_tz(i_N,n_sta)
-   ! double precision :: mom_ur(i_N,10)
-   ! double precision :: mom_ut(i_N,10)
-   ! double precision :: mom_uz(i_N,10)
+   double precision :: stdv_zzr(i_N,n_sta)
+  
    double precision :: mean_p(i_N,n_sta), stdv_p(i_N,n_sta)
 
    !double precision :: piz(i_N), pit(i_N), pir(i_N)
-   double precision :: durdr(i_N,n_sta), durdt(i_N,n_sta), durdz(i_N,n_sta),duzdrsq(i_N,n_sta),dutdrsq(i_N,n_sta),durdrsq(i_N,n_sta)
-   double precision :: dutdr(i_N,n_sta), dutdt(i_N,n_sta), dutdz(i_N,n_sta)
-   double precision :: duzdr(i_N,n_sta), duzdt(i_N,n_sta), duzdz(i_N,n_sta)
-   !double precision :: dissr(i_N,3),disst(i_N,3),dissz(i_N,3), diss(i_N,3) !, dzduzsq(i_N), dzduzcub(i_N)
+   double precision :: durdr(i_N,n_sta), durdt(i_N,n_sta), durdz(i_N,n_sta),durdrsq(i_N,n_sta)
+   double precision :: dutdr(i_N,n_sta), dutdt(i_N,n_sta), dutdz(i_N,n_sta),dutdrsq(i_N,n_sta)
+   double precision :: duzdr(i_N,n_sta), duzdt(i_N,n_sta), duzdz(i_N,n_sta),duzdrsq(i_N,n_sta),duzdzsq(i_N,n_sta)
+   double precision :: uuPST1(i_N,n_sta) ,uuPST1sq(i_N,n_sta), uuDT3(i_N,n_sta)
    double precision :: factor
    double precision :: time_sta(n_sta), utauv(n_sta)
 
@@ -115,6 +114,8 @@
       stdv_rz(n_,csta) = stdv_rz(n_,csta) + sum(vel_z%Re(:,:,n)*vel_r%Re(:,:,n))
       stdv_rt(n_,csta) = stdv_rt(n_,csta) + sum(vel_r%Re(:,:,n)*vel_t%Re(:,:,n))
       stdv_tz(n_,csta) = stdv_tz(n_,csta) + sum(vel_t%Re(:,:,n)*vel_z%Re(:,:,n))
+
+      stdv_zzr(n_,csta) = stdv_zzr(n_,csta) + sum(vel_z%Re(:,:,n)*vel_z%Re(:,:,n)*vel_r%Re(:,:,n))
    enddo
 
    call compute_turb_budget()
@@ -328,7 +329,7 @@ subroutine compute_turb_budget()
 
 !!   vel_r
    
-call var_coll_meshmult(0,mes_D%dr(1),vel_ur,c1) !durdr de todo el campo
+call var_coll_meshmult(1,mes_D%dr(1),vel_ur,c1) !durdr de todo el campo
 call tra_coll2phys1d(c1,p1)
 
 _loop_km_begin
@@ -405,469 +406,49 @@ do n = 1, mes_D%pN
    duzdrsq(n_,csta) = duzdrsq(n_,csta) + sum(p1%Re(:,:,n)**2)
    duzdt(n_,csta) = duzdt(n_,csta) + sum(p3%Re(:,:,n)) 
    duzdz(n_,csta) = duzdz(n_,csta) + sum(p4%Re(:,:,n)) 
+   duzdzsq(n_,csta) = duzdzsq(n_,csta) + sum(p4%Re(:,:,n)**2)
+
+
 end do
+
+!--------Reynolds normal stresses budget-------!!
+
+!  Pressure strain term uu
+
+_loop_km_begin
+ c4%Im(:,nh) = -vel_uz%Im(:,nh)*ad_k1a1(k)
+ c4%Re(:,nh) =  vel_uz%Re(:,nh)*ad_k1a1(k)
+_loop_km_end
+
+call tra_coll2phys1d(c4,p4) !duzdz
+
+p1%Re=p2%Re*p4%Re
+
+do n = 1, mes_D%pN
+   n_ = mes_D%pNi + n - 1
+uuPST1sq(n_,csta)=uuPST1sq(n_,csta)+sum(p1%Re(:,:,n)**2)
+uuPST1(n_,csta)=uuPST1(n_,csta)+sum(p1%Re(:,:,n))
+enddo
+!  Dissipation term uu
+
+_loop_km_begin
+c3%Im(:,nh) = -vel_uz%Im(:,nh)*ad_m1r1(:,m)
+c3%Re(:,nh) =  vel_uz%Re(:,nh)*ad_m1r1(:,m)
+_loop_km_end
+
+call tra_coll2phys1d(c3,p3) !duzdz
+
+p1%Re=p3%Re*mes_D%r(:,-1)
+
+do n = 1, mes_D%pN
+   n_ = mes_D%pNi + n - 1
+uuDT3(n_,csta)=uuDT3(n_,csta)+sum(p1%Re(:,:,n))
+enddo
 
 end subroutine compute_turb_budget
 
 
-! !------------------------------------------------------------------------
-! !  Turbulent budgets:
-! !      Dissipation, % optimization pending
-! !      Rest of the derivatives: budgets in postproc
-! !------------------------------------------------------------------------
-! subroutine var_coll_dissp(c1,c2,c3,c4)
-!    implicit none
-!   type(coll), intent(inout)  :: c1,c2,c3,c4
-!
-!       double precision :: factor
-!       integer :: n, n_
-!       _loop_km_vars
-!
-!
-!      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!       call var_coll_meshmult(0,mes_D%dr(1),vel_uz, c2) 
-!
-!       _loop_km_begin
-!
-!       c3%Im(:,nh) = -vel_uz%Im(:,nh)*ad_k1a1(k)
-!       c3%Re(:,nh) =  vel_uz%Re(:,nh)*ad_k1a1(k)
-!
-!       c1%Im(:,nh) = -vel_uz%Im(:,nh)*ad_m1r1(:,m)
-!       c1%Re(:,nh) =  vel_uz%Re(:,nh)*ad_m1r1(:,m)
-!     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!
-!       factor = 2d0
-!       if (m==0) factor = 1d0
-!
-!          dissr(:,3) = dissr(:,3) + factor*(c2%Re(:,nh)**2+c2%Im(:,nh)**2)
-!          dissz(:,3) = dissz(:,3) + factor*(c3%Re(:,nh)**2+c3%Im(:,nh)**2)
-!          disst(:,3) = disst(:,3) + factor*(c1%Re(:,nh)**2+c1%Im(:,nh)**2)
-!     
-!       _loop_km_end
-!  
-!
-!       ! Lo mismo para theta
-!
-!      call var_coll_meshmult(1,mes_D%dr(1),vel_ut, c2) 
-!
-!      _loop_km_begin
-!
-!      c4%Re(:,nh) = -vel_ut%Im(:,nh)*ad_k1a1(k)
-!      c4%Im(:,nh) =  vel_ut%Re(:,nh)*ad_k1a1(k)
-!
-!      c1%Im(:,nh) = -vel_ut%Im(:,nh)*ad_m1r1(:,m) + vel_ur%Re(:,nh)*mes_D%r(:,-1) !+
-!      c1%Re(:,nh) =  vel_ut%Re(:,nh)*ad_m1r1(:,m) + vel_ur%Im(:,nh)*mes_D%r(:,-1) !+
-!
-!      factor = 2d0
-!      if (m==0) factor = 1d0
-!      
-!         dissr(:,2) = dissr(:,2) + factor*(c2%Re(:,nh)**2+c2%Im(:,nh)**2)
-!         dissz(:,2) = dissz(:,2) + factor*(c4%Re(:,nh)**2+c4%Im(:,nh)**2)
-!         disst(:,2) = disst(:,2) + factor*(c1%Re(:,nh)**2+c1%Im(:,nh)**2)
-!
-!      _loop_km_end
-!
-!      
-!      ! Lo mismo para r
-!
-!      call var_coll_meshmult(1,mes_D%dr(1),vel_ur, c2)
-!
-!      _loop_km_begin
-!
-!      c4%Im(:,nh) = -vel_ur%Im(:,nh)*ad_k1a1(k)
-!      c4%Re(:,nh) =  vel_ur%Re(:,nh)*ad_k1a1(k)
-!
-!      c1%Im(:,nh) = -vel_ur%Im(:,nh)*ad_m1r1(:,m) - vel_ut%Re(:,nh)*mes_D%r(:,-1) !-
-!      c1%Re(:,nh) =  vel_ur%Re(:,nh)*ad_m1r1(:,m) - vel_ut%Im(:,nh)*mes_D%r(:,-1) !-
-!
-!
-!      factor = 2d0
-!      if (m==0) factor = 1d0
-!
-!         dissr(:,1) = dissr(:,1) + factor*(c2%Re(:,nh)**2+c2%Im(:,nh)**2)
-!         dissz(:,1) = dissz(:,1) + factor*(c4%Re(:,nh)**2+c4%Im(:,nh)**2)
-!         disst(:,1) = disst(:,1) + factor*(c1%Re(:,nh)**2+c1%Im(:,nh)**2)
-!
-!   _loop_km_end
-!
-!                        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!                        !!   Rest of Turbulent budgets !! 
-!                        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!
-!! Pressure strain correlation term
-!
-!   call var_coll_meshmult(1,mes_D%dr(1),vel_ur, c1) ! r simple derivative
-!   call tra_phys2coll1d(p2,c4)
-!   ! call tra_phys2coll1d(vel_t,vel_ut)
-!   ! call tra_phys2coll1d(vel_z,vel_uz)
-!
-!         _loop_km_begin
-!
-!                  c2%Im(:,nh) =  vel_ut%Im(:,nh) *ad_m1r1(:,m)*c4%Im(:,nh) +  vel_ut%Re(:,nh)  *ad_m1r1(:,m)*c4%Re(:,nh)
-!                  ! c2%Re(:,nh) =  vel_ut%Re(:,nh)  *ad_m1r1(:,m)    
-!
-!                  c3%Im(:,nh) =  vel_uz%Im(:,nh)*ad_k1a1(k)*c4%Im(:,nh)  +  vel_uz%Re(:,nh)*ad_k1a1(k)*c4%Re(:,nh)
-!                  ! c3%Re(:,nh) =  vel_uz%Re(:,nh)*ad_k1a1(k)
-!
-!                  c1%Re(:,nh) = c1%Re(:,nh)*c4%Re(:,nh) + c1%Im(:,nh)*c4%Im(:,nh)
-!
-!             factor = 2d0
-!            if (m==0) factor = 1d0
-!               pir(:) = pir(:) + factor*(c1%Re(:,nh))
-!               piz(:) = piz(:) + factor*(c2%Im(:,nh))
-!               pit(:) = pit(:) + factor*(c3%Im(:,nh))
-!          _loop_km_end
-!
-!
-!
-!      ! call tra_coll2phys1d(c3,p3) !z
-!      ! call tra_coll2phys1d(c2,p1) !t
-!      ! ! ! call tra_coll2phys1d(c1,p4) !r
-!
-!      ! p3%Re = p3%Re * p2%Re !z
-!      ! p1%Re = p1%Re * p2%Re !t
-!      ! ! p4%Re = p4%Re * p2%Re !r
-!
-!
-!      ! do n = 1, mes_D%pN
-!      ! n_ = mes_D%pNi + n - 1
-!      
-!      ! ! p1%Re(:,:,n) =  2d0 * p1%Re(:,:,n)  ! multiplico por 2 y divido entre r
-!      ! ! p3%Re(:,:,n) =  2d0 * p3%Re(:,:,n)
-!      ! ! pir(n_)  = pir(n_)  + sum(p4%Re(:,:,n)) ! saco la distribucion radial
-!      ! pit(n_)  = pit(n_)  + sum(p1%Re(:,:,n))
-!      ! piz(n_)  = piz(n_)  + sum(p3%Re(:,:,n))
-!      ! end do
-!
-!
-!
-!
-!
-!      ! call tra_phys2coll1d(p3,c2) !z
-!      ! call tra_phys2coll1d(p1,c3) !t
-!      ! call tra_phys2coll1d(p4,c1) !r
-!
-!
-!   ! _loop_km_begin
-!   !          ! z component  
-!   !          c2%Re(:,nh) =  vel_uz%Re(:,nh)*ad_k1a1(k)*c4%Re(:,nh) + vel_uz%Im(:,nh)*ad_k1a1(k)*c4%Im(:,nh)
-!   !          ! theta component
-!   !          c3%Re(:,nh) =  vel_ut%Re(:,nh)*ad_m1r1(:,m)*c4%Re(:,nh) + vel_ut%Im(:,nh)*ad_m1r1(:,m)*c4%Im(:,nh)
-!   !          ! r component
-!   !          ! c1%Re(:,nh) =  c1%Re(:,nh)*c4%Re(:,nh) + c1%Im(:,nh)*c4%Im(:,nh)
-!
-!   !    _loop_km_end
-!
-!   ! _loop_km_begin
-!   !    factor = 2d0
-!   !    if (m==0) factor = 1d0
-!
-!   !       piz(:) = piz(:) + factor*(c2%Re(:,nh) + c2%Im(:,nh))!+c2%Im(:,nh)**2)
-!   !       pit(:) = pit(:) + factor*(c3%Re(:,nh) + c3%Im(:,nh))!+c3%Im(:,nh)**2)
-!   !       ! pir(:) = pir(:) + factor*(c1%Re(:,nh))!+c1%Im(:,nh)**2)
-!   ! _loop_km_end
-!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!           SEMI FUNCIONA
-!! Pressure strain correlation term
-!
-!   ! call var_coll_meshmult(1,mes_D%dr(1),vel_ur, c1) ! r simple derivative
-!   ! call tra_phys2coll1d(p2,c4)
-!
-!   !       _loop_km_begin
-!
-!   !                c2%Im(:,nh) =  -vel_ut%Im(:,nh)*m*i_Mp    
-!   !                c2%Re(:,nh) =  vel_ut%Re(:,nh)*m*i_Mp    
-!
-!   !                c3%Im(:,nh) =  -vel_uz%Im(:,nh)*d_alpha*k
-!   !                c3%Re(:,nh) =  vel_uz%Re(:,nh)*d_alpha*k
-!
-!   !                c1%Re(:,nh) = c1%Re(:,nh)*c4%Re(:,nh) + c1%Im(:,nh)*c4%Im(:,nh)
-!
-!   !           factor = 2d0
-!   !          if (m==0) factor = 1d0
-!   !             pir(:) = pir(:) + factor*(c1%Re(:,nh))
-!   !    _loop_km_end
-!
-!
-!
-!   !    call tra_coll2phys1d(c3,p3) !z
-!   !    call tra_coll2phys1d(c2,p1) !t
-!   !    ! ! call tra_coll2phys1d(c1,p4) !r
-!
-!   !    p3%Re = p3%Re * p2%Re !z
-!   !    p1%Re = p1%Re * p2%Re !t
-!   !    ! ! p4%Re = p4%Re * p2%Re !r
-!
-!
-!   !    ! do n = 1, mes_D%pN
-!   !    ! n_ = mes_D%pNi + n - 1
-!   !    ! p1%Re(:,:,n) =  2d0 * p1%Re(:,:,n) * mes_D%r(n_,-1) ! multiplico por 2 y divido entre r
-!   !    ! p3%Re(:,:,n) =  2d0 * p3%Re(:,:,n)
-!   !    ! ! pir(n_)  = pir(n_)  + sum(p4%Re(:,:,n)) ! saco la distribucion radial
-!   !    ! pit(n_)  = pit(n_)  + sum(p1%Re(:,:,n))
-!   !    ! piz(n_)  = piz(n_)  + sum(p3%Re(:,:,n))
-!   !    ! end do
-!
-!
-!
-!
-!
-!   !    call tra_phys2coll1d(p3,c2) !z
-!   !    call tra_phys2coll1d(p1,c3) !t
-!   !    ! call tra_phys2coll1d(p4,c1) !r
-!
-!
-!   ! ! _loop_km_begin
-!   ! !          ! z component  
-!   ! !          c2%Re(:,nh) =  vel_uz%Re(:,nh)*ad_k1a1(k)*c4%Re(:,nh) + vel_uz%Im(:,nh)*ad_k1a1(k)*c4%Im(:,nh)
-!   ! !          ! theta component
-!   ! !          c3%Re(:,nh) =  vel_ut%Re(:,nh)*ad_m1r1(:,m)*c4%Re(:,nh) + vel_ut%Im(:,nh)*ad_m1r1(:,m)*c4%Im(:,nh)
-!   ! !          ! r component
-!   ! !          ! c1%Re(:,nh) =  c1%Re(:,nh)*c4%Re(:,nh) + c1%Im(:,nh)*c4%Im(:,nh)
-!
-!   ! !    _loop_km_end
-!
-!   ! _loop_km_begin
-!   !    factor = 2d0
-!   !    if (m==0) factor = 1d0
-!
-!   !       piz(:) = piz(:) + factor*(c2%Re(:,nh) + c2%Im(:,nh))!+c2%Im(:,nh)**2)
-!   !       pit(:) = pit(:) + factor*(c3%Re(:,nh) + c3%Im(:,nh))!+c3%Im(:,nh)**2)
-!   !       ! pir(:) = pir(:) + factor*(c1%Re(:,nh))!+c1%Im(:,nh)**2)
-!   ! _loop_km_end
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!
-!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!         !!!!!!!!!!!!!!!!!!!     DERIVATIVES       !!!!!!!!!!!!!!!!!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!
-!! UZSQUR
-!      p1%Re = vel_z%Re * vel_z%Re * vel_z%Re
-!      ! do n = 1, mes_D%pN
-!      ! n_ = mes_D%pNi + n - 1
-!      ! ! p1%Re(:,:,n) = -2d0 * mes_D%r(n_,-1) * p1%Re(:,:,n) ! multiplico por 2 y divido entre r
-!      ! ! pur(n_)  = pur(n_)  + sum(p1%Re(:,:,n)) ! saco la distribucion radial
-!      ! p1%Re(:,:,n) = ( vel_z%Re(:,:,n) - vel_U(n_)) ** 3
-!      ! end do
-!
-!      
-!! UTSQUR
-!      p3%re = vel_t%Re * vel_t%Re * vel_r%Re
-!! URCUB
-!      p4%re = vel_r%Re * vel_r%Re * vel_r%Re
-!
-!      do n = 1, mes_D%pN
-!            n_ = mes_D%pNi + n - 1
-!               
-!               uzsqur(n_)  = uzsqur(n_)  + sum(p1%Re(:,:,n)) ! saco la distribucion radial
-!               utsqur(n_)  = utsqur(n_)  + sum(p3%Re(:,:,n)) ! saco la distribucion radial
-!               urcub(n_)   = urcub(n_)   + sum(p4%Re(:,:,n)) ! saco la distribucion radial
-!      end do
-!
-!
-!
-!
-!
-!
-!
-!
-!
-!
-!
-!
-!! Convection term
-!   
-!      ! p1%Re = vel_r%Re*vel_r%Re
-!
-!
-!
-!      ! do n = 1, mes_D%pN
-!      ! n_ = mes_D%pNi + n - 1
-!      ! p1%Re(:,:,n)  = p1%Re(:,:,n) * mes_D%r(n_,1)
-!      ! end do
-!
-!      ! call tra_phys2coll1d(p1,c1)
-!      ! call var_coll_meshmult(1,mes_D%dr(1),c1, c1) ! r simple derivative
-!      ! call tra_coll2phys1d(c1,p1)
-!
-!      ! do n = 1, mes_D%pN
-!      ! n_ = mes_D%pNi + n - 1
-!      ! p1%Re(:,:,n) = -2d0 * mes_D%r(n_,-1) * p1%Re(:,:,n)
-!      ! pur(n_)  = pur(n_)  + sum(p1%Re(:,:,n))
-!      ! end do
-!
-!
-!! Viscous diffusion term
-!
-!   ! p1%Re = vel_z%Re * vel_z%Re
-!   ! p3%Re = vel_r%Re * vel_r%Re
-!   ! p4%Re = vel_t%Re * vel_t%Re
-!
-!   ! call tra_phys2coll1d(p1,c1) !z
-!   ! call tra_phys2coll1d(p3,c2) !r
-!   ! call tra_phys2coll1d(p4,c3) !t
-!
-!
-!   !    _loop_km_begin
-!
-!   !    c1%Im(:,nh) = -c1%Im(:,nh)*ad_k1a1(k)*ad_k1a1(k) !z
-!   !    c1%Re(:,nh) =  c1%Re(:,nh)*ad_k1a1(k)*ad_k1a1(k)
-!
-!   !    c2%Im(:,nh) = -c2%Im(:,nh)*ad_k1a1(k)*ad_k1a1(k) !r
-!   !    c2%Re(:,nh) =  c2%Re(:,nh)*ad_k1a1(k)*ad_k1a1(k)
-!
-!   !    c3%Im(:,nh) = -c3%Im(:,nh)*ad_k1a1(k)*ad_k1a1(k) !t
-!   !    c3%Re(:,nh) =  c3%Re(:,nh)*ad_k1a1(k)*ad_k1a1(k)
-!
-!   !    _loop_km_end
-!
-!   !    call tra_coll2phys1d(c1,p1) !z
-!   !    call tra_coll2phys1d(c2,p3) !r
-!   !    call tra_coll2phys1d(c3,p4) !t
-!
-!   ! do n = 1, mes_D%pN
-!   !    n_ = mes_D%pNi + n - 1
-!   !    duzsqdz2(n_)  = duzsqdz2(n_)  + sum(p1%Re(:,:,n))
-!   !    dutsqdz2(n_)  = dutsqdz2(n_)  + sum(p4%Re(:,:,n))
-!   !    dursqdz2(n_)  = dursqdz2(n_)  + sum(p3%Re(:,:,n))
-!       
-!   ! end do
-!
-!      ! _loop_km_begin
-!
-!      !    factor = 2d0
-!      !    if (m==0) factor = 1d0
-!
-!      !       pur(:) = pur(:) + factor*(c1%Re(:,nh))
-!
-!      ! _loop_km_end
-!
-!
-!
-!      ! do n = 1, mes_D%pN
-!      !    n_ = mes_D%pNi + n - 1
-!      
-!      ! piz(n_) = piz(n_) + 2 * sqrt(stdv_p(n_)) *  sqrt(duzdz(n_))
-!      ! pit(n_) = pit(n_) + 2 * mes_D%r(n_,-1) * sqrt(stdv_p(n_)) *  sqrt(dutdt(n_))
-!      ! pir(n_) = pir(n_) + 2 * sqrt(stdv_p(n_)) *  sqrt(durdr(n_))
-!      ! enddo
-!
-!
-!
-!! ! Z derivatives of squared velocity
-!
-!!          !dzduzsq
-!
-!!          _loop_km_begin
-!!                tmpr1 = (vel_uz%Re(:,nh)**2 - vel_uz%Im(:,nh)**2) *ad_k1a1(k)
-!!                tmpr2 = (2*vel_uz%Re(:,nh)*vel_uz%Im(:,nh)) *ad_k1a1(k)
-!
-!!                ! Operate
-!!                factor = 2d0
-!!                if (m==0) factor = 1d0
-!!                dzduzsq(:) = dzduzsq(:) + factor*(tmpr1(:)**2+tmpr2(:)**2)
-!
-!!          _loop_km_end
-!
-!!          !dzdutsq
-!
-!!          _loop_km_begin
-!!                tmpr1 = (vel_ut%Re(:,nh)**2 - vel_ut%Im(:,nh)**2) *ad_k1a1(k)
-!!                tmpr2 = (2*vel_ut%Re(:,nh)*vel_ut%Im(:,nh)) *ad_k1a1(k)
-!
-!!                ! Operate
-!!                factor = 2d0
-!!                if (m==0) factor = 1d0
-!!                dzdutsq(:) = dzdutsq(:) + factor*(tmpr1(:)**2+tmpr2(:)**2)
-!
-!!          _loop_km_end
-!
-!
-!!          !dzdursq
-!
-!!          _loop_km_begin
-!!                tmpr1 = (vel_ur%Re(:,nh)**2 - vel_ur%Im(:,nh)**2) *ad_k1a1(k)
-!!                tmpr2 = (2*vel_ur%Re(:,nh)*vel_ur%Im(:,nh)) *ad_k1a1(k)
-!
-!!                ! Operate
-!!                factor = 2d0
-!!                if (m==0) factor = 1d0
-!!                dzdursq(:) = dzdursq(:) + factor*(tmpr1(:)**2+tmpr2(:)**2)
-!
-!!          _loop_km_end
-!
-!
-!! ! Theta derivatives of squared velocity
-!
-!
-!!          !dtduzsq
-!
-!!          _loop_km_begin
-!!                tmpr1 = (vel_uz%Re(:,nh)**2 - vel_uz%Im(:,nh)**2) *ad_m1r1(k)
-!!                tmpr2 = (2*vel_uz%Re(:,nh)*vel_uz%Im(:,nh)) *ad_m1r1(k)
-!
-!!                ! Operate
-!!                factor = 2d0
-!!                if (m==0) factor = 1d0
-!!                dtduzsq(:) = dtduzsq(:) + factor*(tmpr1(:)**2+tmpr2(:)**2)
-!
-!!          _loop_km_end
-!
-!!          !dtdutsq
-!
-!!          _loop_km_begin
-!!                tmpr1 = (vel_ut%Re(:,nh)**2 - vel_ut%Im(:,nh)**2) *ad_m1r1(k)
-!!                tmpr2 = (2*vel_ut%Re(:,nh)*vel_ut%Im(:,nh)) *ad_m1r1(k)
-!
-!!                ! Operate
-!!                factor = 2d0
-!!                if (m==0) factor = 1d0
-!!                dtdutsq(:) = dtdutsq(:) + factor*(tmpr1(:)**2+tmpr2(:)**2)
-!
-!!          _loop_km_end
-!
-!
-!!          !dtdursq
-!
-!!          _loop_km_begin
-!!                tmpr1 = (vel_ur%Re(:,nh)**2 - vel_ur%Im(:,nh)**2) *ad_m1r1(k)
-!!                tmpr2 = (2*vel_ur%Re(:,nh)*vel_ur%Im(:,nh)) *ad_m1r1(k)
-!
-!!                ! Operate
-!!                factor = 2d0
-!!                if (m==0) factor = 1d0
-!!                dtdursq(:) = dtdursq(:) + factor*(tmpr1(:)**2+tmpr2(:)**2)
-!
-!!          _loop_km_end
-!   
-!! r derivatives of squared velocity -> Matlab
-!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!
-!
-!
-!
-!   
-!!      !dzduzcub
-!
-!!    call var_coll_copy(vel_uz,c1)
-!
-!!    _loop_km_begin
-!!    tmpr1 = (c1%Re(:,nh)**3 - 3*c1%Im(:,nh)**2*c1%Re(:,nh)) *ad_k1a1(k)
-!!    tmpr2 = (3*c1%Im(:,nh)*c1%Re(:,nh)**2 - c1%Im(:,nh)**3) *ad_k1a1(k)
-!
-!!          factor = 2d0
-!!       if (m==0) factor = 1d0
-!
-!!       dzduzcub(:) = dzduzcub(:) + factor*(tmpr1(:)**2+tmpr2(:)**2)
-!
-!
-!!    _loop_km_end 
-!
-!
-! end subroutine var_coll_dissp
+
 
 
 
@@ -891,20 +472,10 @@ implicit none
    stdv_rz = 0d0
    stdv_rt = 0d0
    stdv_tz = 0d0
+   stdv_zzr = 0d0
 
-   ! mom_ur = 0d0
-   ! mom_uz = 0d0
-   ! mom_ut = 0d0
-
-   !dissr = 0d0
-   !disst = 0d0
-   !dissz = 0d0
-
-   !urf = 0d0
    mean_p = 0d0
    stdv_p = 0d0
-
-   !diss   = 0d0
 
    durdr = 0d0
    durdt = 0d0
@@ -915,14 +486,16 @@ implicit none
    duzdr = 0d0   
    duzdt = 0d0
    duzdz = 0d0
+
    duzdrsq= 0d0
    dutdrsq= 0d0
    durdrsq= 0d0
 
-!
-   !pir  = 0d0
-   !pit  = 0d0
-   !piz  = 0d0
+   duzdzsq=0d0
+
+   uuPST1=0d0
+   uuPST1sq=0d0
+   uuDT3=0d0
 
 
 end subroutine initialiseSTD
@@ -969,122 +542,61 @@ tam = i_N*n_sta
        mpi_sum, 0, mpi_comm_world, mpi_er)
     stdv_p = dd
 
-   !! Dissipation
-   !    diss(:,1) = dissr(:,1) + disst(:,1) + dissz(:,1)
-   !    diss(:,2) = dissr(:,2) + disst(:,2) + dissz(:,2)
-   !    diss(:,3) = dissr(:,3) + disst(:,3) + dissz(:,3)
+    call mpi_reduce(stdv_zzr, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   stdv_zzr = dd   
 
-   ! call mpi_reduce(diss, dissr, 3*i_N, mpi_double_precision,  & ! Usammos dissr que ya está usada y el no. de elementos a escribir es 3*i_N
-   !     mpi_sum, 0, mpi_comm_world, mpi_er)
-   !  diss = dissr
 
-   !call mpi_reduce(diss(1,1), d, i_N, mpi_double_precision,  &
-   !    mpi_sum, 0, mpi_comm_world, mpi_er)
-   ! diss(:,1) = d
-
-   ! call mpi_reduce(diss(1,2), d, i_N, mpi_double_precision,  &
-   ! mpi_sum, 0, mpi_comm_world, mpi_er)
-   ! diss(:,2) = d
-   ! call mpi_reduce(diss(1,3), d, i_N, mpi_double_precision,  &
-   ! mpi_sum, 0, mpi_comm_world, mpi_er)
-   ! diss(:,3) = d
-
-   !  call mpi_reduce(piz, d, i_N, mpi_double_precision,  &
-   !    mpi_sum, 0, mpi_comm_world, mpi_er)
-   ! piz = d
-   !   call mpi_reduce(pit, d, i_N, mpi_double_precision,  &
-   !    mpi_sum, 0, mpi_comm_world, mpi_er)
-   ! pit = d
-   !   call mpi_reduce(pir, d, i_N, mpi_double_precision,  &
-   !    mpi_sum, 0, mpi_comm_world, mpi_er)
-   ! pir = d
-
-    
-      call mpi_reduce(durdr, dd, tam, mpi_double_precision,  &
+   call mpi_reduce(durdr, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    durdr = dd
-      call mpi_reduce(durdt, dd, tam, mpi_double_precision,  &
+   call mpi_reduce(durdt, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    durdt = dd
-      call mpi_reduce(durdz, dd, tam, mpi_double_precision,  &
+   call mpi_reduce(durdz, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    durdz = dd
-      call mpi_reduce(dutdr, dd, tam, mpi_double_precision,  &
+   call mpi_reduce(dutdr, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    dutdr = dd
-      call mpi_reduce(dutdt, dd, tam, mpi_double_precision,  &
+   call mpi_reduce(dutdt, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    dutdt = dd
-      call mpi_reduce(dutdz, dd, tam, mpi_double_precision,  &
+   call mpi_reduce(dutdz, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    dutdz = dd
-      call mpi_reduce(duzdr, dd, tam, mpi_double_precision,  &
+   call mpi_reduce(duzdr, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    duzdr = dd
-      call mpi_reduce(duzdt, dd, tam, mpi_double_precision,  &
+   call mpi_reduce(duzdt, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    duzdt = dd
-      call mpi_reduce(duzdz, dd, tam, mpi_double_precision,  &
+   call mpi_reduce(duzdz, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    duzdz = dd
-      call mpi_reduce(duzdrsq, dd, tam, mpi_double_precision,  &
-   mpi_sum, 0, mpi_comm_world, mpi_er)
+   call mpi_reduce(duzdrsq, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
    duzdrsq = dd
-      call mpi_reduce(dutdrsq, dd, tam, mpi_double_precision,  &
-   mpi_sum, 0, mpi_comm_world, mpi_er)
+   call mpi_reduce(dutdrsq, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
    dutdrsq = dd
-      call mpi_reduce(durdrsq, dd, tam, mpi_double_precision,  &
-   mpi_sum, 0, mpi_comm_world, mpi_er)
+   call mpi_reduce(durdrsq, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
    durdrsq = dd
+   call mpi_reduce(duzdzsq, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   duzdzsq = dd
 
-    
+   call mpi_reduce(uuDT3, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   uuDT3 = dd  
+   call mpi_reduce(uuPST1, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   uuPST1 = dd      
+   call mpi_reduce(uuPST1sq, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   uuPST1sq = dd      
 
-   !   call mpi_reduce(uzsqur, d, i_N, mpi_double_precision,  &
-   !    mpi_sum, 0, mpi_comm_world, mpi_er)
-   !   uzsqur = d
-   !   call mpi_reduce(utsqur, d, i_N, mpi_double_precision,  &
-   !    mpi_sum, 0, mpi_comm_world, mpi_er)
-   !   utsqur = d
-   !   call mpi_reduce(urcub, d, i_N, mpi_double_precision,  &
-   !    mpi_sum, 0, mpi_comm_world, mpi_er)
-   !   urcub = d
-
-
-
-
-
-
-   ! call mpi_reduce(urf, d, i_N, mpi_double_precision,  &
-   !     mpi_sum, 0, mpi_comm_world, mpi_er)
-   !  urf = d
-
-   ! or, ot, oz: vort's
-   ! call mpi_reduce(or, d, i_N, mpi_double_precision,  &
-   !     mpi_sum, 0, mpi_comm_world, mpi_er)
-   !  or = d
-   ! call mpi_reduce(ot, d, i_N, mpi_double_precision,  &
-   !     mpi_sum, 0, mpi_comm_world, mpi_er)
-   !  ot = d
-   ! call mpi_reduce(oz, d, i_N, mpi_double_precision,  &
-   !     mpi_sum, 0, mpi_comm_world, mpi_er)
-   !  oz = d
-
-   ! call mpi_reduce(dzduzsq, d, i_N, mpi_double_precision,  &
-   !     mpi_sum, 0, mpi_comm_world, mpi_er)
-   !  dzduzsq = d
-   !     call mpi_reduce(dzduzcub, d, i_N, mpi_double_precision,  &
-   !     mpi_sum, 0, mpi_comm_world, mpi_er)
-   !  dzduzcub = d
-
-   !  call mpi_reduce(mom_ur, dd, i_N*10, mpi_double_precision,  &
-   !     mpi_sum, 0, mpi_comm_world, mpi_er)
-   !  mom_ur = dd
-   !  call mpi_reduce(mom_uz, dd, i_N*10, mpi_double_precision,  &
-   !     mpi_sum, 0, mpi_comm_world, mpi_er)
-   !  mom_uz = dd
-   !  call mpi_reduce(mom_ut, dd, i_N*10, mpi_double_precision,  &
-   !     mpi_sum, 0, mpi_comm_world, mpi_er)
-   !  mom_ut = dd
 
     if(mpi_rnk==0)  then
 
@@ -1126,20 +638,13 @@ tam = i_N*n_sta
        call h5ltmake_dataset_double_f(sta_id,"stdv_rz",2,hdims2,stdv_rz,h5err)
        call h5ltmake_dataset_double_f(sta_id,"stdv_rt",2,hdims2,stdv_rt,h5err)
        call h5ltmake_dataset_double_f(sta_id,"stdv_tz",2,hdims2,stdv_tz,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"stdv_zzr",2,hdims2,stdv_zzr,h5err)
+
 
        call h5ltmake_dataset_double_f(sta_id,"stdv_p",2,hdims2,stdv_p,h5err)
        call h5ltmake_dataset_double_f(sta_id,"mean_p",2,hdims2,mean_p,h5err)
 
        
-      ! call h5ltmake_dataset_double_f(sta_id,"disstt",1,hdims,diss(:,2),h5err)
-      ! call h5ltmake_dataset_double_f(sta_id,"dissrr",1,hdims,diss(:,1),h5err)
-      ! call h5ltmake_dataset_double_f(sta_id,"disszz",1,hdims,diss(:,3),h5err) 
-
-      ! call h5ltmake_dataset_double_f(sta_id,"pir",1,hdims,pir,h5err)
-      ! call h5ltmake_dataset_double_f(sta_id,"piz",1,hdims,piz,h5err)
-      ! call h5ltmake_dataset_double_f(sta_id,"pit",1,hdims,pit,h5err) 
-
-
       
       call h5ltmake_dataset_double_f(derivative_id,"durdr",2,hdims2,durdr,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"durdt",2,hdims2,durdt,h5err)
@@ -1154,20 +659,15 @@ tam = i_N*n_sta
       call h5ltmake_dataset_double_f(derivative_id,"duzdrsq",2,hdims2,duzdrsq,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"dutdrsq",2,hdims2,dutdrsq,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"durdrsq",2,hdims2,durdrsq,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"duzdzsq",2,hdims2,duzdzsq,h5err)
 
+      call h5ltmake_dataset_double_f(derivative_id,"uuDT3",2,hdims2,uuDT3,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"uuPST1",2,hdims2,uuPST1,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"uuPST1sq",2,hdims2,uuPST1sq,h5err)
 
-
-       !call h5ltmake_dataset_double_f(sta_id,"uzsqur",1,hdims,uzsqur,h5err)
-       !call h5ltmake_dataset_double_f(sta_id,"utsqur",1,hdims,utsqur,h5err)
-       !call h5ltmake_dataset_double_f(sta_id,"urcub",1,hdims,urcub,h5err)      
-       
          
 
-       
 
-      !  call h5ltmake_dataset_double_f(sta_id,"mom_ur",2,hdims2,mom_ur,h5err)
-      !  call h5ltmake_dataset_double_f(sta_id,"mom_uz",2,hdims2,mom_uz,h5err)
-      !  call h5ltmake_dataset_double_f(sta_id,"mom_ut",2,hdims2,mom_ut,h5err)
        
        call h5gclose_f(header_id,h5err)
        call h5gclose_f(sta_id,   h5err)
