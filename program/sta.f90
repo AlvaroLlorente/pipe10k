@@ -45,7 +45,7 @@
    double precision :: mean_p(i_N,n_sta), stdv_p(i_N,n_sta)
 
    !double precision :: piz(i_N), pit(i_N), pir(i_N)
-   double precision :: durdr(i_N,n_sta), durdt(i_N,n_sta), durdz(i_N,n_sta),duzdrsq(i_N,n_sta)
+   double precision :: durdr(i_N,n_sta), durdt(i_N,n_sta), durdz(i_N,n_sta),duzdrsq(i_N,n_sta),dutdrsq(i_N,n_sta),durdrsq(i_N,n_sta)
    double precision :: dutdr(i_N,n_sta), dutdt(i_N,n_sta), dutdz(i_N,n_sta)
    double precision :: duzdr(i_N,n_sta), duzdt(i_N,n_sta), duzdz(i_N,n_sta)
    !double precision :: dissr(i_N,3),disst(i_N,3),dissz(i_N,3), diss(i_N,3) !, dzduzsq(i_N), dzduzcub(i_N)
@@ -328,7 +328,7 @@ subroutine compute_turb_budget()
 
 !!   vel_r
    
-call var_coll_meshmult(1,mes_D%dr(1),vel_ur,c1) !durdr de todo el campo
+call var_coll_meshmult(0,mes_D%dr(1),vel_ur,c1) !durdr de todo el campo
 call tra_coll2phys1d(c1,p1)
 
 _loop_km_begin
@@ -349,7 +349,8 @@ call tra_coll2phys1d(c4,p4) !durdz
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-   durdr(n_,csta) = durdr(n_,csta) + sum(p1%Re(:,:,n)) 
+   durdr(n_,csta) = durdr(n_,csta) + sum(p1%Re(:,:,n))
+   durdrsq(n_,csta) = durdrsq(n_,csta) + sum(p1%Re(:,:,n)**2)
    durdt(n_,csta) = durdt(n_,csta) + sum(p3%Re(:,:,n)) 
    durdz(n_,csta) = durdz(n_,csta) + sum(p4%Re(:,:,n)) 
 end do
@@ -374,7 +375,8 @@ call tra_coll2phys1d(c4,p4) !dutdz
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-   dutdr(n_,csta) = dutdr(n_,csta) + sum(p1%Re(:,:,n))    
+   dutdr(n_,csta) = dutdr(n_,csta) + sum(p1%Re(:,:,n))   
+   dutdrsq(n_,csta) = dutdrsq(n_,csta) + sum(p1%Re(:,:,n)**2)    
    dutdt(n_,csta) = dutdt(n_,csta) + sum(p3%Re(:,:,n)) 
    dutdz(n_,csta) = dutdz(n_,csta) + sum(p4%Re(:,:,n)) 
 end do
@@ -382,7 +384,7 @@ end do
 !   vel_z
 
 
-call var_coll_meshmult(1,mes_D%dr(1),vel_uz,c1) !duzdr
+call var_coll_meshmult(0,mes_D%dr(1),vel_uz,c1) !duzdr
 call tra_coll2phys1d(c1,p1)
 _loop_km_begin
 
@@ -914,6 +916,8 @@ implicit none
    duzdt = 0d0
    duzdz = 0d0
    duzdrsq= 0d0
+   dutdrsq= 0d0
+   durdrsq= 0d0
 
 !
    !pir  = 0d0
@@ -1026,6 +1030,12 @@ tam = i_N*n_sta
       call mpi_reduce(duzdrsq, dd, tam, mpi_double_precision,  &
    mpi_sum, 0, mpi_comm_world, mpi_er)
    duzdrsq = dd
+      call mpi_reduce(dutdrsq, dd, tam, mpi_double_precision,  &
+   mpi_sum, 0, mpi_comm_world, mpi_er)
+   dutdrsq = dd
+      call mpi_reduce(durdrsq, dd, tam, mpi_double_precision,  &
+   mpi_sum, 0, mpi_comm_world, mpi_er)
+   durdrsq = dd
 
     
 
@@ -1142,6 +1152,8 @@ tam = i_N*n_sta
       call h5ltmake_dataset_double_f(derivative_id,"duzdz",2,hdims2,duzdz,h5err)
 
       call h5ltmake_dataset_double_f(derivative_id,"duzdrsq",2,hdims2,duzdrsq,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"dutdrsq",2,hdims2,dutdrsq,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"durdrsq",2,hdims2,durdrsq,h5err)
 
 
 
