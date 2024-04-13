@@ -438,11 +438,10 @@ _loop_km_end
 
 call tra_coll2phys1d(c3,p3) !duzdz
 
-p1%Re=p3%Re*mes_D%r(:,-1)
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-uuDT3(n_,csta)=uuDT3(n_,csta)+sum(p1%Re(:,:,n))
+uuDT3(n_,csta)=uuDT3(n_,csta)+sum(p3%Re(:,:,n)*mes_D%r(n_,-1))
 enddo
 
 end subroutine compute_turb_budget
