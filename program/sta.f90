@@ -45,7 +45,7 @@
    double precision :: mean_p(i_N,n_sta), stdv_p(i_N,n_sta)
 
    !double precision :: piz(i_N), pit(i_N), pir(i_N)
-   double precision :: durdr(i_N,n_sta), durdt(i_N,n_sta), durdz(i_N,n_sta)
+   double precision :: durdr(i_N,n_sta), durdt(i_N,n_sta), durdz(i_N,n_sta),duzdrsq(i_N,n_sta)
    double precision :: dutdr(i_N,n_sta), dutdt(i_N,n_sta), dutdz(i_N,n_sta)
    double precision :: duzdr(i_N,n_sta), duzdt(i_N,n_sta), duzdz(i_N,n_sta)
    !double precision :: dissr(i_N,3),disst(i_N,3),dissz(i_N,3), diss(i_N,3) !, dzduzsq(i_N), dzduzcub(i_N)
@@ -400,6 +400,7 @@ call tra_coll2phys1d(c4,p4) !duzdz
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
    duzdr(n_,csta) = duzdr(n_,csta) + sum(p1%Re(:,:,n))
+   duzdrsq(n_,csta) = duzdrsq(n_,csta) + sum(p1%Re(:,:,n)**2)
    duzdt(n_,csta) = duzdt(n_,csta) + sum(p3%Re(:,:,n)) 
    duzdz(n_,csta) = duzdz(n_,csta) + sum(p4%Re(:,:,n)) 
 end do
@@ -912,6 +913,7 @@ implicit none
    duzdr = 0d0   
    duzdt = 0d0
    duzdz = 0d0
+   duzdrsq= 0d0
 
 !
    !pir  = 0d0
@@ -1021,6 +1023,9 @@ tam = i_N*n_sta
       call mpi_reduce(duzdz, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    duzdz = dd
+      call mpi_reduce(duzdrsq, dd, tam, mpi_double_precision,  &
+   mpi_sum, 0, mpi_comm_world, mpi_er)
+   duzdrsq = dd
 
     
 
@@ -1135,6 +1140,8 @@ tam = i_N*n_sta
       call h5ltmake_dataset_double_f(derivative_id,"duzdr",2,hdims2,duzdr,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"duzdt",2,hdims2,duzdt,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"duzdz",2,hdims2,duzdz,h5err)
+
+      call h5ltmake_dataset_double_f(derivative_id,"duzdrsq",2,hdims2,duzdrsq,h5err)
 
 
 
