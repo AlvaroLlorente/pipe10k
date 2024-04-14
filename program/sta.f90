@@ -460,8 +460,8 @@ do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
 uuDT3(n_,csta)=uuDT3(n_,csta)+sum((p3%Re(:,:,n))**2)
 
-ttDT3sq(n_,csta)=uuDT3sq(n_,csta)+sum(p4%Re(:,:,n)**2)
-ttDT3(n_,csta)=uuDT3(n_,csta)+sum(p4%Re(:,:,n))
+ttDT3sq(n_,csta)=ttDT3sq(n_,csta)+sum(p4%Re(:,:,n)**2)
+ttDT3(n_,csta)=ttDT3(n_,csta)+sum(p4%Re(:,:,n))
 enddo
 
 end subroutine compute_turb_budget
