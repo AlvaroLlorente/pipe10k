@@ -39,15 +39,15 @@
    double precision :: mean_ut(i_N,n_sta), stdv_ut(i_N,n_sta)
    double precision :: mean_uz(i_N,n_sta), stdv_uz(i_N,n_sta)
    double precision :: stdv_rz(i_N,n_sta), stdv_rt(i_N,n_sta), stdv_tz(i_N,n_sta)
-   double precision :: stdv_zzr(i_N,n_sta)
+   double precision :: stdv_zzr(i_N,n_sta),stdv_rtt(i_N,n_sta)
   
    double precision :: mean_p(i_N,n_sta), stdv_p(i_N,n_sta)
 
    !double precision :: piz(i_N), pit(i_N), pir(i_N)
    double precision :: durdr(i_N,n_sta), durdt(i_N,n_sta), durdz(i_N,n_sta),durdrsq(i_N,n_sta)
-   double precision :: dutdr(i_N,n_sta), dutdt(i_N,n_sta), dutdz(i_N,n_sta),dutdrsq(i_N,n_sta)
+   double precision :: dutdr(i_N,n_sta), dutdt(i_N,n_sta), dutdz(i_N,n_sta),dutdrsq(i_N,n_sta),dutdzsq(i_N,n_sta)
    double precision :: duzdr(i_N,n_sta), duzdt(i_N,n_sta), duzdz(i_N,n_sta),duzdrsq(i_N,n_sta),duzdzsq(i_N,n_sta)
-   double precision :: uuPST1(i_N,n_sta) ,uuPST1sq(i_N,n_sta), uuDT3(i_N,n_sta)
+   double precision :: uuPST1(i_N,n_sta) ,ttPST1(i_N,n_sta), uuDT3(i_N,n_sta),ttDT3(i_N,n_sta)
    double precision :: factor
    double precision :: time_sta(n_sta), utauv(n_sta)
 
@@ -116,6 +116,7 @@
       stdv_tz(n_,csta) = stdv_tz(n_,csta) + sum(vel_t%Re(:,:,n)*vel_z%Re(:,:,n))
 
       stdv_zzr(n_,csta) = stdv_zzr(n_,csta) + sum(vel_z%Re(:,:,n)*vel_z%Re(:,:,n)*vel_r%Re(:,:,n))
+      stdv_rtt(n_,csta) = stdv_rtt(n_,csta) + sum(vel_r%Re(:,:,n)*vel_t%Re(:,:,n)*vel_t%Re(:,:,n))
    enddo
 
    call compute_turb_budget()
@@ -380,6 +381,7 @@ do n = 1, mes_D%pN
    dutdrsq(n_,csta) = dutdrsq(n_,csta) + sum(p1%Re(:,:,n)**2)    
    dutdt(n_,csta) = dutdt(n_,csta) + sum(p3%Re(:,:,n)) 
    dutdz(n_,csta) = dutdz(n_,csta) + sum(p4%Re(:,:,n)) 
+   dutdzsq(n_,csta) = dutdzsq(n_,csta) + sum(p4%Re(:,:,n)**2) 
 end do
 
 !   vel_z
@@ -418,30 +420,46 @@ end do
 _loop_km_begin
  c4%Im(:,nh) = -vel_uz%Im(:,nh)*ad_k1a1(k)
  c4%Re(:,nh) =  vel_uz%Re(:,nh)*ad_k1a1(k)
+
+ c3%Im(:,nh) = -vel_ut%Im(:,nh)*ad_m1r1(:,m)
+ c3%Re(:,nh) =  vel_ut%Re(:,nh)*ad_m1r1(:,m)
 _loop_km_end
 
 call tra_coll2phys1d(c4,p4) !duzdz
+call tra_coll2phys1d(c3,p3) !dutdt
 
-p1%Re=p2%Re*p4%Re
+p1%Re=p2%Re*p4%Re !uu
+p3%Re=p2%Re*p3%Re !tt
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-uuPST1sq(n_,csta)=uuPST1sq(n_,csta)+sum(p1%Re(:,:,n)**2)
 uuPST1(n_,csta)=uuPST1(n_,csta)+sum(p1%Re(:,:,n))
+
+ttPST1(n_,csta)=ttPST1(n_,csta)+sum(p3%Re(:,:,n))
+
 enddo
+
+
+
 !  Dissipation term uu
 
 _loop_km_begin
 c3%Im(:,nh) = -vel_uz%Im(:,nh)*ad_m1r1(:,m)
 c3%Re(:,nh) =  vel_uz%Re(:,nh)*ad_m1r1(:,m)
+
+c4%Im(:,nh) = -vel_ut%Im(:,nh)*ad_m1r1(:,m)
+c4%Re(:,nh) =  vel_ut%Re(:,nh)*ad_m1r1(:,m)
 _loop_km_end
 
-call tra_coll2phys1d(c3,p3) !duzdz
+call tra_coll2phys1d(c3,p3) !duzdt
+call tra_coll2phys1d(c4,p4) !dutdt
 
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-uuDT3(n_,csta)=uuDT3(n_,csta)+sum(p3%Re(:,:,n)*mes_D%r(n_,-1))
+uuDT3(n_,csta)=uuDT3(n_,csta)+sum((p1%Re(:,:,n)*mes_D%r(n_,-1))**2)
+
+ttDT3(n_,csta)=uuDT3(n_,csta)+sum((p4%Re(:,:,n)*mes_D%r(n_,-1)+vel_r(:,:,n)*mes_D%r(n_,-1))**2)
 enddo
 
 end subroutine compute_turb_budget
@@ -472,6 +490,7 @@ implicit none
    stdv_rt = 0d0
    stdv_tz = 0d0
    stdv_zzr = 0d0
+   stdv_rtt = 0d0
 
    mean_p = 0d0
    stdv_p = 0d0
@@ -491,10 +510,12 @@ implicit none
    durdrsq= 0d0
 
    duzdzsq=0d0
+   dutdzsq=0d0
 
    uuPST1=0d0
-   uuPST1sq=0d0
    uuDT3=0d0
+   ttPST1=0d0
+   ttDT3=0d0
 
 
 end subroutine initialiseSTD
@@ -544,6 +565,9 @@ tam = i_N*n_sta
     call mpi_reduce(stdv_zzr, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    stdv_zzr = dd   
+   call mpi_reduce(stdv_rtt, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+      stdv_rtt = dd   
 
 
    call mpi_reduce(durdr, dd, tam, mpi_double_precision,  &
@@ -585,6 +609,9 @@ tam = i_N*n_sta
    call mpi_reduce(duzdzsq, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    duzdzsq = dd
+   call mpi_reduce(dutdzsq, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+      dutdzsq = dd
 
    call mpi_reduce(uuDT3, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
@@ -592,9 +619,12 @@ tam = i_N*n_sta
    call mpi_reduce(uuPST1, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    uuPST1 = dd      
-   call mpi_reduce(uuPST1sq, dd, tam, mpi_double_precision,  &
+   call mpi_reduce(ttPST1, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
-   uuPST1sq = dd      
+   ttPST1 = dd   
+    call mpi_reduce(ttDT3, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   ttDT3 = dd  
 
 
     if(mpi_rnk==0)  then
@@ -638,6 +668,7 @@ tam = i_N*n_sta
        call h5ltmake_dataset_double_f(sta_id,"stdv_rt",2,hdims2,stdv_rt,h5err)
        call h5ltmake_dataset_double_f(sta_id,"stdv_tz",2,hdims2,stdv_tz,h5err)
        call h5ltmake_dataset_double_f(sta_id,"stdv_zzr",2,hdims2,stdv_zzr,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"stdv_rtt",2,hdims2,stdv_rtt,h5err)
 
 
        call h5ltmake_dataset_double_f(sta_id,"stdv_p",2,hdims2,stdv_p,h5err)
@@ -659,10 +690,13 @@ tam = i_N*n_sta
       call h5ltmake_dataset_double_f(derivative_id,"dutdrsq",2,hdims2,dutdrsq,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"durdrsq",2,hdims2,durdrsq,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"duzdzsq",2,hdims2,duzdzsq,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"dutdzsq",2,hdims2,dutdzsq,h5err)
 
       call h5ltmake_dataset_double_f(derivative_id,"uuDT3",2,hdims2,uuDT3,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"uuPST1",2,hdims2,uuPST1,h5err)
-      call h5ltmake_dataset_double_f(derivative_id,"uuPST1sq",2,hdims2,uuPST1sq,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"ttDT3",2,hdims2,ttDT3,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"ttPST1",2,hdims2,ttPST1,h5err)
+
 
          
 
