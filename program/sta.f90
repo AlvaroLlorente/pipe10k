@@ -457,11 +457,16 @@ _loop_km_end
 
 call tra_coll2phys1d(c3,p3) !Termino 5
 
-call var_coll_meshmult(1,mes_D%dr(1),vel_ut*mes_D%r(:,-1),c1)
+_loop_km_begin
+c2%Re(:,nh)=vel_ut%Re(:,nh)*mes_D%r(:,-1)
+c2%Im(:,nh)=vel_ut%Im(:,nh)*mes_D%r(:,-1)
+_loop_km_end
+
+call var_coll_meshmult(1,mes_D%dr(1),c2,c1)
 
 _loop_km_begin
-c4%Re(:,nh) = mes_D%r(:,-1)*(-vel_ur%Im(:,nh)*m*i_Mp)+c1%Re*mes_D%r(:,1)
-c4%Im(:,nh) = mes_D%r(:,-1)*(vel_ur%Re(:,nh)*m*i_Mp)+c1%Im*mes_D%r(:,1)
+c4%Re(:,nh) = mes_D%r(:,-1)*(-vel_ur%Im(:,nh)*m*i_Mp)+c1%Re(:,nh)*mes_D%r(:,1)
+c4%Im(:,nh) = mes_D%r(:,-1)*(vel_ur%Re(:,nh)*m*i_Mp)+c1%Im(:,nh)*mes_D%r(:,1)
 _loop_km_end
 
 call tra_coll2phys1d(c4,p4) !Termino 6
