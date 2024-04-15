@@ -426,7 +426,7 @@ call var_coll_meshmult(1,mes_D%dr(1),vel_ur,c1)
 
 _loop_km_begin
  c4%Im(:,nh) = (vel_uz%Re(:,nh)*ad_m1r1(:,m))*c2%Im(:,nh)+(vel_uz%Im(:,nh)*ad_m1r1(:,m))*c2%Re(:,nh)
- c4%Re(:,nh) =  (vel_uz%Re(:,nh)*ad_m1r1(:,m))*c2%Re(:,nh)-(vel_uz%Im(:,nh)ad_m1r1(:,m))*c2%Im(:,nh)
+ c4%Re(:,nh) =  (vel_uz%Re(:,nh)*ad_m1r1(:,m))*c2%Re(:,nh)-(vel_uz%Im(:,nh)*ad_m1r1(:,m))*c2%Im(:,nh)
 
  c3%Im(:,nh) = (vel_ut%Re(:,nh)*ad_m1r1(:,m))*c2%Im(:,nh)+(vel_ut%Im(:,nh)*ad_m1r1(:,m))*c2%Re(:,nh)
  c3%Re(:,nh) = (vel_ut%Re(:,nh)*ad_m1r1(:,m))*c2%Re(:,nh)-(vel_ut%Im(:,nh)*ad_m1r1(:,m))*c2%Im(:,nh)
@@ -448,7 +448,7 @@ enddo
 
 !  Pressure diffusion term 
 
-rrPDT1(n_,csta)=rrPDT1(n_,csta)+sum(vel_r%Re(:,:,n)*p2(:,:,n)) ! P * Vr
+rrPDT1(n_,csta)=rrPDT1(n_,csta)+sum(vel_r%Re(:,:,n)*p2%Re(:,:,n)) ! P * Vr
 
 !  Dissipation term 
 
