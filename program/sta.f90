@@ -337,11 +337,11 @@ call tra_coll2phys1d(c1,p1)
 
 _loop_km_begin
 
- c4%Im(:,nh) = -vel_ur%Im(:,nh)*ad_k1a1(k)
- c4%Re(:,nh) =  vel_ur%Re(:,nh)*ad_k1a1(k)
+ c4%Re(:,nh) = -vel_ur%Im(:,nh)*d_alpha*k
+ c4%Im(:,nh) =  vel_ur%Re(:,nh)*d_alpha*k
 
- c3%Im(:,nh) = -vel_ur%Im(:,nh)*ad_m1r1(:,m)
- c3%Re(:,nh) =  vel_ur%Re(:,nh)*ad_m1r1(:,m)
+ c3%Re(:,nh) = -vel_ur%Im(:,nh)*m*i_Mp
+ c3%Im(:,nh) =  vel_ur%Re(:,nh)*m*i_Mp
 
 
 _loop_km_end
@@ -367,11 +367,11 @@ call var_coll_meshmult(1,mes_D%dr(1),vel_ut,c1) !dutdr
 call tra_coll2phys1d(c1,p1)
  _loop_km_begin
 
- c4%Im(:,nh) = -vel_ut%Im(:,nh)*ad_k1a1(k)
- c4%Re(:,nh) =  vel_ut%Re(:,nh)*ad_k1a1(k)
+ c4%Re(:,nh) = -vel_ut%Im(:,nh)*d_alpha*k
+ c4%Im(:,nh) =  vel_ut%Re(:,nh)*d_alpha*k
 
- c3%Im(:,nh) = -vel_ut%Im(:,nh)*ad_m1r1(:,m)
- c3%Re(:,nh) =  vel_ut%Re(:,nh)*ad_m1r1(:,m)
+ c3%Re(:,nh) = -vel_ut%Im(:,nh)*m*i_Mp
+ c3%Im(:,nh) =  vel_ut%Re(:,nh)*m*i_Mp
 
 _loop_km_end
 
@@ -394,11 +394,11 @@ call var_coll_meshmult(0,mes_D%dr(1),vel_uz,c1) !duzdr
 call tra_coll2phys1d(c1,p1)
 _loop_km_begin
 
- c4%Im(:,nh) = -vel_uz%Im(:,nh)*ad_k1a1(k)
- c4%Re(:,nh) =  vel_uz%Re(:,nh)*ad_k1a1(k)
+ c4%Re(:,nh) = -vel_uz%Im(:,nh)*d_alpha*k
+ c4%Im(:,nh) =  vel_uz%Re(:,nh)*d_alpha*k
 
- c3%Im(:,nh) = -vel_uz%Im(:,nh)*ad_m1r1(:,m)
- c3%Re(:,nh) =  vel_uz%Re(:,nh)*ad_m1r1(:,m)
+ c3%Re(:,nh) = -vel_uz%Im(:,nh)*m*i_Mp
+ c3%Im(:,nh) =  vel_uz%Re(:,nh)*m*i_Mp
 
 _loop_km_end
 
@@ -420,27 +420,27 @@ end do
 
 !  Pressure strain term 
 
-call tra_phys2coll1d(p2,c2)
+
 
 call var_coll_meshmult(1,mes_D%dr(1),vel_ur,c1)
 
 _loop_km_begin
- c4%Im(:,nh) = (vel_uz%Re(:,nh)*d_alpha*k)*c2%Im(:,nh)+(vel_uz%Im(:,nh)*d_alpha*k)*c2%Re(:,nh)
- c4%Re(:,nh) =  (vel_uz%Re(:,nh)*d_alpha*k)*c2%Re(:,nh)-(vel_uz%Im(:,nh)*d_alpha*k)*c2%Im(:,nh)
+ c4%Re(:,nh) = -vel_uz%Im(:,nh)*d_alpha*k
+ c4%Im(:,nh) =  vel_uz%Re(:,nh)*d_alpha*k
 
- c3%Im(:,nh) = (vel_ut%Re(:,nh)*m*i_Mp)*c2%Im(:,nh)+(vel_ut%Im(:,nh)*m*i_Mp)*c2%Re(:,nh)
- c3%Re(:,nh) = (vel_ut%Re(:,nh)*m*i_Mp)*c2%Re(:,nh)-(vel_ut%Im(:,nh)*m*i_Mp)*c2%Im(:,nh)
+ c3%Re(:,nh) = -vel_uz%Im(:,nh)*m*i_Mp
+ c3%Im(:,nh) =  vel_uz%Re(:,nh)*m*i_Mp
 _loop_km_end
 
-call tra_coll2phys1d(c4,p4) !duzdz*P uu
-call tra_coll2phys1d(c3,p3) !dutdt*P tt
+call tra_coll2phys1d(c4,p4) !duzdz uu
+call tra_coll2phys1d(c3,p3) !dutdt tt
 call tra_coll2phys1d(c1,p1) !durdr
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-uuPST1(n_,csta)=uuPST1(n_,csta)+sum(p4%Re(:,:,n))
+uuPST1(n_,csta)=uuPST1(n_,csta)+sum(p4%Re(:,:,n)*p2%Re(:,:,n))
 
-ttPST1(n_,csta)=ttPST1(n_,csta)+sum(p3%Re(:,:,n))
+ttPST1(n_,csta)=ttPST1(n_,csta)+sum(p3%Re(:,:,n)*p2%Re(:,:,n))
 
 rrPST1(n_,csta)=rrPST1(n_,csta)+sum(p1%Re(:,:,n)*p2%Re(:,:,n))
 
@@ -456,8 +456,8 @@ enddo
 !  Dissipation term 
 
 _loop_km_begin
-c3%Im(:,nh) = (-vel_uz%Im(:,nh)*m*i_Mp)*mes_D%r(:,-1)
-c3%Re(:,nh) =  (vel_uz%Re(:,nh)*m*i_Mp)*mes_D%r(:,-1)
+c3%Re(:,nh) = (-vel_uz%Im(:,nh)*m*i_Mp)*mes_D%r(:,-1)
+c3%Im(:,nh) =  (vel_uz%Re(:,nh)*m*i_Mp)*mes_D%r(:,-1)
 
 c4%Re(:,nh) = mes_D%r(:,-1)*(-vel_ut%Im(:,nh)*m*i_Mp+vel_ur%Re(:,nh))
 c4%Im(:,nh) = mes_D%r(:,-1)*( vel_ut%Re(:,nh)*m*i_Mp+vel_ur%Im(:,nh))
