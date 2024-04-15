@@ -425,11 +425,11 @@ call tra_phys2coll1d(p2,c2)
 call var_coll_meshmult(1,mes_D%dr(1),vel_ur,c1)
 
 _loop_km_begin
- c4%Im(:,nh) = (vel_uz%Re(:,nh)*ad_m1r1(:,m))*c2%Im+(vel_uz%Im(:,nh)*ad_m1r1(:,m))*c2%Re
- c4%Re(:,nh) =  (vel_uz%Re(:,nh)*ad_m1r1(:,m))*c2%Re-(vel_uz%Im(:,nh)ad_m1r1(:,m))*c2%Im
+ c4%Im(:,nh) = (vel_uz%Re(:,nh)*ad_m1r1(:,m))*c2%Im(:,nh)+(vel_uz%Im(:,nh)*ad_m1r1(:,m))*c2%Re(:,nh)
+ c4%Re(:,nh) =  (vel_uz%Re(:,nh)*ad_m1r1(:,m))*c2%Re(:,nh)-(vel_uz%Im(:,nh)ad_m1r1(:,m))*c2%Im(:,nh)
 
- c3%Im(:,nh) = (vel_ut%Re(:,nh)*ad_m1r1(:,m))*c2%Im+(vel_ut%Im(:,nh)*ad_m1r1(:,m))*c2%Re
- c3%Re(:,nh) = (vel_ut%Re(:,nh)*ad_m1r1(:,m))*c2%Re-(vel_ut%Im(:,nh)*ad_m1r1(:,m))*c2%Im
+ c3%Im(:,nh) = (vel_ut%Re(:,nh)*ad_m1r1(:,m))*c2%Im(:,nh)+(vel_ut%Im(:,nh)*ad_m1r1(:,m))*c2%Re(:,nh)
+ c3%Re(:,nh) = (vel_ut%Re(:,nh)*ad_m1r1(:,m))*c2%Re(:,nh)-(vel_ut%Im(:,nh)*ad_m1r1(:,m))*c2%Im(:,nh)
 _loop_km_end
 
 call tra_coll2phys1d(c4,p4) !duzdz*P uu
@@ -442,7 +442,7 @@ uuPST1(n_,csta)=uuPST1(n_,csta)+sum(p4%Re(:,:,n))
 
 ttPST1(n_,csta)=ttPST1(n_,csta)+sum(p3%Re(:,:,n))
 
-rrPST1(n_,csta)=rrPST1(n_,csta)+sum(p3%Re(:,:,n)*p2(:,:,n))
+rrPST1(n_,csta)=rrPST1(n_,csta)+sum(p3%Re(:,:,n)*p2%Re(:,:,n))
 
 enddo
 
