@@ -425,8 +425,8 @@ call tra_phys2coll1d(p2,c2)
 call var_coll_meshmult(1,mes_D%dr(1),vel_ur,c1)
 
 _loop_km_begin
- c4%Im(:,nh) = (vel_uz%Re(:,nh)*ad_m1r1(:,m))*c2%Im(:,nh)+(vel_uz%Im(:,nh)*ad_m1r1(:,m))*c2%Re(:,nh)
- c4%Re(:,nh) =  (vel_uz%Re(:,nh)*ad_m1r1(:,m))*c2%Re(:,nh)-(vel_uz%Im(:,nh)*ad_m1r1(:,m))*c2%Im(:,nh)
+ c4%Im(:,nh) = (vel_uz%Re(:,nh)*ad_k1a1(k))*c2%Im(:,nh)+(vel_uz%Im(:,nh)*ad_k1a1(k))*c2%Re(:,nh)
+ c4%Re(:,nh) =  (vel_uz%Re(:,nh)*ad_k1a1(k))*c2%Re(:,nh)-(vel_uz%Im(:,nh)*ad_k1a1(k))*c2%Im(:,nh)
 
  c3%Im(:,nh) = (vel_ut%Re(:,nh)*ad_m1r1(:,m))*c2%Im(:,nh)+(vel_ut%Im(:,nh)*ad_m1r1(:,m))*c2%Re(:,nh)
  c3%Re(:,nh) = (vel_ut%Re(:,nh)*ad_m1r1(:,m))*c2%Re(:,nh)-(vel_ut%Im(:,nh)*ad_m1r1(:,m))*c2%Im(:,nh)
@@ -442,13 +442,16 @@ uuPST1(n_,csta)=uuPST1(n_,csta)+sum(p4%Re(:,:,n))
 
 ttPST1(n_,csta)=ttPST1(n_,csta)+sum(p3%Re(:,:,n))
 
-rrPST1(n_,csta)=rrPST1(n_,csta)+sum(p3%Re(:,:,n)*p2%Re(:,:,n))
+rrPST1(n_,csta)=rrPST1(n_,csta)+sum(p1%Re(:,:,n)*p2%Re(:,:,n))
 
 enddo
 
 !  Pressure diffusion term 
 
+do n = 1, mes_D%pN
+   n_ = mes_D%pNi + n - 1
 rrPDT1(n_,csta)=rrPDT1(n_,csta)+sum(vel_r%Re(:,:,n)*p2%Re(:,:,n)) ! P * Vr
+enddo
 
 !  Dissipation term 
 
@@ -456,20 +459,20 @@ _loop_km_begin
 c3%Im(:,nh) = (-vel_uz%Im(:,nh)*ad_m1r1(:,m))*mes_D%r(:,-1)
 c3%Re(:,nh) =  (vel_uz%Re(:,nh)*ad_m1r1(:,m))*mes_D%r(:,-1)
 
-c4%Re(:,nh) = mes_D%r(:,-2)*(-vel_ut%Im(:,nh)*m*i_Mp+vel_ur%Re(:,nh))
-c4%Im(:,nh) = mes_D%r(:,-2)*( vel_ut%Re(:,nh)*m*i_Mp+vel_ur%Im(:,nh))
+c4%Re(:,nh) = mes_D%r(:,-1)*(-vel_ut%Im(:,nh)*m*i_Mp+vel_ur%Re(:,nh))
+c4%Im(:,nh) = mes_D%r(:,-1)*( vel_ut%Re(:,nh)*m*i_Mp+vel_ur%Im(:,nh))
 
-c1%Re(:,nh) = mes_D%r(:,-2)*(-vel_ur%Im(:,nh)*m*i_Mp-vel_ut%Re(:,nh))
-c1%Im(:,nh) = mes_D%r(:,-2)*( vel_ur%Re(:,nh)*m*i_Mp-vel_ut%Im(:,nh))   
+c1%Re(:,nh) = mes_D%r(:,-1)*(-vel_ur%Im(:,nh)*m*i_Mp-vel_ut%Re(:,nh))
+c1%Im(:,nh) = mes_D%r(:,-1)*( vel_ur%Re(:,nh)*m*i_Mp-vel_ut%Im(:,nh))   
 _loop_km_end
 
 call tra_coll2phys1d(c3,p3) !1/r(duzdt)
-call tra_coll2phys1d(c4,p4) !1/r^2(dutdt+ur)
-call tra_coll2phys1d(c1,p1) ! 1/r^2(durdt-ut)
+call tra_coll2phys1d(c4,p4) !1/r(dutdt+ur)
+call tra_coll2phys1d(c1,p1) ! 1/r(durdt-ut)
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-uuDT3(n_,csta)=uuDT3(n_,csta)+sum((p3%Re(:,:,n))**2)
+uuDT3(n_,csta)=uuDT3(n_,csta)+sum(p3%Re(:,:,n)**2)
 
 ttDT3sq(n_,csta)=ttDT3sq(n_,csta)+sum(p4%Re(:,:,n)**2)
 ttDT3(n_,csta)=ttDT3(n_,csta)+sum(p4%Re(:,:,n))
