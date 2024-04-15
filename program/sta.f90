@@ -448,6 +448,8 @@ enddo
 
 !  Pressure diffusion term 
 
+p1%Re=vel_r%Re*p2%Re
+
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
 rrPDT1(n_,csta)=rrPDT1(n_,csta)+sum(vel_r%Re(:,:,n)*p2%Re(:,:,n)) ! P * Vr
