@@ -49,7 +49,7 @@
    double precision :: duzdr(i_N,n_sta), duzdt(i_N,n_sta), duzdz(i_N,n_sta),duzdrsq(i_N,n_sta),duzdzsq(i_N,n_sta)
    double precision :: uuPST1(i_N,n_sta) ,ttPST1(i_N,n_sta), uuDT3(i_N,n_sta),ttDT3(i_N,n_sta),ttDT3sq(i_N,n_sta)
    double precision :: rrDT3sq(i_N,n_sta), rrDT3(i_N,n_sta), rrPST1(i_N,n_sta), rrPDT1(i_N,n_sta)
-   double precision :: kTDT2(i_N,n_sta),kDT4(i_N,n_sta),kDT5sq(i_N,n_sta),kDT5(i_N,n_sta),kDT6sq(i_N,n_sta),kDT6(i_N,n_sta),kDT7sq(i_N,n_sta),kDT7(i_N,n_sta)
+   double precision :: kVDT1(i_N,n_sta), kTDT2(i_N,n_sta),kDT4(i_N,n_sta),kDT5sq(i_N,n_sta),kDT5(i_N,n_sta),kDT6sq(i_N,n_sta),kDT6(i_N,n_sta),kDT7sq(i_N,n_sta),kDT7(i_N,n_sta)
    double precision :: factor
    double precision :: time_sta(n_sta), utauv(n_sta)
 
@@ -432,6 +432,26 @@ do n = 1, mes_D%pN
    kTDT2(n_,csta)  = kTDT2(n_,csta)  + sum(p1%Re(:,:,n)) ! saco la distribucion radial
 end do
 
+! Viscous diffusion term
+
+_loop_km_begin
+c2%Re(:,nh)=vel_ur%Re(:,nh)*vel_uz%Re(:,nh)*mes_D%r(:,1)
+c2%Im(:,nh)=vel_ur%Re(:,nh)*vel_uz%Im(:,nh)*mes_D%r(:,1)
+_loop_km_end
+
+call var_coll_meshmult(0,mes_D%dr(1),c2,c1)
+
+_loop_km_begin
+c2%Re(:,nh)=(c1%Re(:,nh)*mes_D%r(:,-1))*d_alpha*k
+c2%Im(:,nh)=(c1%Im(:,nh)*mes_D%r(:,-1))*d_alpha*k
+_loop_km_end
+
+call tra_coll2phys1d(c2,p1)
+
+do n = 1, mes_D%pN
+   n_ = mes_D%pNi + n - 1
+kVDT1(n_,csta)=kVDT1(n_,csta)+sum(p1%Re(:,:,n))
+enddo
 
 !  Dissipation term 
 
@@ -619,6 +639,7 @@ implicit none
    rrDT3=0d0
    rrDT3sq=0d0
    kTDT2=0d0
+   kVDT1=0d0
    kDT4=0d0
    kDT5=0d0
    kDT5sq=0d0
@@ -758,6 +779,9 @@ tam = i_N*n_sta
    call mpi_reduce(kTDT2, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    kTDT2 = dd 
+   call mpi_reduce(kVDT1, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   kVDT1 = dd 
    call mpi_reduce(kDT4, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    kDT4 = dd 
@@ -859,6 +883,7 @@ tam = i_N*n_sta
       call h5ltmake_dataset_double_f(derivative_id,"rrPST1",2,hdims2,rrPST1,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"rrPDT1",2,hdims2,rrPDT1,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"kTDT2",2,hdims2,kTDT2,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"kVDT1",2,hdims2,kVDT1,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"kDT4",2,hdims2,kDT4,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"kDT5",2,hdims2,kDT5,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"kDT5sq",2,hdims2,kDT5sq,h5err)
