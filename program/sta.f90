@@ -820,7 +820,7 @@ tam = i_N*n_sta
        call h5ltmake_dataset_double_f(header_id,"alpha",1,hdims,(/d_alpha/),h5err)
 
        call h5ltmake_dataset_int_f(header_id,"N" ,1,hdims,(/i_N/),h5err)
-       call h5ltmake_dataset_int_f(header_id,"num" ,1,hdims,(/csta/),h5err)
+       call h5ltmake_dataset_int_f(header_id,"num" ,1,hdims,(/csta/)-1,h5err)
        call h5ltmake_dataset_int_f(header_id,"M" ,1,hdims,(/i_M/),h5err)
        call h5ltmake_dataset_int_f(header_id,"K" ,1,hdims,(/i_K/),h5err)
        call h5ltmake_dataset_int_f(header_id,"Mp",1,hdims,(/i_Mp/),h5err)
