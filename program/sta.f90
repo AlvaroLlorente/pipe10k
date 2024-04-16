@@ -522,8 +522,8 @@ _loop_km_begin
  c4%Re(:,nh) = -vel_uz%Im(:,nh)*d_alpha*k
  c4%Im(:,nh) =  vel_uz%Re(:,nh)*d_alpha*k
 
- c3%Re(:,nh) = -vel_uz%Im(:,nh)*m*i_Mp
- c3%Im(:,nh) =  vel_uz%Re(:,nh)*m*i_Mp
+ c3%Re(:,nh) = -vel_ut%Im(:,nh)*m*i_Mp
+ c3%Im(:,nh) =  vel_ut%Re(:,nh)*m*i_Mp
 _loop_km_end
 
 call tra_coll2phys1d(c4,p4) !duzdz uu
