@@ -401,7 +401,7 @@
       integer(hid_t) :: G1, G2, G3
       character(len=20) ::cadena, nombre_dataset1, nombre_dataset2, nombre_dataset3
 
-      !call vel_sta
+   
 
       write(extc,'(I4.4)') extn
 
@@ -507,7 +507,6 @@
       integer(hid_t) :: G1, G2
       
 
-      call vel_sta()
 
       write(extc,'(I4.4)') extn
 
