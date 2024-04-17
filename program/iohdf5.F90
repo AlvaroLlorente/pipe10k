@@ -147,7 +147,7 @@
       if(modulo(tim_step,i_save_rate1)==0) then
          call io_save_state()
          call io_save_phys_plane()
-         call io_save_phys_field()
+         !call io_save_phys_field()
          fnameima=trim(filstt)//'.'//extc//'.'//'sth'
          call saveStats(fnameima)
          ! call io_save_spectrum()
@@ -423,7 +423,6 @@
       call h5fcreate_f(trim(fnamephys),H5F_ACC_TRUNC_F,fid,h5err,H5P_DEFAULT_F,pid)
       call h5gcreate_f(fid, '/radial', G1, h5err)
       call h5gcreate_f(fid, '/axial', G2, h5err)
-      call h5gcreate_f(fid, '/header', G3, h5err)
       call h5pclose_f(pid,h5err)
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
@@ -477,20 +476,20 @@
 
         call h5fopen_f(fnamephys,H5F_ACC_RDWR_F,fid,h5err)
         hdims = (/1/)
-        call h5ltmake_dataset_double_f(G3,"time",1,hdims,(/tim_t/),h5err)
-        call h5ltmake_dataset_double_f(G3,"Re",1,hdims,(/d_Re/),h5err)
-        call h5ltmake_dataset_double_f(G3,"alpha",1,hdims,(/d_alpha/),h5err)
+        call h5ltmake_dataset_double_f(fid,"time",1,hdims,(/tim_t/),h5err)
+        call h5ltmake_dataset_double_f(fid,"Re",1,hdims,(/d_Re/),h5err)
+        call h5ltmake_dataset_double_f(fid,"alpha",1,hdims,(/d_alpha/),h5err)
 
-        call h5ltmake_dataset_int_f(G3,"N" ,1,hdims,(/i_N/),h5err)
-        call h5ltmake_dataset_int_f(G3,"M" ,1,hdims,(/i_M/),h5err)
-        call h5ltmake_dataset_int_f(G3,"K" ,1,hdims,(/i_K/),h5err)
-        call h5ltmake_dataset_int_f(G3,"Mp",1,hdims,(/i_Mp/),h5err)
+        call h5ltmake_dataset_int_f(fid,"N" ,1,hdims,(/i_N/),h5err)
+        call h5ltmake_dataset_int_f(fid,"M" ,1,hdims,(/i_M/),h5err)
+        call h5ltmake_dataset_int_f(fid,"K" ,1,hdims,(/i_K/),h5err)
+        call h5ltmake_dataset_int_f(fid,"Mp",1,hdims,(/i_Mp/),h5err)
         
-        call h5ltmake_dataset_double_f(G3,"dt"   ,1,hdims,(/tim_dt/),h5err)
+        call h5ltmake_dataset_double_f(fid,"dt"   ,1,hdims,(/tim_dt/),h5err)
 
         hdims = (/i_N/)
-        call h5ltmake_dataset_double_f(G3,"r"   ,1,hdims,mes_D%r(1:i_N,1),h5err)
-        call h5gclose_f(G3,h5err)
+        call h5ltmake_dataset_double_f(fid,"r"   ,1,hdims,mes_D%r(1:i_N,1),h5err)
+
         call h5fclose_f(fid,h5err)
       end if
 
@@ -529,7 +528,6 @@
       call h5pset_sieve_buf_size_f(pid, siever, h5err)
       call h5fcreate_f(trim(fnamephys),H5F_ACC_TRUNC_F,fid,h5err,H5P_DEFAULT_F,pid)
       call h5gcreate_f(fid, '/sta', G1, h5err)
-      call h5gcreate_f(fid, '/header', G2, h5err)
       call h5pclose_f(pid,h5err)
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
@@ -556,24 +554,21 @@
       if(mpi_rnk==0) then
 
         call h5fopen_f(fnamephys,H5F_ACC_RDWR_F,fid,h5err)
-        call h5gcreate_f(fid, '/header', G2, h5err)
         hdims = (/1/)
-        call h5ltmake_dataset_double_f(G2,"time",1,hdims,(/tim_t/),h5err)
-        call h5ltmake_dataset_double_f(G2,"Re",1,hdims,(/d_Re/),h5err)
-        call h5ltmake_dataset_double_f(G2,"alpha",1,hdims,(/d_alpha/),h5err)
+        call h5ltmake_dataset_double_f(fid,"time",1,hdims,(/tim_t/),h5err)
+        call h5ltmake_dataset_double_f(fid,"Re",1,hdims,(/d_Re/),h5err)
+        call h5ltmake_dataset_double_f(fid,"alpha",1,hdims,(/d_alpha/),h5err)
 
-        call h5ltmake_dataset_int_f(G2,"N" ,1,hdims,(/i_N/),h5err)
-        call h5ltmake_dataset_int_f(G2,"M" ,1,hdims,(/i_M/),h5err)
-        call h5ltmake_dataset_int_f(G2,"K" ,1,hdims,(/i_K/),h5err)
-        call h5ltmake_dataset_int_f(G2,"Mp",1,hdims,(/i_Mp/),h5err)
+        call h5ltmake_dataset_int_f(fid,"N" ,1,hdims,(/i_N/),h5err)
+        call h5ltmake_dataset_int_f(fid,"M" ,1,hdims,(/i_M/),h5err)
+        call h5ltmake_dataset_int_f(fid,"K" ,1,hdims,(/i_K/),h5err)
+        call h5ltmake_dataset_int_f(fid,"Mp",1,hdims,(/i_Mp/),h5err)
         
-        call h5ltmake_dataset_double_f(G2,"dt"   ,1,hdims,(/tim_dt/),h5err)
+        call h5ltmake_dataset_double_f(fid,"dt"   ,1,hdims,(/tim_dt/),h5err)
 
         hdims = (/i_N/)
-        call h5ltmake_dataset_double_f(G2,"r"   ,1,hdims,mes_D%r(1:i_N,1),h5err)
+        call h5ltmake_dataset_double_f(fid,"r"   ,1,hdims,mes_D%r(1:i_N,1),h5err)
         
-        
-        call h5gclose_f(G2,h5err)
         call h5fclose_f(fid,h5err)
         
       end if
