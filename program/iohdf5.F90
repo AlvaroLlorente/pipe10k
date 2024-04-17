@@ -147,7 +147,7 @@
       if(modulo(tim_step,i_save_rate1)==0) then
          call io_save_state()
          call io_save_phys_plane()
-         call io_save_phys_field()
+         !call io_save_phys_field()
          fnameima=trim(filstt)//'.'//extc//'.'//'sth'
          call saveStats(fnameima)
          ! call io_save_spectrum()
@@ -401,7 +401,7 @@
       integer(hid_t) :: G1, G2, G3
       character(len=20) ::cadena, nombre_dataset1, nombre_dataset2, nombre_dataset3
 
-      call vel_sta
+      !call vel_sta
 
       write(extc,'(I4.4)') extn
 
