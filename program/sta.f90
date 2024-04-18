@@ -49,7 +49,7 @@
    double precision :: duzdr(i_N,n_sta), duzdt(i_N,n_sta), duzdz(i_N,n_sta),duzdrsq(i_N,n_sta),duzdzsq(i_N,n_sta),d2uzdt2(i_N,n_sta)
    double precision :: uuPST1(i_N,n_sta) ,ttPST1(i_N,n_sta), uuDT3(i_N,n_sta),ttDT3(i_N,n_sta),ttDT3sq(i_N,n_sta)
    double precision :: rrDT3sq(i_N,n_sta), rrDT3(i_N,n_sta), rrPST1(i_N,n_sta), rrPDT1(i_N,n_sta)
-   double precision :: kVDT1(i_N,n_sta), kTDT2(i_N,n_sta),kDT4(i_N,n_sta),kDT5sq(i_N,n_sta),kDT5(i_N,n_sta),kDT6sq(i_N,n_sta),kDT6(i_N,n_sta),kDT7sq(i_N,n_sta),kDT7(i_N,n_sta)
+   double precision :: kCT1(i_N,n_sta),kPDT1(i_N,n_sta),kVDT1(i_N,n_sta),kTDT1(i_N,n_sta) ,kTDT2(i_N,n_sta),kDT4(i_N,n_sta),kDT5(i_N,n_sta),kDT6(i_N,n_sta),kDT7(i_N,n_sta)
    double precision :: factor
    double precision :: time_sta(n_sta), utauv(n_sta)
 
@@ -439,11 +439,87 @@ enddo
 
 !--------Turbulent kinetic energy budget-------!!
 
+! Convection term
+p1%Re = vel_r%Re * vel_r%Re
+p3%Re = vel_t%Re * vel_t%Re
+p4%Re = vel_z%Re * vel_z%Re
+
+call tra_phys2coll1d(p1,c1) !z
+call tra_phys2coll1d(p3,c3) !r
+call tra_phys2coll1d(p4,c4) !t
+
+_loop_km_begin
+c1%Re(:,nh) = -c1%Im(:,nh)*d_alpha*k
+c1%Im(:,nh) =  c1%Re(:,nh)*d_alpha*k
+
+c3%Re(:,nh) = -c3%Im(:,nh)*d_alpha*k
+c3%Im(:,nh) =  c3%Re(:,nh)*d_alpha*k
+
+c4%Re(:,nh) = -c4%Im(:,nh)*d_alpha*k
+c4%Im(:,nh) =  c4%Re(:,nh)*d_alpha*k
+_loop_km_end
+
+call tra_coll2phys1d(c1,p1)
+call tra_coll2phys1d(c3,p3)
+call tra_coll2phys1d(c4,p4)
+
+do n = 1, mes_D%pN
+   n_ = mes_D%pNi + n - 1
+   kCT1(n_,csta) = kCT1(n_,csta) + sum(p1%Re(:,:,n)+p3%Re(:,:,n)+p4%Re(:,:,n))
+   
+enddo
+
+
+
 !  Pressure difussion term
 
-!Son los mismos datos de rrPDT1
+p1%Re=vel_z%Re*p2%Re
+
+call tra_phys2coll1d(p1,c1) 
+_loop_km_begin
+c1%Re(:,nh) = -c1%Im(:,nh)*d_alpha*k
+c1%Im(:,nh) =  c1%Re(:,nh)*d_alpha*k
+_loop_km_end
+
+call tra_coll2phys1d(c1,p1)
+
+do n = 1, mes_D%pN
+   n_ = mes_D%pNi + n - 1
+   kPDT1(n_,csta) = kPDT1(n_,csta) + sum(p1%Re(:,:,n))
+   
+enddo
+
+!kPDT2 = rrPDT1
 
 !  Turbulent difussion term 
+
+p1%Re = vel_z%Re * vel_r%Re * vel_r%Re
+p3%Re = vel_z%Re * vel_t%Re * vel_t%Re
+p4%Re = vel_z%Re * vel_z%R * vel_z%Re
+
+call tra_phys2coll1d(p1,c1) !z
+call tra_phys2coll1d(p3,c3) !r
+call tra_phys2coll1d(p4,c4) !t
+
+_loop_km_begin
+c1%Re(:,nh) = -c1%Im(:,nh)*d_alpha*k
+c1%Im(:,nh) =  c1%Re(:,nh)*d_alpha*k
+
+c3%Re(:,nh) = -c3%Im(:,nh)*d_alpha*k
+c3%Im(:,nh) =  c3%Re(:,nh)*d_alpha*k
+
+c4%Re(:,nh) = -c4%Im(:,nh)*d_alpha*k
+c4%Im(:,nh) =  c4%Re(:,nh)*d_alpha*k
+_loop_km_endd
+
+call tra_coll2phys1d(c1,p1)
+call tra_coll2phys1d(c3,p3)
+call tra_coll2phys1d(c4,p4)
+
+do n = 1, mes_D%pN
+   n_ = mes_D%pNi + n - 1
+   kTDT1(n_,csta)  = kTDT1(n_,csta)  + sum(p1%Re(:,:,n)+p3%Re(:,:,n)+p4%Re(:,:,n)) ! saco la distribucion radial
+end do
 
 p1%Re=vel_r%Re*(vel_r%Re**2+vel_t%Re**2+vel_z%Re**2)
 
@@ -491,8 +567,8 @@ enddo
 call var_coll_meshmult(0,mes_D%dr(1),vel_uz,c1)
 
 _loop_km_begin
-c3%Re(:,nh) = (-vel_ur%Im(:,nh)*d_alpha*k)+c1%Re(:,nh)
-c3%Im(:,nh) =  (vel_ur%Re(:,nh)*d_alpha*k)+c1%Im(:,nh)
+c3%Re(:,nh) = (-vel_ur%Im(:,nh)*d_alpha*k)*-c1%Re(:,nh)
+c3%Im(:,nh) =  (vel_ur%Re(:,nh)*d_alpha*k)*c1%Im(:,nh)
 _loop_km_end
 
 call tra_coll2phys1d(c3,p3) !Termino 5
@@ -505,29 +581,28 @@ _loop_km_end
 call var_coll_meshmult(1,mes_D%dr(1),c2,c1)
 
 _loop_km_begin
-c4%Re(:,nh) = mes_D%r(:,-1)*(-vel_ur%Im(:,nh)*m*i_Mp)+c1%Re(:,nh)*mes_D%r(:,1)
-c4%Im(:,nh) = mes_D%r(:,-1)*(vel_ur%Re(:,nh)*m*i_Mp)+c1%Im(:,nh)*mes_D%r(:,1)
+c4%Re(:,nh) = (-vel_ur%Im(:,nh)*m*i_Mp)*-c1%Re(:,nh)
+c4%Im(:,nh) = (vel_ur%Re(:,nh)*m*i_Mp)*c1%Im(:,nh)
 _loop_km_end
 
 call tra_coll2phys1d(c4,p4) !Termino 6
 
 _loop_km_begin
-c1%Re(:,nh) = (-vel_ut%Im(:,nh)*d_alpha*k)-(vel_uz%Im(:,nh)*m*i_Mp)*mes_D%r(:,-1)
-c1%Im(:,nh) = (vel_ut%Re(:,nh)*d_alpha*k)+(vel_uz%Re(:,nh)*m*i_Mp)*mes_D%r(:,-1)
+c1%Re(:,nh) = (-vel_ut%Im(:,nh)*d_alpha*k)*(-vel_uz%Im(:,nh)*m*i_Mp)*mes_D%r(:,-1)
+c1%Im(:,nh) = (vel_ut%Re(:,nh)*d_alpha*k)*(vel_uz%Re(:,nh)*m*i_Mp)*mes_D%r(:,-1)
 _loop_km_end
 
 call tra_coll2phys1d(c1,p1) !Termino 7
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-kDT5sq(n_,csta)=kDT5sq(n_,csta)+sum(p3%Re(:,:,n)**2)   
-kDT5(n_,csta)=kDT5(n_,csta)+sum(p3%Re(:,:,n))
+ kDT5(n_,csta)=kDT5(n_,csta)+2*sum(p3%Re(:,:,n))
 
-kDT6sq(n_,csta)=kDT6sq(n_,csta)+sum(p4%Re(:,:,n)**2)   
-kDT6(n_,csta)=kDT6(n_,csta)+sum(p4%Re(:,:,n))
 
-kDT7sq(n_,csta)=kDT7sq(n_,csta)+sum(p1%Re(:,:,n)**2)   
-kDT7(n_,csta)=kDT7(n_,csta)+sum(p1%Re(:,:,n))
+ kDT6(n_,csta)=kDT6(n_,csta)+2*sum(p4%Re(:,:,n))
+
+   
+ kDT7(n_,csta)=kDT7(n_,csta)+2*sum(p1%Re(:,:,n))
 enddo
 
 !--------Reynolds normal stresses budget-------!!
@@ -661,15 +736,16 @@ implicit none
    rrPDT1=0d0
    rrDT3=0d0
    rrDT3sq=0d0
+   kCT1=0d0
+   kPDT1=0d0
+   kTDT1=0d0
    kTDT2=0d0
    kVDT1=0d0
    kDT4=0d0
    kDT5=0d0
-   kDT5sq=0d0
    kDT6=0d0
-   kDT6sq=0d0
    kDT7=0d0
-   kDT7sq=0d0
+  
 
 
 end subroutine initialiseSTD
@@ -806,6 +882,16 @@ tam = i_N*n_sta
    call mpi_reduce(rrPDT1, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    rrPDT1 = dd 
+
+   call mpi_reduce(kCT1, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   kCT1 = dd 
+   call mpi_reduce(kPDT1, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   kPDT1 = dd 
+   call mpi_reduce(kTDT1, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   kTDT1 = dd 
    call mpi_reduce(kTDT2, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    kTDT2 = dd 
@@ -818,21 +904,13 @@ tam = i_N*n_sta
    call mpi_reduce(kDT5, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    kDT5 = dd 
-   call mpi_reduce(kDT5sq, dd, tam, mpi_double_precision,  &
-      mpi_sum, 0, mpi_comm_world, mpi_er)
-   kDT5sq = dd 
    call mpi_reduce(kDT6, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    kDT6 = dd 
-   call mpi_reduce(kDT6sq, dd, tam, mpi_double_precision,  &
-      mpi_sum, 0, mpi_comm_world, mpi_er)
-   kDT6sq = dd 
    call mpi_reduce(kDT7, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    kDT7 = dd 
-   call mpi_reduce(kDT7sq, dd, tam, mpi_double_precision,  &
-      mpi_sum, 0, mpi_comm_world, mpi_er)
-   kDT7sq = dd 
+
 
 
 
@@ -904,7 +982,6 @@ tam = i_N*n_sta
       call h5ltmake_dataset_double_f(derivative_id,"durdzsq",2,hdims2,durdzsq,h5err)
       
       call h5ltmake_dataset_double_f(derivative_id,"d2utdt2",2,hdims2,d2utdt2,h5err)   
-      
       call h5ltmake_dataset_double_f(derivative_id,"d2uzdt2",2,hdims2,d2uzdt2,h5err)
 
       call h5ltmake_dataset_double_f(derivative_id,"uuDT3",2,hdims2,uuDT3,h5err)
@@ -916,15 +993,17 @@ tam = i_N*n_sta
       call h5ltmake_dataset_double_f(derivative_id,"rrDT3sq",2,hdims2,rrDT3sq,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"rrPST1",2,hdims2,rrPST1,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"rrPDT1",2,hdims2,rrPDT1,h5err)
+
+      call h5ltmake_dataset_double_f(derivative_id,"kCT1",2,hdims2,kCT1,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"kPDT1",2,hdims2,kPDT1,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"kTDT1",2,hdims2,kTDT1,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"kTDT2",2,hdims2,kTDT2,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"kVDT1",2,hdims2,kVDT1,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"kDT4",2,hdims2,kDT4,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"kDT5",2,hdims2,kDT5,h5err)
-      call h5ltmake_dataset_double_f(derivative_id,"kDT5sq",2,hdims2,kDT5sq,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"kDT6",2,hdims2,kDT6,h5err)
-      call h5ltmake_dataset_double_f(derivative_id,"kDT6sq",2,hdims2,kDT6sq,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"kDT7",2,hdims2,kDT7,h5err)
-      call h5ltmake_dataset_double_f(derivative_id,"kDT7sq",2,hdims2,kDT7sq,h5err)
+
 
 
          
