@@ -44,9 +44,9 @@
    double precision :: mean_p(i_N,n_sta), stdv_p(i_N,n_sta)
 
    !double precision :: piz(i_N), pit(i_N), pir(i_N)
-   double precision :: durdr(i_N,n_sta), durdt(i_N,n_sta), durdz(i_N,n_sta),durdrsq(i_N,n_sta),durdzsq(i_N,n_sta)
+   double precision :: durdr(i_N,n_sta), durdt(i_N,n_sta), durdz(i_N,n_sta),durdrsq(i_N,n_sta),durdtsq(i_N,n_sta), durdzsq(i_N,n_sta)
    double precision :: dutdr(i_N,n_sta), dutdt(i_N,n_sta), dutdz(i_N,n_sta),dutdrsq(i_N,n_sta),dutdzsq(i_N,n_sta),d2utdt2(i_N,n_sta)
-   double precision :: duzdr(i_N,n_sta), duzdt(i_N,n_sta), duzdz(i_N,n_sta),duzdrsq(i_N,n_sta),duzdzsq(i_N,n_sta),d2uzdt2(i_N,n_sta)
+   double precision :: duzdr(i_N,n_sta), duzdt(i_N,n_sta), duzdz(i_N,n_sta),duzdrsq(i_N,n_sta),duzdtsq(i_N,n_sta), duzdzsq(i_N,n_sta),d2uzdt2(i_N,n_sta)
    double precision :: uuPST1(i_N,n_sta) ,ttPST1(i_N,n_sta), uuDT3(i_N,n_sta),ttDT3(i_N,n_sta),ttDT3sq(i_N,n_sta)
    double precision :: rrDT3sq(i_N,n_sta), rrDT3(i_N,n_sta), rrPST1(i_N,n_sta), rrPDT1(i_N,n_sta)
    double precision :: kCT1(i_N,n_sta),kPDT1(i_N,n_sta),kVDT1(i_N,n_sta),kTDT1(i_N,n_sta) ,kTDT2(i_N,n_sta),kDT4(i_N,n_sta),kDT5(i_N,n_sta),kDT6(i_N,n_sta),kDT7(i_N,n_sta)
@@ -354,7 +354,8 @@ do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
    durdr(n_,csta) = durdr(n_,csta) + sum(p1%Re(:,:,n))
    durdrsq(n_,csta) = durdrsq(n_,csta) + sum(p1%Re(:,:,n)**2)
-   durdt(n_,csta) = durdt(n_,csta) + sum(p3%Re(:,:,n)) 
+   durdt(n_,csta) = durdt(n_,csta) + sum(p3%Re(:,:,n))
+   durdtsq(n_,csta) = durdtsq(n_,csta) + sum(p3%Re(:,:,n)**2)   
    durdz(n_,csta) = durdz(n_,csta) + sum(p4%Re(:,:,n))
    durdzsq(n_,csta) = durdzsq(n_,csta) + sum(p4%Re(:,:,n)**2)  
 end do
@@ -408,7 +409,8 @@ do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
    duzdr(n_,csta) = duzdr(n_,csta) + sum(p1%Re(:,:,n))
    duzdrsq(n_,csta) = duzdrsq(n_,csta) + sum(p1%Re(:,:,n)**2)
-   duzdt(n_,csta) = duzdt(n_,csta) + sum(p3%Re(:,:,n)) 
+   duzdt(n_,csta) = duzdt(n_,csta) + sum(p3%Re(:,:,n))
+   duzdtsq(n_,csta) = duzdtsq(n_,csta) + sum(p3%Re(:,:,n)**2) 
    duzdz(n_,csta) = duzdz(n_,csta) + sum(p4%Re(:,:,n)) 
    duzdzsq(n_,csta) = duzdzsq(n_,csta) + sum(p4%Re(:,:,n)**2)
 
@@ -720,6 +722,9 @@ implicit none
    dutdrsq= 0d0
    durdrsq= 0d0
 
+   duzdtsq=0d0
+   durdtsq=0d0
+
    duzdzsq=0d0
    dutdzsq=0d0
    durdzsq= 0d0
@@ -835,9 +840,16 @@ tam = i_N*n_sta
    call mpi_reduce(dutdrsq, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    dutdrsq = dd
-   call mpi_reduce(durdrsq, dd, tam, mpi_double_precision,  &
+   call mpi_reduce(durdtsq, dd, tam, mpi_double_precision,  &          
       mpi_sum, 0, mpi_comm_world, mpi_er)
-   durdrsq = dd
+   durdtsq = dd
+   call mpi_reduce(duzdtsq, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   duzdtsq = dd
+   call mpi_reduce(dutdrsq, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   dutdrsq = dd
+
    call mpi_reduce(duzdzsq, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    duzdzsq = dd
@@ -977,7 +989,9 @@ tam = i_N*n_sta
       call h5ltmake_dataset_double_f(derivative_id,"duzdrsq",2,hdims2,duzdrsq,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"dutdrsq",2,hdims2,dutdrsq,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"durdrsq",2,hdims2,durdrsq,h5err)
-      call h5ltmake_dataset_double_f(derivative_id,"duzdzsq",2,hdims2,duzdzsq,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"durdtsq",2,hdims2,durdtsq,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"duzdtsq",2,hdims2,duzdtsq,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"duzdzsq",2,hdims2,duzdzsq,h5err)       
       call h5ltmake_dataset_double_f(derivative_id,"dutdzsq",2,hdims2,dutdzsq,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"durdzsq",2,hdims2,durdzsq,h5err)
       
