@@ -495,7 +495,7 @@ enddo
 
 p1%Re = vel_z%Re * vel_r%Re * vel_r%Re
 p3%Re = vel_z%Re * vel_t%Re * vel_t%Re
-p4%Re = vel_z%Re * vel_z%R * vel_z%Re
+p4%Re = vel_z%Re * vel_z%Re * vel_z%Re
 
 call tra_phys2coll1d(p1,c1) !z
 call tra_phys2coll1d(p3,c3) !r
@@ -510,7 +510,7 @@ c3%Im(:,nh) =  c3%Re(:,nh)*d_alpha*k
 
 c4%Re(:,nh) = -c4%Im(:,nh)*d_alpha*k
 c4%Im(:,nh) =  c4%Re(:,nh)*d_alpha*k
-_loop_km_endd
+_loop_km_end
 
 call tra_coll2phys1d(c1,p1)
 call tra_coll2phys1d(c3,p3)
