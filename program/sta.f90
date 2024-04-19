@@ -690,7 +690,6 @@ enddo
 
 !  Pressure diffusion term 
 
-p1%Re=vel_r%Re*p2%Re
 
 _loop_km_begin
 c3%Re(:,nh) = -vel_uz%Im(:,nh)*d_alpha*k
@@ -701,7 +700,7 @@ call tra_coll2phys1d(c3,p3)
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-rrPDT1(n_,csta)=rrPDT1(n_,csta)+sum(vel_r%Re(:,:,n)*p2%Re(:,:,n)) ! P * Vr
+rrPDT1(n_,csta)=rrPDT1(n_,csta)+sum((vel_r%Re(:,:,n)*p2%Re(:,:,n))**2) ! P * Vr
 uuPDT1(n_,csta)=uuPDT1(n_,csta)+sum(p3%Re(:,:,n)*p2%Re(:,:,n)) ! P * dVzdz
 
 enddo
