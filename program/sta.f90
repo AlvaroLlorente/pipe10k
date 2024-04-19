@@ -859,7 +859,7 @@ call tra_coll2phys1d(c4,p4)
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-rrDT3(n_,csta)=rrDT3(n_,csta)+sum(p1%Re(:,:,n)**2+p3%Re(:,:,n)+p4%Re(:,:,n))
+rrDT3(n_,csta)=rrDT3(n_,csta)+sum(p1%Re(:,:,n)**2+p3%Re(:,:,n)-p4%Re(:,:,n))
 enddo
 
 end subroutine compute_turb_budget
