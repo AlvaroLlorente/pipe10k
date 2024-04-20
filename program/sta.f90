@@ -857,7 +857,7 @@ do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
 rrDT31(n_,csta)=rrDT31(n_,csta)+sum(p1%Re(:,:,n)**2)
 rrDT32(n_,csta)=rrDT32(n_,csta)+sum(p3%Re(:,:,n)**2)
-rrDT33(n_,csta)=rrDT33(n_,csta)+sum(p4%Re(:,:,n)*vel_t(:,:,n))
+rrDT33(n_,csta)=rrDT33(n_,csta)+sum(p4%Re(:,:,n)*vel_t%Re(:,:,n))
 enddo
 
 end subroutine compute_turb_budget
