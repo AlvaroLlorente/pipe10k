@@ -843,23 +843,16 @@ enddo
 !  Dissipation term urur
 
 _loop_km_begin
-c1%Re(:,nh) = (-vel_ur%Im(:,nh)*m*i_Mp)*mes_D%r(:,-1)
-c1%Im(:,nh) =  (vel_ur%Re(:,nh)*m*i_Mp)*mes_D%r(:,-1)
-
-c3%Re(:,nh) = (vel_ut%Re(:,nh)**2)*mes_D%r(:,-2)
-c3%Im(:,nh) = (vel_ut%Im(:,nh)**2)*mes_D%r(:,-2)
-
-c4%Re(:,nh) = 2*(-vel_ur%Im(:,nh)*m*i_Mp)*vel_ut%Re(:,nh)*mes_D%r(:,-2)      
-c4%Im(:,nh) = 2*(vel_ur%Re(:,nh)*m*i_Mp)*vel_ut%im(:,nh)*mes_D%r(:,-2)    
+c4%Re(:,nh) = (-vel_ur%Im(:,nh)*m*i_Mp)*vel_ut%Re(:,nh)    
+c4%Im(:,nh) = (vel_ur%Re(:,nh)*m*i_Mp)*vel_ut%im(:,nh) 
 _loop_km_end
 
-call tra_coll2phys1d(c1,p1)
-call tra_coll2phys1d(c3,p3)
+
 call tra_coll2phys1d(c4,p4)
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-rrDT3(n_,csta)=rrDT3(n_,csta)+sum(p1%Re(:,:,n)**2+p3%Re(:,:,n)-p4%Re(:,:,n))
+rrDT3(n_,csta)=rrDT3(n_,csta)+sum(p4%Re(:,:,n))
 enddo
 
 end subroutine compute_turb_budget
