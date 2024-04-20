@@ -650,7 +650,7 @@ enddo
 call var_coll_meshmult(0,mes_D%dr(1),vel_uz,c1)
 
 _loop_km_begin
-c3%Re(:,nh) = (-vel_ur%Im(:,nh)*d_alpha*k)*-c1%Re(:,nh)
+c3%Re(:,nh) = (-vel_ur%Im(:,nh)*d_alpha*k)*c1%Re(:,nh)
 c3%Im(:,nh) =  (vel_ur%Re(:,nh)*d_alpha*k)*c1%Im(:,nh)
 _loop_km_end
 
@@ -664,7 +664,7 @@ _loop_km_end
 call var_coll_meshmult(1,mes_D%dr(1),c2,c1)
 
 _loop_km_begin
-c4%Re(:,nh) = (-vel_ur%Im(:,nh)*m*i_Mp)*-c1%Re(:,nh)
+c4%Re(:,nh) = (-vel_ur%Im(:,nh)*m*i_Mp)*c1%Re(:,nh)
 c4%Im(:,nh) = (vel_ur%Re(:,nh)*m*i_Mp)*c1%Im(:,nh)
 _loop_km_end
 
