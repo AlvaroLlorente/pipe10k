@@ -842,11 +842,11 @@ _loop_km_begin
 c1%Re(:,nh) = -vel_ur%Im(:,nh)*m*i_Mp*mes_D%r(:,-1)
 c1%Im(:,nh) =  vel_ur%Re(:,nh)*m*i_Mp*mes_D%r(:,-1)
 
-c1%Re(:,nh) = vel_ur%Re(:,nh)*vel_ur%Re(:,nh)*mes_D%r(:,-2)
-c1%Im(:,nh) = vel_ur%Re(:,nh)*vel_ur%Re(:,nh)*mes_D%r(:,-2)
+c3%Re(:,nh) = vel_ut%Re(:,nh)*mes_D%r(:,-1)
+c3%Im(:,nh) = vel_ut%Im(:,nh)*mes_D%r(:,-1)
 
-c4%Re(:,nh) = (-vel_ur%Im(:,nh)*m*i_Mp)*vel_ut%Re(:,nh)*mes_D%r(:,-2)
-c4%Im(:,nh) = (vel_ur%Re(:,nh)*m*i_Mp)*vel_ut%im(:,nh)*mes_D%r(:,-2)
+c4%Re(:,nh) = (-vel_ur%Im(:,nh)*m*i_Mp)*mes_D%r(:,-2)
+c4%Im(:,nh) = (vel_ur%Re(:,nh)*m*i_Mp)*mes_D%r(:,-2)
 _loop_km_end
 
 call tra_coll2phys1d(c1,p1)
@@ -856,8 +856,8 @@ call tra_coll2phys1d(c4,p4)
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
 rrDT31(n_,csta)=rrDT31(n_,csta)+sum(p1%Re(:,:,n)**2)
-rrDT32(n_,csta)=rrDT32(n_,csta)+sum(p3%Re(:,:,n))
-rrDT33(n_,csta)=rrDT33(n_,csta)+sum(p4%Re(:,:,n))
+rrDT32(n_,csta)=rrDT32(n_,csta)+sum(p3%Re(:,:,n)**2)
+rrDT33(n_,csta)=rrDT33(n_,csta)+sum(p4%Re(:,:,n)*vel_t(:,:,n))
 enddo
 
 end subroutine compute_turb_budget
