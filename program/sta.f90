@@ -833,8 +833,8 @@ c4%Im(:,nh) = (vel_ut%Re(:,nh)*m*i_Mp)*mes_D%r(:,-2)
 _loop_km_end
 
 
+call tra_coll2phys1d(c1,p1)
 call tra_coll2phys1d(c3,p3)
-call tra_coll2phys1d(c4,p4)
 call tra_coll2phys1d(c4,p4)
 
 do n = 1, mes_D%pN
@@ -845,8 +845,6 @@ ttDT33(n_,csta)=ttDT33(n_,csta)+sum(p4%Re(:,:,n)*vel_r%Re(:,:,n))
 enddo
 
 !  Dissipation term urur
-
-
 
 
 _loop_km_begin
