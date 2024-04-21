@@ -659,11 +659,13 @@ enddo
 call var_coll_meshmult(1,mes_D%dr(1),vel_ut,c1)
 
 _loop_km_begin
-c3%Re(:,nh) = (-vel_ur%Im(:,nh)*m*i_Mp)*c1%Re(:,nh)*mes_D%r(:,-1)
-c3%Im(:,nh) = (vel_ur%Re(:,nh)*m*i_Mp)*c1%Im(:,nh)*mes_D%r(:,-1)
+c3%Re(:,nh) = (-vel_ur%Im(:,nh)*m*i_Mp)*mes_D%r(:,-1)
+c3%Im(:,nh) = (vel_ur%Re(:,nh)*m*i_Mp)*mes_D%r(:,-1)
 _loop_km_end
-
+call tra_coll2phys1d(c1,p1) !provisional para multiplicar por p3
 call tra_coll2phys1d(c3,p3) !Termino 6_3
+
+p3%Re=p3%Re*p1%Re
 
 _loop_km_begin
 c1%Re(:,nh) = (-vel_ur%Im(:,nh)*m*i_Mp)*mes_D%r(:,-1)
@@ -675,21 +677,26 @@ call tra_coll2phys1d(c1,p1) !Termino 6_1
 
 !kDT72 = uuDT3, no hace falta sacarlo otra vez
 
+do n = 1, mes_D%pN
+   n_ = mes_D%pNi + n - 1
+ kDT61(n_,csta)=kDT61(n_,csta)+sum(p1%Re(:,:,n)**2) 
+ kDT63(n_,csta)=kDT63(n_,csta)+2*sum(p3%Re(:,:,n))
+enddo
+
 _loop_km_begin
-c4%Re(:,nh) = (-vel_ut%Im(:,nh)*d_alpha*k)*(-vel_uz%Im(:,nh)*m*i_Mp)*mes_D%r(:,-1)
-c4%Im(:,nh) = (vel_ut%Re(:,nh)*d_alpha*k)*(vel_uz%Re(:,nh)*m*i_Mp)*mes_D%r(:,-1)
+c4%Re(:,nh) = (-vel_ut%Im(:,nh)*d_alpha*k)*mes_D%r(:,-1)
+c4%Im(:,nh) = (vel_ut%Re(:,nh)*d_alpha*k)*mes_D%r(:,-1)
+
+c1%Re(:,nh) = (-vel_uz%Im(:,nh)*m*i_Mp)
+c1%Im(:,nh) = (vel_uz%Re(:,nh)*m*i_Mp)
 _loop_km_end
 
+call tra_coll2phys1d(c1,p1)
 call tra_coll2phys1d(c4,p4) !Termino 7_3
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-
- kDT61(n_,csta)=kDT61(n_,csta)+sum(p1%Re(:,:,n)**2) 
- kDT63(n_,csta)=kDT63(n_,csta)+2*sum(p3%Re(:,:,n))
-
-   
- kDT73(n_,csta)=kDT73(n_,csta)+2*sum(p4%Re(:,:,n))
+ kDT73(n_,csta)=kDT73(n_,csta)+2*sum(p4%Re(:,:,n)*p1%Re(:,:,n))
 enddo
 
 !--------Reynolds normal stresses budget-------!!
