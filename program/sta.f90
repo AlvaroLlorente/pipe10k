@@ -29,8 +29,8 @@
    save
 
 
-   double precision, private :: uclm, utaum,ucl, utau, Ub
-   double precision, private :: aa, bb, cc
+   double precision, private :: ucl, utau, Ub
+ 
    
 
 ! ------------------------- stats  -------------------------------
@@ -50,11 +50,11 @@
    double precision :: dur2dz(i_N,n_sta), dut2dz(i_N,n_sta), duz2dz(i_N,n_sta), duzurdz(i_N,n_sta), duzutdz(i_N,n_sta)
    double precision :: uuCT1(i_N,n_sta), uuPST1(i_N,n_sta), uuTDT1(i_N,n_sta), uuDT3(i_N,n_sta)
    double precision :: ttCT1(i_N,n_sta), ttPST1(i_N,n_sta), ttTDT1(i_N,n_sta), ttDT31(i_N,n_sta), ttDT32(i_N,n_sta), ttDT33(i_N,n_sta)
-   double precision :: rrCT1(i_N,n_sta), rrTDT1(i_N,n_sta), rrDT31(i_N,n_sta), rrDT32(i_N,n_sta), rrDT33(i_N,n_sta), rrPST1(i_N,n_sta), rrPDT1(i_N,n_sta)
+   double precision :: rrCT1(i_N,n_sta), rrTDT1(i_N,n_sta), rrDT31(i_N,n_sta), rrDT32(i_N,n_sta), rrDT33(i_N,n_sta), rrPST1(i_N,n_sta), rrPDT1(i_N,n_sta),rrDT332(i_N,n_sta)
    double precision :: kCT1(i_N,n_sta),kPDT1(i_N,n_sta),kVDT1(i_N,n_sta),kTDT1(i_N,n_sta) ,kTDT2(i_N,n_sta),kDT4(i_N,n_sta),kDT5(i_N,n_sta)
    double precision :: kDT61(i_N,n_sta), kDT63(i_N,n_sta),kDT73(i_N,n_sta)
    double precision :: factor
-   double precision :: time_sta(n_sta), utauv(n_sta)
+   double precision :: time_sta(n_sta), utauv(n_sta), uclv(n_sta), dt(n_sta)
 
    integer :: csta
    
@@ -84,14 +84,15 @@
    ! Compute friction velocity
 
    if (mpi_rnk ==0 ) then
-      time_sta(csta) = tim_t
+      time_sta(csta) = tim_t + tim_dt
       ucl = 1d0 + dot_product(vel_uz%Re(1:1+i_KL,0),mes_D%dr0(:,0))
       utau = dot_product(vel_uz%Re(i_N-i_KL:i_N,0),mes_D%dr1(:,1))
       utau = dsqrt(dabs((Utau-2d0)/d_Re))
 
       ! add statistics
-      uclm = uclm + ucl
-      utaum = utaum + utau 
+
+      dt(csta)=tim_dt
+      uclv(csta)=ucl
       utauv(csta) = utau 
    endif
 
@@ -879,6 +880,7 @@ do n = 1, mes_D%pN
 rrDT31(n_,csta)=rrDT31(n_,csta)+sum(p1%Re(:,:,n)**2)
 rrDT32(n_,csta)=rrDT32(n_,csta)+sum(p3%Re(:,:,n)**2)
 rrDT33(n_,csta)=rrDT33(n_,csta)+sum(p4%Re(:,:,n)*vel_t%Re(:,:,n))
+rrDT332(n_,csta)=rrDT332(n_,csta)+sum(p4%Re(:,:,n))
 enddo
 
 end subroutine compute_turb_budget
@@ -897,8 +899,11 @@ subroutine initialiseSTD()
 
 implicit none
    csta = 1
-   utaum   = 0d0
-   uclm    = 0d0
+   time_sta=0d0
+   dt=0d0
+   uclv=0d0
+   utauv=0d0
+
    mean_ur = 0d0
    stdv_ur = 0d0
    mean_ut = 0d0
@@ -910,7 +915,7 @@ implicit none
    stdv_tz = 0d0
    stdv_zzr = 0d0
    stdv_rtt = 0d0
-   stdv_rrr=0d0
+   stdv_rrr = 0d0
 
    mean_p = 0d0
    stdv_p = 0d0
@@ -966,6 +971,7 @@ implicit none
    rrDT31=0d0
    rrDT32=0d0
    rrDT33=0d0
+   rrDT332=0d0
 
 
    kCT1=0d0
@@ -1160,9 +1166,12 @@ tam = i_N*n_sta
    call mpi_reduce(rrDT32, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    rrDT32 = dd   
-   call mpi_reduce(rrDT33, dd, tam, mpi_double_precision,  &
+   call mpi_reduce(rrDT33, dd, tam, mpi_double_precision,  &   
       mpi_sum, 0, mpi_comm_world, mpi_er)
    rrDT33 = dd   
+   call mpi_reduce(rrDT332, dd, tam, mpi_double_precision,  &   
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   rrDT332 = dd   
    call mpi_reduce(rrPST1, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    rrPST1 = dd 
@@ -1223,15 +1232,14 @@ tam = i_N*n_sta
        call h5ltmake_dataset_int_f(header_id,"K" ,1,hdims,(/i_K/),h5err)
        call h5ltmake_dataset_int_f(header_id,"Mp",1,hdims,(/i_Mp/),h5err)
 
-       call h5ltmake_dataset_double_f(sta_id,"utau",1,hdims,utaum,h5err)
-       call h5ltmake_dataset_double_f(sta_id,"ucl",1,hdims,uclm,h5err)
 
-       call h5ltmake_dataset_double_f(header_id,"dt"   ,1,hdims,(/tim_dt/),h5err)
        hdims = (/i_N/)
        call h5ltmake_dataset_double_f(header_id,"r"   ,1,hdims,mes_D%r(1:i_N,1),h5err)
        hdims = (/n_sta/)
        call h5ltmake_dataset_double_f(header_id,"timev",1,hdims,time_sta,h5err)
        call h5ltmake_dataset_double_f(sta_id,"utauv",1,hdims,utauv,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"uclv",1,hdims,uclv,h5err)
+       call h5ltmake_dataset_double_f(header_id,"dt",1,hdims,dt,h5err)
       
        hdims2 = (/i_N,n_sta/)
        call h5ltmake_dataset_double_f(sta_id,"mean_ur",2,hdims2,mean_ur,h5err)
@@ -1301,6 +1309,7 @@ tam = i_N*n_sta
       call h5ltmake_dataset_double_f(derivative_id,"rrDT31",2,hdims2,rrDT31,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"rrDT32",2,hdims2,rrDT32,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"rrDT33",2,hdims2,rrDT33,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"rrDT332",2,hdims2,rrDT332,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"rrPST1",2,hdims2,rrPST1,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"rrPDT1",2,hdims2,rrPDT1,h5err)
 

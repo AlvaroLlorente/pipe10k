@@ -534,6 +534,9 @@
       hdims3=(/i_pZ,i_Th,i_pN/) !Dimensiones campo completo
       strow=1  !Creo que no sirve para nada, de momento
 
+      utau = dot_product(vel_uz%Re(i_N-i_KL:i_N,0),mes_D%dr1(:,1))
+      utau = dsqrt(dabs((Utau-2d0)/d_Re))
+
       do n = 1, mes_D%pN
          n_ = mes_D%pNi + n - 1	
             p1%Re(:,:,n)=vel_z%Re(:,:,n)+vel_U(n_)
@@ -564,6 +567,7 @@
         call h5ltmake_dataset_int_f(fid,"Mp",1,hdims,(/i_Mp/),h5err)
         
         call h5ltmake_dataset_double_f(fid,"dt"   ,1,hdims,(/tim_dt/),h5err)
+        call h5ltmake_dataset_double_f(sta_id,"utau",1,hdims,utau,h5err)
 
         hdims = (/i_N/)
         call h5ltmake_dataset_double_f(fid,"r"   ,1,hdims,mes_D%r(1:i_N,1),h5err)
