@@ -852,8 +852,13 @@ enddo
 
 _loop_km_begin
 
-c1%Re(:,nh) = (-vel_ut%Im(:,nh)*m*i_Mp)*mes_D%r(:,-1)
-c1%Im(:,nh) =  (vel_ut%Re(:,nh)*m*i_Mp)*mes_D%r(:,-1)
+_loop_km_begin   
+c2%Re(:,nh) = mes_D%r(:,-1)*(-vel_ut%Im(:,nh)*m*i_Mp+vel_ur%Re(:,nh))
+c2%Im(:,nh) = mes_D%r(:,-1)*( vel_ut%Re(:,nh)*m*i_Mp+vel_ur%Im(:,nh))
+
+
+!c1%Re(:,nh) = (-vel_ut%Im(:,nh)*m*i_Mp)*mes_D%r(:,-1)
+!c1%Im(:,nh) =  (vel_ut%Re(:,nh)*m*i_Mp)*mes_D%r(:,-1)
 
 c3%Re(:,nh) = vel_ur%Re(:,nh)*mes_D%r(:,-1)
 c3%Im(:,nh) = vel_ur%Im(:,nh)*mes_D%r(:,-1)
@@ -869,9 +874,12 @@ call tra_coll2phys1d(c4,p4)
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-ttDT31(n_,csta)=ttDT31(n_,csta)+sum(p1%Re(:,:,n)**2)
-ttDT32(n_,csta)=ttDT32(n_,csta)+sum(p3%Re(:,:,n)**2)   
-ttDT33(n_,csta)=ttDT33(n_,csta)+sum(p4%Re(:,:,n)*vel_r%Re(:,:,n))
+
+ttDT31(n_,csta)=ttDT31(n_,csta)+sum(p1%Re(:,:,n)**2)   
+
+!ttDT31(n_,csta)=ttDT31(n_,csta)+sum(p1%Re(:,:,n)**2)
+!ttDT32(n_,csta)=ttDT32(n_,csta)+sum(p3%Re(:,:,n)**2)   
+!ttDT33(n_,csta)=ttDT33(n_,csta)+sum(p4%Re(:,:,n)*vel_r%Re(:,:,n))
 enddo
 
 !  Dissipation term urur
