@@ -790,7 +790,7 @@ enddo
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-rrPDT1(n_,csta)=rrPDT1(n_,csta)+sum((vel_r%Re(:,:,n)*p2%Re(:,:,n))) ! P * Vr
+rrPDT1(n_,csta)=rrPDT1(n_,csta)+sum((vel_ r%Re(:,:,n)*p2%Re(:,:,n))) ! P * Vr
 
 enddo
 
