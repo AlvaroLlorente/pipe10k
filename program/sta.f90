@@ -52,7 +52,7 @@
    double precision :: ttCT1(i_N,n_sta), ttPST1(i_N,n_sta), ttTDT1(i_N,n_sta), ttDT31(i_N,n_sta), ttDT32(i_N,n_sta), ttDT33(i_N,n_sta)
    double precision :: rrCT1(i_N,n_sta), rrTDT1(i_N,n_sta), rrDT31(i_N,n_sta), rrDT32(i_N,n_sta), rrDT33(i_N,n_sta), rrPST1(i_N,n_sta), rrPDT1(i_N,n_sta),rrDT332(i_N,n_sta)
    double precision :: kCT1(i_N,n_sta),kPDT1(i_N,n_sta),kVDT1(i_N,n_sta),kTDT1(i_N,n_sta) ,kTDT2(i_N,n_sta),kDT4(i_N,n_sta),kDT5(i_N,n_sta)
-   double precision :: kDT61(i_N,n_sta), kDT63(i_N,n_sta),kDT73(i_N,n_sta)
+   double precision :: kDT61(i_N,n_sta), kDT62(i_N,n_sta), kDT63(i_N,n_sta),kDT73(i_N,n_sta)
    double precision :: factor
    double precision :: time_sta(n_sta), utauv(n_sta), uclv(n_sta), dt(n_sta)
 
@@ -656,12 +656,16 @@ kDT5(n_,csta)=kDT5(n_,csta)+2*sum(p4%Re(:,:,n))
 enddo
 !------
 
+_loop_km_begin
+c3%Re(:,nh) = vel_ut%Re(:,nh)*mes_D%r(:,-1)
+c3%Im(:,nh) = vel_ut%Im(:,nh)*mes_D%r(:,-1)
+_loop_km_end
 
-call var_coll_meshmult(1,mes_D%dr(1),vel_ut,c1)
+call var_coll_meshmult(1,mes_D%dr(1),c3,c1)
 
 _loop_km_begin
-c3%Re(:,nh) = (-vel_ur%Im(:,nh)*m*i_Mp)*mes_D%r(:,-1)
-c3%Im(:,nh) = (vel_ur%Re(:,nh)*m*i_Mp)*mes_D%r(:,-1)
+c3%Re(:,nh) = (-vel_ur%Im(:,nh)*m*i_Mp)
+c3%Im(:,nh) = (vel_ur%Re(:,nh)*m*i_Mp)
 _loop_km_end
 call tra_coll2phys1d(c1,p1) !provisional para multiplicar por p3
 call tra_coll2phys1d(c3,p3) !Termino 6_3
@@ -675,15 +679,29 @@ _loop_km_end
 
 call tra_coll2phys1d(c1,p1) !Termino 6_1
 
+_loop_km_begin
+c1%Re(:,nh) = vel_ut%Re(:,nh)*mes_D%r(:,-1)
+c1%Im(:,nh) = vel_ut%Im(:,nh)*mes_D%r(:,-1)
+_loop_km_end
 
-!kDT72 = uuDT3, no hace falta sacarlo otra vez
+call var_coll_meshmult(1,mes_D%dr(1),c1,c2)
+
+_loop_km_begin
+c4%Re(:,nh) = c2%Re(:,nh)*mes_D%r(:,1)
+c4%Im(:,nh) = c2%Im(:,nh)*mes_D%r(:,1)
+_loop_km_end
+
+call tra_coll2phys1d(c4,p4) !Termino 6_2
+
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
  kDT61(n_,csta)=kDT61(n_,csta)+sum(p1%Re(:,:,n)**2) 
+ kDT62(n_,csta)=kDT62(n_,csta)+sum(p4%Re(:,:,n)**2) 
  kDT63(n_,csta)=kDT63(n_,csta)+2*sum(p3%Re(:,:,n))
 enddo
 
+!kDT72 = uuDT3, no hace falta sacarlo otra vez
 _loop_km_begin
 c4%Re(:,nh) = (-vel_ut%Im(:,nh)*d_alpha*k)*mes_D%r(:,-1)
 c4%Im(:,nh) = (vel_ut%Re(:,nh)*d_alpha*k)*mes_D%r(:,-1)
@@ -982,6 +1000,7 @@ implicit none
    kDT4=0d0
    kDT5=0d0
    kDT61=0d0
+   kDT62=0d0
    kDT63=0d0
    kDT73=0d0
   
@@ -1203,6 +1222,9 @@ tam = i_N*n_sta
    call mpi_reduce(kDT61, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    kDT61 = dd 
+   call mpi_reduce(kDT62, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   kDT62 = dd 
    call mpi_reduce(kDT63, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    kDT63 = dd 
@@ -1321,6 +1343,7 @@ tam = i_N*n_sta
       call h5ltmake_dataset_double_f(derivative_id,"kDT4",2,hdims2,kDT4,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"kDT5",2,hdims2,kDT5,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"kDT61",2,hdims2,kDT61,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"kDT62",2,hdims2,kDT62,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"kDT63",2,hdims2,kDT63,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"kDT73",2,hdims2,kDT73,h5err)
 
