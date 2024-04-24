@@ -790,7 +790,7 @@ enddo
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-rrPDT1(n_,csta)=rrPDT1(n_,csta)+sum((vel_ r%Re(:,:,n)*p2%Re(:,:,n))) ! P * Vr
+rrPDT1(n_,csta)=rrPDT1(n_,csta)+sum((p2%Re(:,:,n)*vel_r%Re(:,:,n))) ! P * Vr
 
 enddo
 
@@ -853,8 +853,8 @@ enddo
 
 
 _loop_km_begin   
-c2%Re(:,nh) = mes_D%r(:,-1)*(-vel_ut%Im(:,nh)*m*i_Mp+vel_ur%Re(:,nh))
-c2%Im(:,nh) = mes_D%r(:,-1)*( vel_ut%Re(:,nh)*m*i_Mp+vel_ur%Im(:,nh))
+c1%Re(:,nh) = mes_D%r(:,-1)*(-vel_ut%Im(:,nh)*m*i_Mp+vel_ur%Re(:,nh))
+c1%Im(:,nh) = mes_D%r(:,-1)*( vel_ut%Re(:,nh)*m*i_Mp+vel_ur%Im(:,nh))
 
 
 !c1%Re(:,nh) = (-vel_ut%Im(:,nh)*m*i_Mp)*mes_D%r(:,-1)
