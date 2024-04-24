@@ -1101,6 +1101,9 @@ tam = i_N*n_sta
    call mpi_reduce(dutdrsq, dd, tam, mpi_double_precision,  & 
       mpi_sum, 0, mpi_comm_world, mpi_er)
    dutdrsq = dd
+   call mpi_reduce(durdrsq, dd, tam, mpi_double_precision,  & 
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   durdrsq = dd
    call mpi_reduce(durdtsq, dd, tam, mpi_double_precision,  &          
       mpi_sum, 0, mpi_comm_world, mpi_er)
    durdtsq = dd
