@@ -101,13 +101,7 @@
       call vel_sta()
 
       call pressure(c1,c2,c3,p1,p2)
-      !call var_coll_dissp(c1,c2,c3,c4)
-       
 
-
-
-
-      
 
    do n = 1, mes_D%pN
       n_ = mes_D%pNi + n - 1
@@ -1346,7 +1340,7 @@ tam = i_N*n_sta
 
 
    ! Once saved, initialise  verything to 0 again. 
-   !call initialiseSTD()
+   call initialiseSTD()
 
 end subroutine saveStats
 
