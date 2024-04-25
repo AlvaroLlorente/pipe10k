@@ -53,7 +53,7 @@
    double precision :: rrCT1(i_N,n_sta), rrTDT1(i_N,n_sta), rrDT31(i_N,n_sta), rrDT32(i_N,n_sta), rrDT33(i_N,n_sta), rrPST1(i_N,n_sta), rrPDT1(i_N,n_sta),rrDT332(i_N,n_sta)
    double precision :: kCT1(i_N,n_sta),kPDT1(i_N,n_sta),kVDT1(i_N,n_sta),kTDT1(i_N,n_sta) ,kTDT2(i_N,n_sta),kDT4(i_N,n_sta),kDT5(i_N,n_sta)
    double precision :: kDT61(i_N,n_sta), kDT62(i_N,n_sta), kDT63(i_N,n_sta),kDT73(i_N,n_sta)
-   double precision :: factor
+   double precision :: time
    double precision :: time_sta(n_sta), utauv(n_sta), uclv(n_sta), dt(n_sta)
 
    integer :: csta
@@ -84,7 +84,8 @@
    ! Compute friction velocity
 
    if (mpi_rnk ==0 ) then
-      time_sta(csta) = tim_t + tim_dt
+      time= tim_t + tim_dt
+      time_sta(csta) = time 
       ucl = 1d0 + dot_product(vel_uz%Re(1:1+i_KL,0),mes_D%dr0(:,0))
       utau = dot_product(vel_uz%Re(i_N-i_KL:i_N,0),mes_D%dr1(:,1))
       utau = dsqrt(dabs((Utau-2d0)/d_Re))
@@ -834,6 +835,7 @@ enddo
 _loop_km_begin
 c3%Re(:,nh) = (-vel_uz%Im(:,nh)*m*i_Mp)*mes_D%r(:,-1)
 c3%Im(:,nh) =  (vel_uz%Re(:,nh)*m*i_Mp)*mes_D%r(:,-1)
+
 _loop_km_end
 
 call tra_coll2phys1d(c3,p3) !1/r(duzdt)
@@ -933,6 +935,7 @@ subroutine initialiseSTD()
 implicit none
    csta = 1
    time_sta=0d0
+   time=0d0
    dt=0d0
    uclv=0d0
    utauv=0d0
