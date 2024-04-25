@@ -1343,8 +1343,10 @@ tam = i_N*n_sta
        call h5fclose_f(fid,h5err)
 
    endif
-   ! Once saved, initialise e verything to 0 again. 
-   call initialiseSTD()
+
+
+   ! Once saved, initialise  verything to 0 again. 
+   !call initialiseSTD()
 
 end subroutine saveStats
 
