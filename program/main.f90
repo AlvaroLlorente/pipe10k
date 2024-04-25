@@ -16,7 +16,6 @@
    implicit none
    real :: d_start, d_stop
    double precision :: steptimer = 0d0, retau
-   integer :: csta
 
    call h5open_f(h5err)
    call initialise()
@@ -46,7 +45,6 @@
             call compute_sta()
          endif
          call io_write2files()
-         csta = csta + 1
       endif
       
       call vel_predictor()
