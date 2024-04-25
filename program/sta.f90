@@ -909,13 +909,13 @@ end subroutine compute_turb_budget
 subroutine initialiseSTD()
 
 implicit none
-   csta = 0
+   csta = 1
    time_sta=0d0
    time=0d0
    dt=0d0
    uclv=0d0
    utauv=0d0
-
+   
    mean_ur = 0d0
    stdv_ur = 0d0
    mean_ut = 0d0
@@ -928,7 +928,7 @@ implicit none
    stdv_zzr = 0d0
    stdv_rtt = 0d0
    stdv_rrr = 0d0
-
+   
    mean_p = 0d0
    stdv_p = 0d0
 
