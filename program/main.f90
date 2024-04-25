@@ -41,7 +41,7 @@
 
       ! Estadisticas on the fly aquí!!!!
       if (tim_step>1) then
-         if (mod(tim_step,s_step)==1) then
+         if (mod(tim_step,s_step)==0) then
             call compute_sta()
          endif
          call io_write2files()
