@@ -34,14 +34,14 @@
    double precision :: vel_Pr0
    double precision :: vel_U(i_N)
    double precision :: vel_Up(i_N)
-
+d
 
    
    
 
 
    ! misc
-   double precision :: d(i_N), dd(i_N,n_sta)
+   double precision :: d(i_N), dd(i_N,0:n_sta)
    ! double complex :: Tbis(0:i_3K-1, 0:_Ms-1, i_pN)
    ! double complex :: Ts(0:i_pZ-1, 0:i_M1, i_pN)
    double complex, allocatable, dimension(:,:,:) :: Tbis
