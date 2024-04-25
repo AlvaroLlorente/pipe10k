@@ -44,9 +44,9 @@
    double precision :: mean_p(i_N,n_sta), stdv_p(i_N,n_sta)
 
 
-   double precision :: durdr(i_N,n_sta), durdt(i_N,n_sta), durdz(i_N,n_sta),durdrsq(i_N,n_sta),durdtsq(i_N,n_sta), durdzsq(i_N,n_sta),d2ur2dz2(i_N,n_sta)
-   double precision :: dutdr(i_N,n_sta), dutdt(i_N,n_sta), dutdz(i_N,n_sta),dutdrsq(i_N,n_sta),dutdtsq(i_N,n_sta),dutdzsq(i_N,n_sta),d2ut2dz2(i_N,n_sta)
-   double precision :: duzdr(i_N,n_sta), duzdt(i_N,n_sta), duzdz(i_N,n_sta),duzdrsq(i_N,n_sta),duzdtsq(i_N,n_sta), duzdzsq(i_N,n_sta),d2uz2dz2(i_N,n_sta)
+   double precision :: durdt(i_N,n_sta), durdz(i_N,n_sta),durdrsq(i_N,n_sta),durdtsq(i_N,n_sta), durdzsq(i_N,n_sta),d2ur2dz2(i_N,n_sta)
+   double precision :: dutdt(i_N,n_sta), dutdz(i_N,n_sta),dutdrsq(i_N,n_sta),dutdtsq(i_N,n_sta),dutdzsq(i_N,n_sta),d2ut2dz2(i_N,n_sta)
+   double precision :: duzdt(i_N,n_sta), duzdz(i_N,n_sta),duzdrsq(i_N,n_sta),duzdtsq(i_N,n_sta), duzdzsq(i_N,n_sta),d2uz2dz2(i_N,n_sta)
    double precision :: dur2dz(i_N,n_sta), dut2dz(i_N,n_sta), duz2dz(i_N,n_sta), duzurdz(i_N,n_sta), duzutdz(i_N,n_sta)
    double precision :: uuCT1(i_N,n_sta), uuPST1(i_N,n_sta), uuTDT1(i_N,n_sta), uuDT3(i_N,n_sta)
    double precision :: ttCT1(i_N,n_sta), ttPST1(i_N,n_sta), ttTDT1(i_N,n_sta), ttDT31(i_N,n_sta)
@@ -350,7 +350,6 @@ call tra_coll2phys1d(c4,p4) !durdz
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-   durdr(n_,csta) = durdr(n_,csta) + sum(p1%Re(:,:,n))
    durdrsq(n_,csta) = durdrsq(n_,csta) + sum(p1%Re(:,:,n)**2)
    durdt(n_,csta) = durdt(n_,csta) + sum(p3%Re(:,:,n))
    durdtsq(n_,csta) = durdtsq(n_,csta) + sum(p3%Re(:,:,n)**2)   
@@ -378,7 +377,6 @@ call tra_coll2phys1d(c4,p4) !dutdz
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-   dutdr(n_,csta) = dutdr(n_,csta) + sum(p1%Re(:,:,n))   
    dutdrsq(n_,csta) = dutdrsq(n_,csta) + sum(p1%Re(:,:,n)**2)    
    dutdt(n_,csta) = dutdt(n_,csta) + sum(p3%Re(:,:,n))
    dutdtsq(n_,csta) = dutdtsq(n_,csta) + sum(p3%Re(:,:,n)**2) 
@@ -406,7 +404,6 @@ call tra_coll2phys1d(c4,p4) !duzdz
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-   duzdr(n_,csta) = duzdr(n_,csta) + sum(p1%Re(:,:,n))
    duzdrsq(n_,csta) = duzdrsq(n_,csta) + sum(p1%Re(:,:,n)**2)
    duzdt(n_,csta) = duzdt(n_,csta) + sum(p3%Re(:,:,n))
    duzdtsq(n_,csta) = duzdtsq(n_,csta) + sum(p3%Re(:,:,n)**2) 
@@ -935,13 +932,10 @@ implicit none
    mean_p = 0d0
    stdv_p = 0d0
 
-   durdr = 0d0
    durdt = 0d0
    durdz = 0d0
-   dutdr = 0d0
    dutdt = 0d0
-   dutdz = 0d0
-   duzdr = 0d0   
+   dutdz = 0d0   
    duzdt = 0d0
    duzdz = 0d0
 
@@ -1054,27 +1048,19 @@ tam = i_N*n_sta
       mpi_sum, 0, mpi_comm_world, mpi_er)
    stdv_rrr = dd 
 
-   call mpi_reduce(durdr, dd, tam, mpi_double_precision,  &
-      mpi_sum, 0, mpi_comm_world, mpi_er)
-   durdr = dd
+
    call mpi_reduce(durdt, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    durdt = dd
    call mpi_reduce(durdz, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    durdz = dd
-   call mpi_reduce(dutdr, dd, tam, mpi_double_precision,  &
-      mpi_sum, 0, mpi_comm_world, mpi_er)
-   dutdr = dd
    call mpi_reduce(dutdt, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    dutdt = dd
    call mpi_reduce(dutdz, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    dutdz = dd
-   call mpi_reduce(duzdr, dd, tam, mpi_double_precision,  &
-      mpi_sum, 0, mpi_comm_world, mpi_er)
-   duzdr = dd
    call mpi_reduce(duzdt, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    duzdt = dd
@@ -1266,13 +1252,10 @@ tam = i_N*n_sta
 
        
       
-      call h5ltmake_dataset_double_f(derivative_id,"durdr",2,hdims2,durdr,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"durdt",2,hdims2,durdt,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"durdz",2,hdims2,durdz,h5err)
-      call h5ltmake_dataset_double_f(derivative_id,"dutdr",2,hdims2,dutdr,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"dutdt",2,hdims2,dutdt,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"dutdz",2,hdims2,dutdz,h5err)
-      call h5ltmake_dataset_double_f(derivative_id,"duzdr",2,hdims2,duzdr,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"duzdt",2,hdims2,duzdt,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"duzdz",2,hdims2,duzdz,h5err)
 
