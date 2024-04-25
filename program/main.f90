@@ -45,6 +45,7 @@
             call compute_sta()
          endif
          call io_write2files()
+         csta = csta + 1
       endif
       
       call vel_predictor()
