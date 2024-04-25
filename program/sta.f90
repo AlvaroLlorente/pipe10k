@@ -35,26 +35,26 @@
 
 ! ------------------------- stats  -------------------------------
 
-   double precision :: mean_ur(i_N,0:n_sta), stdv_ur(i_N,0:n_sta)
-   double precision :: mean_ut(i_N,0:n_sta), stdv_ut(i_N,0:n_sta)
-   double precision :: mean_uz(i_N,0:n_sta), stdv_uz(i_N,0:n_sta)
-   double precision :: stdv_rz(i_N,0:n_sta), stdv_rt(i_N,0:n_sta), stdv_tz(i_N,0:n_sta)
-   double precision :: stdv_zzr(i_N,0:n_sta),stdv_rtt(i_N,0:n_sta),stdv_rrr(i_N,0:n_sta)
+   double precision :: mean_ur(i_N,n_sta), stdv_ur(i_N,n_sta)
+   double precision :: mean_ut(i_N,n_sta), stdv_ut(i_N,n_sta)
+   double precision :: mean_uz(i_N,n_sta), stdv_uz(i_N,n_sta)
+   double precision :: stdv_rz(i_N,n_sta), stdv_rt(i_N,n_sta), stdv_tz(i_N,n_sta)
+   double precision :: stdv_zzr(i_N,n_sta),stdv_rtt(i_N,n_sta),stdv_rrr(i_N,n_sta)
   
-   double precision :: mean_p(i_N,0:n_sta), stdv_p(i_N,0:n_sta)
+   double precision :: mean_p(i_N,n_sta), stdv_p(i_N,n_sta)
 
 
-   double precision :: durdt(i_N,0:n_sta), durdz(i_N,0:n_sta),durdrsq(i_N,0:n_sta),durdtsq(i_N,0:n_sta), durdzsq(i_N,0:n_sta),d2ur2dz2(i_N,0:n_sta)
-   double precision :: dutdt(i_N,0:n_sta), dutdz(i_N,0:n_sta),dutdrsq(i_N,0:n_sta),dutdtsq(i_N,0:n_sta),dutdzsq(i_N,0:n_sta),d2ut2dz2(i_N,0:n_sta)
-   double precision :: duzdt(i_N,0:n_sta), duzdz(i_N,0:n_sta),duzdrsq(i_N,0:n_sta),duzdtsq(i_N,0:n_sta), duzdzsq(i_N,0:n_sta),d2uz2dz2(i_N,0:n_sta)
-   double precision :: dur2dz(i_N,0:n_sta), dut2dz(i_N,0:n_sta), duz2dz(i_N,0:n_sta), duzurdz(i_N,0:n_sta), duzutdz(i_N,0:n_sta)
-   double precision :: uuCT1(i_N,0:n_sta), uuPST1(i_N,0:n_sta), uuTDT1(i_N,0:n_sta), uuDT3(i_N,0:n_sta)
-   double precision :: ttCT1(i_N,0:n_sta), ttPST1(i_N,0:n_sta), ttTDT1(i_N,0:n_sta), ttDT31(i_N,0:n_sta)
-   double precision :: rrCT1(i_N,0:n_sta), rrTDT1(i_N,0:n_sta), rrDT31(i_N,0:n_sta), rrPST1(i_N,0:n_sta), rrPDT1(i_N,0:n_sta)
-   double precision :: kCT1(i_N,0:n_sta),kPDT1(i_N,0:n_sta),kVDT1(i_N,0:n_sta),kTDT1(i_N,0:n_sta) ,kTDT2(i_N,0:n_sta),kDT4(i_N,0:n_sta),kDT5(i_N,0:n_sta)
-   double precision :: kDT61(i_N,0:n_sta), kDT62(i_N,0:n_sta), kDT63(i_N,0:n_sta),kDT73(i_N,0:n_sta)
+   double precision :: durdt(i_N,n_sta), durdz(i_N,n_sta),durdrsq(i_N,n_sta),durdtsq(i_N,n_sta), durdzsq(i_N,n_sta),d2ur2dz2(i_N,n_sta)
+   double precision :: dutdt(i_N,n_sta), dutdz(i_N,n_sta),dutdrsq(i_N,n_sta),dutdtsq(i_N,n_sta),dutdzsq(i_N,n_sta),d2ut2dz2(i_N,n_sta)
+   double precision :: duzdt(i_N,n_sta), duzdz(i_N,n_sta),duzdrsq(i_N,n_sta),duzdtsq(i_N,n_sta), duzdzsq(i_N,n_sta),d2uz2dz2(i_N,n_sta)
+   double precision :: dur2dz(i_N,n_sta), dut2dz(i_N,n_sta), duz2dz(i_N,n_sta), duzurdz(i_N,n_sta), duzutdz(i_N,n_sta)
+   double precision :: uuCT1(i_N,n_sta), uuPST1(i_N,n_sta), uuTDT1(i_N,n_sta), uuDT3(i_N,n_sta)
+   double precision :: ttCT1(i_N,n_sta), ttPST1(i_N,n_sta), ttTDT1(i_N,n_sta), ttDT31(i_N,n_sta)
+   double precision :: rrCT1(i_N,n_sta), rrTDT1(i_N,n_sta), rrDT31(i_N,n_sta), rrPST1(i_N,n_sta), rrPDT1(i_N,n_sta)
+   double precision :: kCT1(i_N,n_sta),kPDT1(i_N,n_sta),kVDT1(i_N,n_sta),kTDT1(i_N,n_sta) ,kTDT2(i_N,n_sta),kDT4(i_N,n_sta),kDT5(i_N,n_sta)
+   double precision :: kDT61(i_N,n_sta), kDT62(i_N,n_sta), kDT63(i_N,n_sta),kDT73(i_N,n_sta)
    double precision :: time
-   double precision :: time_sta(0:n_sta), utauv(n_sta), uclv(n_sta), dt(n_sta)
+   double precision :: time_sta(n_sta), utauv(n_sta), uclv(n_sta), dt(n_sta)
 
    integer :: csta
    
