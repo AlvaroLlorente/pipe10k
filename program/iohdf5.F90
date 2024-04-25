@@ -37,12 +37,7 @@
 
 ! STATS
 
-   double precision :: mean_ur(i_N), stdv_ur(i_N)
-   double precision :: mean_ut(i_N), stdv_ut(i_N)
-   double precision :: mean_uz(i_N), stdv_uz(i_N), stdv_rz(i_N)
-   double precision :: utau
-   !double precision :: !d1 !, d(i_N)
-   integer :: csta
+
 
 ! ------------------------- HDF5 -------------------------------
 
@@ -147,8 +142,8 @@
      
       if(modulo(tim_step,i_save_rate1)==0) then
          call io_save_state()
-         !call io_save_phys_plane()
-         call io_save_phys_field()
+         call io_save_phys_plane()
+         !call io_save_phys_field()
          fnameima=trim(filstt)//'.'//extc//'.'//'sth'
          call saveStats(fnameima)
          ! call io_save_spectrum()
@@ -414,6 +409,7 @@
       write(*,*) 'Writing the file ...',trim(fnamephys)
       end if
 
+
       ! Save header, only master do this.
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
@@ -535,8 +531,6 @@
       hdims3=(/i_pZ,i_Th,i_pN/) !Dimensiones campo completo
       strow=1  !Creo que no sirve para nada, de momento
 
-      utau = dot_product(vel_uz%Re(i_N-i_KL:i_N,0),mes_D%dr1(:,1))
-      utau = dsqrt(dabs((Utau-2d0)/d_Re))
 
       do n = 1, mes_D%pN
          n_ = mes_D%pNi + n - 1	
@@ -568,7 +562,6 @@
         call h5ltmake_dataset_int_f(fid,"Mp",1,hdims,(/i_Mp/),h5err)
         
         call h5ltmake_dataset_double_f(fid,"dt"   ,1,hdims,(/tim_dt/),h5err)
-        call h5ltmake_dataset_double_f(sta_id,"utau",1,hdims,utau,h5err)
 
         hdims = (/i_N/)
         call h5ltmake_dataset_double_f(fid,"r"   ,1,hdims,mes_D%r(1:i_N,1),h5err)
