@@ -786,7 +786,6 @@ rrPDT1(n_,csta)=rrPDT1(n_,csta)+sum((p2%Re(:,:,n)*vel_r%Re(:,:,n))) ! P * Vr
 
 enddo
 
-rrPDT1(:,csta)*mes_D%r(:,-1)
 
 
 !  Turbulent diffusion
