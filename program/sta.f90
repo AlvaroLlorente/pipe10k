@@ -199,7 +199,7 @@ type (phys), intent(inout)    :: p1,p2
 
          ! r equation 
          !durdr 
-         call var_coll_meshmult(0,mes_D%dr(1),vel_ur,c1) !durdr
+         call var_coll_meshmult(1,mes_D%dr(1),vel_ur,c1) !durdr
          call tra_coll2phys1d(c1,p1)
 
 
@@ -229,7 +229,7 @@ type (phys), intent(inout)    :: p1,p2
 
          ! theta equation
          ! dutdr
-         call var_coll_meshmult(0,mes_D%dr(1),vel_ut,c2)
+         call var_coll_meshmult(1,mes_D%dr(1),vel_ut,c2)
          call tra_coll2phys1d(c2,p1)
          p2%Re=vel_r%Re*p1%Re
       
@@ -329,7 +329,7 @@ subroutine compute_turb_budget()
 
 !!   vel_r
    
-call var_coll_meshmult(0,mes_D%dr(1),vel_ur,c1) !durdr de todo el campo
+call var_coll_meshmult(1,mes_D%dr(1),vel_ur,c1) !durdr de todo el campo
 call tra_coll2phys1d(c1,p1)
 
 _loop_km_begin
@@ -360,7 +360,7 @@ end do
 
 !   vel_t
 
-call var_coll_meshmult(0,mes_D%dr(1),vel_ut,c1) !dutdr
+call var_coll_meshmult(1,mes_D%dr(1),vel_ut,c1) !dutdr
 call tra_coll2phys1d(c1,p1)
  _loop_km_begin
 
@@ -653,7 +653,7 @@ c3%Re(:,nh) = vel_ut%Re(:,nh)*mes_D%r(:,-1)
 c3%Im(:,nh) = vel_ut%Im(:,nh)*mes_D%r(:,-1)
 _loop_km_end
 
-call var_coll_meshmult(0,mes_D%dr(1),c3,c1)
+call var_coll_meshmult(1,mes_D%dr(1),c3,c1)
 
 _loop_km_begin
 c3%Re(:,nh) = (-vel_ur%Im(:,nh)*m*i_Mp)
@@ -676,7 +676,7 @@ c1%Re(:,nh) = vel_ut%Re(:,nh)*mes_D%r(:,-1)
 c1%Im(:,nh) = vel_ut%Im(:,nh)*mes_D%r(:,-1)
 _loop_km_end
 
-call var_coll_meshmult(0,mes_D%dr(1),c1,c2)
+call var_coll_meshmult(1,mes_D%dr(1),c1,c2)
 
 _loop_km_begin
 c4%Re(:,nh) = c2%Re(:,nh)*mes_D%r(:,1)
@@ -750,7 +750,7 @@ enddo
 
 !  Pressure strain term 
 
-call var_coll_meshmult(0,mes_D%dr(1),vel_ur,c1)
+call var_coll_meshmult(1,mes_D%dr(1),vel_ur,c1)
 
 _loop_km_begin
  c4%Re(:,nh) = -vel_uz%Im(:,nh)*d_alpha*k
