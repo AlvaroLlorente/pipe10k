@@ -47,7 +47,7 @@
 !-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
    integer,          parameter :: i_save_rate1  = 1000
    integer,          parameter :: i_save_rate2  = 10
-   integer,          parameter :: i_maxtstep    = 10001
+   integer,          parameter :: i_maxtstep    = 30001
    integer,          parameter :: s_step        = 5 ! interval to take statistics. 
    integer,          parameter :: n_sta         = i_save_rate1/s_step ! número de estadísticas 
    integer,          parameter :: f_step        = 1d8 ! Steps
