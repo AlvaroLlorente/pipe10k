@@ -455,13 +455,13 @@
          call h5dump_parallel(G2,nombre_dataset3,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,p2%Re(:,1,:),h5err)
          
 
-         write(cadena, '(I1)') 2
-         nombre_dataset1="/axial/vel_r_"//cadena
-         nombre_dataset2="/axial/vel_t_"//cadena
-         nombre_dataset3="/axial/vel_z_"//cadena
-         call h5dump_parallel(G2,nombre_dataset1,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(:,(i_Th/2)+1,:),h5err)
-         call h5dump_parallel(G2,nombre_dataset2,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(:,(i_Th/2)+1,:),h5err)
-         call h5dump_parallel(G2,nombre_dataset3,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,p3%Re(:,(i_Th/2)+1,:),h5err)
+         !write(cadena, '(I1)') 2
+         !nombre_dataset1="/axial/vel_r_"//cadena
+         !nombre_dataset2="/axial/vel_t_"//cadena
+         !nombre_dataset3="/axial/vel_z_"//cadena
+         !call h5dump_parallel(G2,nombre_dataset1,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(:,(i_Th/2)+1,:),h5err)
+         !call h5dump_parallel(G2,nombre_dataset2,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(:,(i_Th/2)+1,:),h5err)
+         !call h5dump_parallel(G2,nombre_dataset3,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,p3%Re(:,(i_Th/2)+1,:),h5err)
          
 
       call h5gclose_f(G1,h5err)

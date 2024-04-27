@@ -843,9 +843,6 @@ enddo
 !  Dissipation term utut
 
 
-
-
-
 _loop_km_begin   
 c1%Re(:,nh) = mes_D%r(:,-1)*(-vel_ut%Im(:,nh)*m*i_Mp+vel_ur%Re(:,nh))
 c1%Im(:,nh) = mes_D%r(:,-1)*( vel_ut%Re(:,nh)*m*i_Mp+vel_ur%Im(:,nh))
@@ -873,20 +870,10 @@ _loop_km_begin
 c1%Re(:,nh) = mes_D%r(:,-1)*(-vel_ur%Im(:,nh)*m*i_Mp-vel_ut%Re(:,nh))
 c1%Im(:,nh) = mes_D%r(:,-1)*( vel_ur%Re(:,nh)*m*i_Mp-vel_ut%Im(:,nh))
 
-!c1%Re(:,nh) = -vel_ur%Im(:,nh)*m*i_Mp*mes_D%r(:,-1)     
-!c1%Im(:,nh) =  vel_ur%Re(:,nh)*m*i_Mp*mes_D%r(:,-1)
-
-
-c3%Re(:,nh) = vel_ut%Re(:,nh)*mes_D%r(:,-1)
-c3%Im(:,nh) = vel_ut%Im(:,nh)*mes_D%r(:,-1)
-
-c4%Re(:,nh) = (-vel_ur%Im(:,nh)*m*i_Mp)*mes_D%r(:,-2)
-c4%Im(:,nh) = (vel_ur%Re(:,nh)*m*i_Mp)*mes_D%r(:,-2)
 _loop_km_end
 
 call tra_coll2phys1d(c1,p1)
-call tra_coll2phys1d(c3,p3)
-call tra_coll2phys1d(c4,p4)
+
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
