@@ -50,7 +50,7 @@
    double precision :: dur2dz(i_N,n_sta), dut2dz(i_N,n_sta), duz2dz(i_N,n_sta), duzurdz(i_N,n_sta), duzutdz(i_N,n_sta)
    double precision :: uuCT1(i_N,n_sta), uuPST1(i_N,n_sta), uuTDT1(i_N,n_sta), uuDT3(i_N,n_sta)
    double precision :: ttCT1(i_N,n_sta), ttPST1(i_N,n_sta), ttTDT1(i_N,n_sta), ttDT31(i_N,n_sta)
-   double precision :: rrCT1(i_N,n_sta), rrTDT1(i_N,n_sta), rrDT31(i_N,n_sta), rrPST1(i_N,n_sta), rrPDT1(i_N,n_sta)
+   double precision :: rrCT1(i_N,n_sta), rrTDT1(i_N,n_sta), rrTDT2(i_N,n_sta) rrDT31(i_N,n_sta), rrPST1(i_N,n_sta), rrPDT1(i_N,n_sta)
    double precision :: kCT1(i_N,n_sta),kPDT1(i_N,n_sta),kVDT1(i_N,n_sta),kTDT1(i_N,n_sta) ,kTDT2(i_N,n_sta),kDT4(i_N,n_sta),kDT5(i_N,n_sta)
    double precision :: kDT61(i_N,n_sta), kDT62(i_N,n_sta), kDT63(i_N,n_sta),kDT73(i_N,n_sta)
    double precision :: time
@@ -779,7 +779,6 @@ enddo
 !uuPDT1 = kPDT1   ! P * dVzdz
 
 
-
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
 rrPDT1(n_,csta)=rrPDT1(n_,csta)+sum((p2%Re(:,:,n)*vel_r%Re(:,:,n))) ! P * Vr
@@ -788,20 +787,22 @@ enddo
 
 
 
+
+
 !  Turbulent diffusion
 
-p1%Re=vel_z%Re*vel_r%Re*vel_r%Re
+!p1%Re=vel_z%Re*vel_r%Re*vel_r%Re
 p3%Re=vel_z%Re*vel_t%Re*vel_t%Re
 p4%Re=vel_r%Re**3
 
-call tra_phys2coll1d(p1,c1) 
+!call tra_phys2coll1d(p1,c1) 
 call tra_phys2coll1d(p3,c3) 
 call tra_phys2coll1d(p4,c4) 
 
 _loop_km_begin
 
-c1%Re(:,nh) = -c1%Im(:,nh)*d_alpha*k
-c1%Im(:,nh) =  c1%Re(:,nh)*d_alpha*k
+!c1%Re(:,nh) = -c1%Im(:,nh)*d_alpha*k
+!c1%Im(:,nh) =  c1%Re(:,nh)*d_alpha*k
 
 c3%Re(:,nh) = -c3%Im(:,nh)*d_alpha*k
 c3%Im(:,nh) =  c3%Re(:,nh)*d_alpha*k
@@ -816,12 +817,27 @@ call tra_coll2phys1d(c4,p4)
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-      rrTDT1(n_,csta)=rrTDT1(n_,csta)+sum(p1%Re(:,:,n)) 
+      !rrTDT1(n_,csta)=rrTDT1(n_,csta)+sum(p1%Re(:,:,n)) 
       ttTDT1(n_,csta)=ttTDT1(n_,csta)+sum(p3%Re(:,:,n)) 
       uuTDT1(n_,csta)=uuTDT1(n_,csta)+sum(p4%Re(:,:,n)) 
 enddo
 
+_loop_km_begin
+c1%Re(:,nh) = -vel_uz%Im(:,nh)*d_alpha*k
+c1%Im(:,nh) =  vel_uz%Re(:,nh)*d_alpha*k
 
+c2%Re(:,nh) = -vel_ur%Im(:,nh)*d_alpha*k
+c2%Im(:,nh) =  vel_ur%Re(:,nh)*d_alpha*k
+_loop_km_end
+
+call tra_coll2phys1d(c1,p1) 
+call tra_coll2phys1d(c2,p2) 
+
+do n = 1, mes_D%pN
+   n_ = mes_D%pNi + n - 1
+      rrTDT1(n_,csta)=rrTDT1(n_,csta)+sum(p1%Re(:,:,n)*vel_r%Re(:,:,n)) 
+      rrTDT2(n_,csta)=rrTDT2(n_,csta)+sum(p2%Re(:,:,n)*vel_z%Re(:,:,n)) 
+enddo
 
 !  Dissipation term uzuz
 
@@ -965,6 +981,7 @@ implicit none
    rrPST1=0d0
    rrPDT1=0d0
    rrTDT1=0d0
+   rrTDT2=0d0
    rrDT31=0d0
 
 
@@ -1144,7 +1161,10 @@ tam = i_N*n_sta
    rrCT1 = dd  
    call mpi_reduce(rrTDT1, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
-      rrTDT1 = dd  
+   rrTDT1 = dd  
+   call mpi_reduce(rrTDT2, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   rrTDT2 = dd  
    call mpi_reduce(rrDT31, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    rrDT31 = dd   
@@ -1280,6 +1300,7 @@ tam = i_N*n_sta
 
       call h5ltmake_dataset_double_f(derivative_id,"rrCT1",2,hdims2,rrCT1,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"rrTDT1",2,hdims2,rrTDT1,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"rrTDT2",2,hdims2,rrTDT2,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"rrDT31",2,hdims2,rrDT31,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"rrPST1",2,hdims2,rrPST1,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"rrPDT1",2,hdims2,rrPDT1,h5err)
