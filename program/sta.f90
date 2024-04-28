@@ -50,7 +50,7 @@
    double precision :: dur2dz(i_N,n_sta), dut2dz(i_N,n_sta), duz2dz(i_N,n_sta), duzurdz(i_N,n_sta), duzutdz(i_N,n_sta)
    double precision :: uuCT1(i_N,n_sta), uuPST1(i_N,n_sta), uuTDT1(i_N,n_sta), uuDT3(i_N,n_sta)
    double precision :: ttCT1(i_N,n_sta), ttPST1(i_N,n_sta), ttTDT1(i_N,n_sta), ttDT31(i_N,n_sta)
-   double precision :: rrCT1(i_N,n_sta), rrTDT1(i_N,n_sta), rrTDT2(i_N,n_sta) rrDT31(i_N,n_sta), rrPST1(i_N,n_sta), rrPDT1(i_N,n_sta)
+   double precision :: rrCT1(i_N,n_sta), rrTDT1(i_N,n_sta), rrTDT2(i_N,n_sta), rrDT31(i_N,n_sta), rrPST1(i_N,n_sta), rrPDT1(i_N,n_sta)
    double precision :: kCT1(i_N,n_sta),kPDT1(i_N,n_sta),kVDT1(i_N,n_sta),kTDT1(i_N,n_sta) ,kTDT2(i_N,n_sta),kDT4(i_N,n_sta),kDT5(i_N,n_sta)
    double precision :: kDT61(i_N,n_sta), kDT62(i_N,n_sta), kDT63(i_N,n_sta),kDT73(i_N,n_sta)
    double precision :: time
@@ -835,8 +835,8 @@ call tra_coll2phys1d(c2,p2)
 
 do n = 1, mes_D%pN
    n_ = mes_D%pNi + n - 1
-      rrTDT1(n_,csta)=rrTDT1(n_,csta)+sum(p1%Re(:,:,n)*vel_r%Re(:,:,n)) 
-      rrTDT2(n_,csta)=rrTDT2(n_,csta)+sum(p2%Re(:,:,n)*vel_z%Re(:,:,n)) 
+      rrTDT1(n_,csta)=rrTDT1(n_,csta)+sum(p1%Re(:,:,n)*vel_r%Re(:,:,n)**2) 
+      rrTDT2(n_,csta)=rrTDT2(n_,csta)+sum(p2%Re(:,:,n)*vel_z%Re(:,:,n)*vel_r%Re(:,:,n)) 
 enddo
 
 !  Dissipation term uzuz
