@@ -24,7 +24,7 @@
    character*4 extc
    character(len = 256):: fnameima,filinp, dirinp, filstt, filename, fnamephys
 
-   integer               :: io_save2,extn
+   integer               :: io_save2,extn, utau
    integer,     private  :: io_KE, io_ID, io_dt, io_pt, io_fr, io_hre, io_cf
    
    double precision, private :: wk(i_N, 0:i_pH1) ! PAsar luego por cabecera a la rutina o a través de un modulo.
@@ -396,21 +396,19 @@
 
    subroutine io_save_phys_plane()
       integer :: info
-      integer :: n, n_, strow,utau
+      integer :: n, n_, strow
       integer(hid_t) :: G1, G2, G3
       character(len=20) ::cadena, nombre_dataset1, nombre_dataset2, nombre_dataset3
 
    
 
-      write(extc,'(I4.4)') extn
+     ! write(extc,'(I4.4)') extn
 
       info = MPI_INFO_NULL
-      fnamephys=trim(dirinp)//trim(filinp)//'.'//extc//'.'//'spp'
+      fnamephys=trim(dirinp)//trim(filinp)//'.'//tim_step//'.'//'spp'
 
 
-      if (mpi_rnk==0) then
-      write(*,*) 'Writing the file ...',trim(fnamephys)
-      end if
+
 
 
       ! Save header, only master do this.
