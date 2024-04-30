@@ -404,11 +404,11 @@
       character(len=20) ::cadena, nombre_dataset1, nombre_dataset2, nombre_dataset3
 
      
-     write(extc,'(I4.4)') extn
-     write(index,'(I4.4)') indice
+
+      write(index,'(*(g0))') indice
 
       info = MPI_INFO_NULL
-      fnamephys=trim(dirinp)//trim(filinp)//'.'//extc//'.'//index//'.'//'spp'
+      fnamephys=trim(dirinp)//trim(filinp)//'.'//index//'.'//'spp'
 
 
 
