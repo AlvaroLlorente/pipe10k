@@ -385,7 +385,7 @@
         call h5fclose_f(fid,h5err)
       end if
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
-      !stop
+ 
 
 
    end subroutine io_save_state
@@ -402,7 +402,7 @@
 
    
 
-     write(indice,'(*(g0))') index
+     write(indice,'(I4.4)') index
 
       info = MPI_INFO_NULL
       fnamephys=trim(dirinp)//trim(filinp)//'.'//index//'.'//'spp'
