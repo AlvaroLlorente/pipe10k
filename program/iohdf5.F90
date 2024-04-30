@@ -409,7 +409,7 @@
      write(index,'(I3.3)') indice
 
       info = MPI_INFO_NULL
-      fnamephys=trim(dirinp)//trim(filinp)//'.'//extc//'.'//'spp'
+      fnamephys=trim(dirinp)//trim(filinp)//'.'//extc//'.'//index//'.'//'spp'
 
       if (mpi_rnk==0) then
          write(*,*) 'Writing the file ...',trim(fnamephys)
