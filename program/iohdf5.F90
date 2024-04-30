@@ -22,7 +22,7 @@
 
    character(len=256) text
    character*4 extc
-   character(len = 256):: fnameima,filinp, dirinp, filstt, filename, fnamephys
+   character(len = 256):: fnameima,filinp, dirinp, filstt, filename, fnamephys, index
 
    integer               :: io_save2,extn, utau, indice=0
    integer,     private  :: io_KE, io_ID, io_dt, io_pt, io_fr, io_hre, io_cf
