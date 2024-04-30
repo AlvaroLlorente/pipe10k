@@ -140,12 +140,15 @@
    subroutine io_write2files()
      implicit none
      
+
+      if (mod(tim_step,s_step)==0) then
+          call io_save_phys_plane()
+          !call io_save_phys_field()
+      endif
       if(modulo(tim_step,i_save_rate1)==0) then
          call io_save_state()
-         !call io_save_phys_plane()
-         !call io_save_phys_field()
          fnameima=trim(filstt)//'.'//extc//'.'//'sth'
-         call saveStats(fnameima)
+         !call saveStats(fnameima)
          ! call io_save_spectrum()
          ! call io_save_meanprof()
          extn = extn+1
@@ -393,7 +396,7 @@
 
    subroutine io_save_phys_plane()
       integer :: info
-      integer :: n, n_, strow
+      integer :: n, n_, strow,utau
       integer(hid_t) :: G1, G2, G3
       character(len=20) ::cadena, nombre_dataset1, nombre_dataset2, nombre_dataset3
 
@@ -471,6 +474,9 @@
        
       if(mpi_rnk==0) then
 
+         utau = dot_product(vel_uz%Re(i_N-i_KL:i_N,0),mes_D%dr1(:,1))
+         utau = dsqrt(dabs((Utau-2d0)/d_Re))
+
         call h5fopen_f(fnamephys,H5F_ACC_RDWR_F,fid,h5err)
         hdims = (/1/)
         call h5ltmake_dataset_double_f(fid,"time",1,hdims,(/tim_t/),h5err)
@@ -481,6 +487,7 @@
         call h5ltmake_dataset_int_f(fid,"M" ,1,hdims,(/i_M/),h5err)
         call h5ltmake_dataset_int_f(fid,"K" ,1,hdims,(/i_K/),h5err)
         call h5ltmake_dataset_int_f(fid,"Mp",1,hdims,(/i_Mp/),h5err)
+        call h5ltmake_dataset_int_f(fid,"utau",1,hdims,(/u_tau/),h5err)
         
         call h5ltmake_dataset_double_f(fid,"dt"   ,1,hdims,(/tim_dt/),h5err)
 
