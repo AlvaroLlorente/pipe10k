@@ -154,6 +154,7 @@
          ! call io_save_spectrum()
          ! call io_save_meanprof()
          extn = extn+1
+         indice = 1
       endif
 
       if(modulo(tim_step,i_save_rate2)==0) then
@@ -402,12 +403,12 @@
       integer(hid_t) :: G1, G2, G3
       character(len=20) ::cadena, nombre_dataset1, nombre_dataset2, nombre_dataset3
 
-   
-
-     write(index,'(*(g0))') indice
+     
+     write(extc,'(I4.4)') extn
+     write(index,'(I4.4)') indice
 
       info = MPI_INFO_NULL
-      fnamephys=trim(dirinp)//trim(filinp)//'.'//index//'.'//'spp'
+      fnamephys=trim(dirinp)//trim(filinp)//'.'//extc//'.'//index//'.'//'spp'
 
 
 
