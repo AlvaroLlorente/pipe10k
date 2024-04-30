@@ -24,7 +24,7 @@
    character*4 extc
    character(len = 256):: fnameima,filinp, dirinp, filstt, filename, fnamephys
 
-   integer               :: io_save2,extn, utau
+   integer               :: io_save2,extn, utau, indice=0
    integer,     private  :: io_KE, io_ID, io_dt, io_pt, io_fr, io_hre, io_cf
    
    double precision, private :: wk(i_N, 0:i_pH1) ! PAsar luego por cabecera a la rutina o a través de un modulo.
@@ -402,10 +402,10 @@
 
    
 
-     ! write(extc,'(I4.4)') extn
+     write(indice,'(*(g0))') index
 
       info = MPI_INFO_NULL
-      fnamephys=trim(dirinp)//trim(filinp)//'.'//tim_step//'.'//'spp'
+      fnamephys=trim(dirinp)//trim(filinp)//'.'//index//'.'//'spp'
 
 
 
@@ -496,6 +496,8 @@
       end if
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr) 
+
+      indice=indice+1
    
    end subroutine io_save_phys_plane
 
