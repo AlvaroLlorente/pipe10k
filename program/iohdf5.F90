@@ -412,12 +412,6 @@
       fnamephys=trim(dirinp)//trim(filinp)//'.'//extc//'.'//index
       fnamephys=trim(fnamephys)//'.'//'spp'
 
-      if(mpi_rnk==0) then
-      utau = dot_product(vel_uz%Re(i_N-i_KL:i_N,0),mes_D%dr1(:,1))
-      utau = dsqrt(dabs((Utau-2d0)/d_Re))
-
-      write(*,*) utau
-      endif
 
       ! Save header, only master do this.
 
@@ -492,7 +486,7 @@
         call h5ltmake_dataset_int_f(fid,"M" ,1,hdims,(/i_M/),h5err)
         call h5ltmake_dataset_int_f(fid,"K" ,1,hdims,(/i_K/),h5err)
         call h5ltmake_dataset_int_f(fid,"Mp",1,hdims,(/i_Mp/),h5err)
-        call h5ltmake_dataset_int_f(fid,"utau",1,hdims,(/utau/),h5err)
+    
         
         call h5ltmake_dataset_double_f(fid,"dt"   ,1,hdims,(/tim_dt/),h5err)
 
