@@ -412,11 +412,12 @@
       fnamephys=trim(dirinp)//trim(filinp)//'.'//extc//'.'//index
       fnamephys=trim(fnamephys)//'.'//'spp'
 
-
+      if(mpi_rnk==0) then
       utau = dot_product(vel_uz%Re(i_N-i_KL:i_N,0),mes_D%dr1(:,1))
       utau = dsqrt(dabs((Utau-2d0)/d_Re))
 
       write(*,*) utau
+      endif
 
       ! Save header, only master do this.
 
