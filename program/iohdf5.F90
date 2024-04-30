@@ -22,7 +22,8 @@
 
    character(len=256) text
    character*4 extc
-   character(len = 256):: fnameima,filinp, dirinp, filstt, filename, fnamephys, index
+   character(len = 256):: fnameima,filinp, dirinp, filstt, filename, index
+   character(len=*) :: fnamephys
 
    integer               :: io_save2,extn, utau, indice
    integer,     private  :: io_KE, io_ID, io_dt, io_pt, io_fr, io_hre, io_cf
@@ -405,7 +406,7 @@
 
      
      write(extc,'(I4.4)') extn
-     write(index,'(I4.4)') indice
+     write(index,'(I3.3)') indice
 
       info = MPI_INFO_NULL
       fnamephys=trim(dirinp)//trim(filinp)//'.'//extc//'.'//index//'.'//'spp'
