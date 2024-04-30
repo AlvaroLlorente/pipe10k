@@ -404,7 +404,7 @@
 
    
 
-     write(indice,'(I4.4)') index
+     write(index,'(I4.4)') indice
 
       info = MPI_INFO_NULL
       fnamephys=trim(dirinp)//trim(filinp)//'.'//index//'.'//'spp'
