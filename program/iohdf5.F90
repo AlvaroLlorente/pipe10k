@@ -416,7 +416,8 @@
          write(*,*) 'Writing the file ...',trim(fnamephys)
       end if
 
-
+      utau = dot_product(vel_uz%Re(i_N-i_KL:i_N,0),mes_D%dr1(:,1))
+      utau = dsqrt(dabs((Utau-2d0)/d_Re))
 
       ! Save header, only master do this.
 
@@ -479,8 +480,7 @@
        
       if(mpi_rnk==0) then
 
-         utau = dot_product(vel_uz%Re(i_N-i_KL:i_N,0),mes_D%dr1(:,1))
-         utau = dsqrt(dabs((Utau-2d0)/d_Re))
+
 
         call h5fopen_f(fnamephys,H5F_ACC_RDWR_F,fid,h5err)
         hdims = (/1/)
