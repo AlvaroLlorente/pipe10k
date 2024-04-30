@@ -24,7 +24,7 @@
    character*4 extc
    character(len = 256):: fnameima,filinp, dirinp, filstt, filename, fnamephys, index
 
-   integer               :: io_save2,extn, utau, indice=0
+   integer               :: io_save2,extn, utau, indice
    integer,     private  :: io_KE, io_ID, io_dt, io_pt, io_fr, io_hre, io_cf
    
    double precision, private :: wk(i_N, 0:i_pH1) ! PAsar luego por cabecera a la rutina o a través de un modulo.
@@ -72,6 +72,8 @@
       io_pt    = 0
       io_fr    = 0
       io_cf    = 89
+
+      indice   = 1
 
      if(mpi_rnk.eq.0) then
         open(19,file='hre.dat',status='old')
