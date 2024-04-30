@@ -487,7 +487,7 @@
         call h5ltmake_dataset_int_f(fid,"M" ,1,hdims,(/i_M/),h5err)
         call h5ltmake_dataset_int_f(fid,"K" ,1,hdims,(/i_K/),h5err)
         call h5ltmake_dataset_int_f(fid,"Mp",1,hdims,(/i_Mp/),h5err)
-        call h5ltmake_dataset_int_f(fid,"utau",1,hdims,(/u_tau/),h5err)
+        call h5ltmake_dataset_int_f(fid,"utau",1,hdims,(/utau/),h5err)
         
         call h5ltmake_dataset_double_f(fid,"dt"   ,1,hdims,(/tim_dt/),h5err)
 
