@@ -22,8 +22,8 @@
 
    character(len=256) text
    character*4 extc
-   character(len = 256):: fnameima,filinp, dirinp, filstt, filename, index
-   character(len=:) :: fnamephys
+   character(len = 256):: fnameima,filinp, dirinp, filstt, fnamephys, filename, index
+
 
    integer               :: io_save2,extn, utau, indice
    integer,     private  :: io_KE, io_ID, io_dt, io_pt, io_fr, io_hre, io_cf
@@ -411,7 +411,9 @@
       info = MPI_INFO_NULL
       fnamephys=trim(dirinp)//trim(filinp)//'.'//extc//'.'//index//'.'//'spp'
 
-
+      if (mpi_rnk==0) then
+         write(*,*) 'Writing the file ...',trim(fnamephys)
+      end if
 
 
 
