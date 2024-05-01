@@ -447,7 +447,7 @@
          call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,p1%Re(i_Z/2,:,:),h5err)
   
 
-      hdims2=(/i_pZ,i_pN/) !Dimensiones plano axial
+      hdims2=(/i_Z,i_N/) !Dimensiones plano axial
 
 
          write(cadena, '(I1)') 1
