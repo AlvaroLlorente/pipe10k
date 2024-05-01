@@ -530,9 +530,9 @@
       fnamephys=trim(dirinp)//trim(filinp)//'.'//extc//'.'//'sppf'
 
 
-      if (mpi_rnk==0) then
-      write(*,*) 'Writing the file ...',trim(fnamephys)
-      end if
+      !if (mpi_rnk==0) then
+      !write(*,*) 'Writing the file ...',trim(fnamephys)
+      !end if
 
       ! Save header, only master do this.
 
@@ -556,6 +556,8 @@
             p1%Re(:,:,n)=vel_z%Re(:,:,n)+vel_U(n_)
       enddo
 
+      call mpi_reduce(vel_r%Re, ddd, i_pZ*i_Th*i_pN, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
          
          call h5dump_parallel(G1,"/sta/vel_r",3, hdims3,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(:,:,:),h5err)
          call h5dump_parallel(G1,"/sta/vel_t",3, hdims3,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(:,:,:),h5err)
