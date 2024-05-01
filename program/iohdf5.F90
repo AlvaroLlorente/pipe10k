@@ -401,7 +401,7 @@
    subroutine io_save_phys_plane()
       integer :: info
       integer :: n, n_, strow
-      integer(hid_t) :: G1, G2, G3
+      integer(hid_t) :: G1, G2
       character(len=20) ::cadena, nombre_dataset1, nombre_dataset2, nombre_dataset3
 
 
@@ -438,7 +438,7 @@
                p1%Re(i_pZ/2,:,n)=vel_z%Re(i_pZ/2,:,n)+vel_U(n_)
                p2%Re(:,1,n)=vel_z%Re(:,1,n)+vel_U(n_)
          enddo
-!
+
          !if(mpi_rnk==0) then
          !write(*,*) size(vel_r%Re, 1)
          !write(*,*) size(vel_r%Re, 2)
@@ -452,9 +452,9 @@
          nombre_dataset2="/radial/vel_t_"//cadena
          nombre_dataset3="/radial/vel_z_"//cadena
 
-         call h5dump_parallel(G1,nombre_dataset1,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(i_pZ/2,:,:),h5err)
-         call h5dump_parallel(G1,nombre_dataset2,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(i_pZ/2,:,:),h5err)
-         call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,p1%Re(i_pZ/2,:,:),h5err)
+         call h5dump_parallel(G1,nombre_dataset1,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(20,:,:),h5err)
+         call h5dump_parallel(G1,nombre_dataset2,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(20,:,:),h5err)
+         call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,p1%Re(20,:,:),h5err)
   
 
       hdims2=(/i_pZ,i_pN/) !Dimensiones plano axial
