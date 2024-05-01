@@ -429,7 +429,7 @@
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
-      hdims2=(/i_pN,i_Th/) !Dimensiones plano radial
+      hdims2=(/i_Th,i_pN/) !Dimensiones plano radial
       strow=1  !Creo que no sirve para nada, de momento
      
       
@@ -457,7 +457,7 @@
          call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,p1%Re(i_pZ/2,:,:),h5err)
   
 
-      hdims2=(/i_pN,i_pZ/) !Dimensiones plano axial
+      hdims2=(/i_pZ,i_pN/) !Dimensiones plano axial
 
       
          write(cadena, '(I1)') 1
