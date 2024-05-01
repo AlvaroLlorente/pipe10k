@@ -445,15 +445,6 @@
          write(*,*) size(vel_r%Re, 3)
          endif
 
-      call mpi_reduce(vel_r%Re, ddd, i_pZ*i_Th*i_pN, mpi_double_precision,  &
-         mpi_sum, 0, mpi_comm_world, mpi_er)
-      vel_r%Re = ddd
-      call mpi_reduce(vel_t%Re, ddd, i_pZ*i_Th*i_pN, mpi_double_precision,  &
-         mpi_sum, 0, mpi_comm_world, mpi_er)
-      vel_t%Re = ddd
-      call mpi_reduce(p1%Re, ddd, i_pZ*i_Th*i_pN, mpi_double_precision,  &
-         mpi_sum, 0, mpi_comm_world, mpi_er)
-      p1%Re = ddd
 
       call mpi_bcast(vel_r%Re, i_pZ*i_Th*i_pN, mpi_double_precision, 0, mpi_comm_world, mpi_er)
       call mpi_bcast(vel_t%Re, i_pZ*i_Th*i_pN, mpi_double_precision, 0, mpi_comm_world, mpi_er)
