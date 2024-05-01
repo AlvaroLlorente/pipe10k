@@ -547,7 +547,7 @@
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
-      hdims3=(/i_pN,i_Th,i_pz/) !Dimensiones campo completo
+      hdims3=(/i_pZ,i_Th,i_pN/) !Dimensiones campo completo
       strow=1  !Creo que no sirve para nada, de momento
 
 
