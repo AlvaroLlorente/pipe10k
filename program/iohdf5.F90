@@ -442,14 +442,14 @@
          write(*,*) size(vel_r%Re, 1)
          write(*,*) size(vel_r%Re, 2)
          write(*,*) size(vel_r%Re, 3)
-         
-      call mpi_reduce(vel_r%Re, ddd, i_Z*i_Th*i_N, mpi_double_precision,  &
+
+      call mpi_reduce(vel_r%Re, ddd, i_pZ*i_Th*i_pN, mpi_double_precision,  &
          mpi_sum, 0, mpi_comm_world, mpi_er)
       vel_r%Re = ddd
-      call mpi_reduce(vel_t%Re, ddd, i_Z*i_Th*i_N, mpi_double_precision,  &
+      call mpi_reduce(vel_t%Re, ddd, i_pZ*i_Th*i_pN, mpi_double_precision,  &
          mpi_sum, 0, mpi_comm_world, mpi_er)
       vel_t%Re = ddd
-      call mpi_reduce(p1%Re, ddd, i_Z*i_Th*i_N, mpi_double_precision,  &
+      call mpi_reduce(p1%Re, ddd, i_pZ*i_Th*i_pN, mpi_double_precision,  &
          mpi_sum, 0, mpi_comm_world, mpi_er)
       p1%Re = ddd
 
