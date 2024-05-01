@@ -448,6 +448,10 @@
       call mpi_reduce(p1%Re, ddd, i_Z*i_Th*i_N, mpi_double_precision,  &
          mpi_sum, 0, mpi_comm_world, mpi_er)
       p1%Re = ddd
+
+      write(*,*) size(vel_r%Re, 1)
+      write(*,*) size(vel_r%Re, 2)
+      write(*,*) size(vel_r%Re, 3)
       
       
          write(cadena, '(I1)') 1
