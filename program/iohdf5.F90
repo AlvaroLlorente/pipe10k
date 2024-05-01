@@ -404,6 +404,8 @@
       integer(hid_t) :: G1, G2, G3
       character(len=20) ::cadena, nombre_dataset1, nombre_dataset2, nombre_dataset3
 
+
+   
      
      write(extc,'(I4.4)') extn
      write(index,'(I3.3)') indice
@@ -427,7 +429,7 @@
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
-      hdims2=(/i_Th,i_N/) !Dimensiones plano radial
+      hdims2=(/i_Th,i_pN/) !Dimensiones plano radial
       strow=1  !Creo que no sirve para nada, de momento
      
       
@@ -436,19 +438,29 @@
                p1%Re(i_pZ/2,:,n)=vel_z%Re(i_pZ/2,:,n)+vel_U(n_)
                p2%Re(:,1,n)=vel_z%Re(:,1,n)+vel_U(n_)
          enddo
+
+      call mpi_reduce(vel_r%Re, ddd, tam, mpi_double_precision,  &
+         mpi_sum, 0, mpi_comm_world, mpi_er)
+      vel_r%Re = ddd
+      call mpi_reduce(vel_t%Re, ddd, tam, mpi_double_precision,  &
+         mpi_sum, 0, mpi_comm_world, mpi_er)
+      vel_t%Re = ddd
+      call mpi_reduce(p1%Re, ddd, tam, mpi_double_precision,  &
+         mpi_sum, 0, mpi_comm_world, mpi_er)
+      p1%Re = ddd
       
          write(cadena, '(I1)') 1
          nombre_dataset1="/radial/vel_r_"//cadena
          nombre_dataset2="/radial/vel_t_"//cadena
          nombre_dataset3="/radial/vel_z_"//cadena
 
-         call h5dump_parallel(G1,nombre_dataset1,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(i_Z/2,:,:),h5err)
-         call h5dump_parallel(G1,nombre_dataset2,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(i_Z/2,:,:),h5err)
-         call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,p1%Re(i_Z/2,:,:),h5err)
+         call h5dump_parallel(G1,nombre_dataset1,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(i_pZ/2,:,:),h5err)
+         call h5dump_parallel(G1,nombre_dataset2,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(i_pZ/2,:,:),h5err)
+         call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,p1%Re(i_pZ/2,:,:),h5err)
   
 
-      hdims2=(/i_Z,i_N/) !Dimensiones plano axial
-!
+      hdims2=(/i_pZ,i_pN/) !Dimensiones plano axial
+
 
          write(cadena, '(I1)') 1
          nombre_dataset1="/axial/vel_r_"//cadena
