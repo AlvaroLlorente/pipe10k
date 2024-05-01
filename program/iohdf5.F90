@@ -438,7 +438,7 @@
                p1%Re(i_pZ/2,:,n)=vel_z%Re(i_pZ/2,:,n)+vel_U(n_)
                p2%Re(:,1,n)=vel_z%Re(:,1,n)+vel_U(n_)
          enddo
-      if (mpi_rnk == 0) then
+     
       call mpi_reduce(vel_r%Re, ddd, i_Z*i_Th*i_N, mpi_double_precision,  &
          mpi_sum, 0, mpi_comm_world, mpi_er)
       vel_r%Re = ddd
@@ -448,7 +448,7 @@
       call mpi_reduce(p1%Re, ddd, i_Z*i_Th*i_N, mpi_double_precision,  &
          mpi_sum, 0, mpi_comm_world, mpi_er)
       p1%Re = ddd
-      endif
+      
       
          write(cadena, '(I1)') 1
          nombre_dataset1="/radial/vel_r_"//cadena
