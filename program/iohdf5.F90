@@ -559,7 +559,7 @@
       call mpi_reduce(vel_r%Re, ddd, i_pZ*i_Th*i_pN, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
          
-         call h5dump_parallel(G1,"/sta/vel_r",3, hdims3,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(:,:,:),h5err)
+         call h5dump_parallel(G1,"/sta/vel_r",3, hdims3,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,ddd,h5err)
          call h5dump_parallel(G1,"/sta/vel_t",3, hdims3,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(:,:,:),h5err)
          call h5dump_parallel(G1,"/sta/vel_z",3, hdims3,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,p1%Re(:,:,:),h5err)
          
