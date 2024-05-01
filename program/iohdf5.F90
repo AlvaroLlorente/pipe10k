@@ -438,7 +438,11 @@
                p1%Re(i_pZ/2,:,n)=vel_z%Re(i_pZ/2,:,n)+vel_U(n_)
                p2%Re(:,1,n)=vel_z%Re(:,1,n)+vel_U(n_)
          enddo
-     
+ 
+         write(*,*) size(vel_r%Re, 1)
+         write(*,*) size(vel_r%Re, 2)
+         write(*,*) size(vel_r%Re, 3)
+         
       call mpi_reduce(vel_r%Re, ddd, i_Z*i_Th*i_N, mpi_double_precision,  &
          mpi_sum, 0, mpi_comm_world, mpi_er)
       vel_r%Re = ddd
@@ -449,9 +453,7 @@
          mpi_sum, 0, mpi_comm_world, mpi_er)
       p1%Re = ddd
 
-      write(*,*) size(vel_r%Re, 1)
-      write(*,*) size(vel_r%Re, 2)
-      write(*,*) size(vel_r%Re, 3)
+
       
       
          write(cadena, '(I1)') 1
