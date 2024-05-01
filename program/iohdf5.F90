@@ -438,12 +438,12 @@
                p1%Re(i_pZ/2,:,n)=vel_z%Re(i_pZ/2,:,n)+vel_U(n_)
                p2%Re(:,1,n)=vel_z%Re(:,1,n)+vel_U(n_)
          enddo
-
-         if(mpi_rnk==0) then
-         write(*,*) size(vel_r%Re, 1)
-         write(*,*) size(vel_r%Re, 2)
-         write(*,*) size(vel_r%Re, 3)
-         endif
+!
+         !if(mpi_rnk==0) then
+         !write(*,*) size(vel_r%Re, 1)
+         !write(*,*) size(vel_r%Re, 2)
+         !write(*,*) size(vel_r%Re, 3)
+         !endif
 
 
       
