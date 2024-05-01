@@ -448,7 +448,7 @@
   
 
       hdims2=(/i_Z,i_N/) !Dimensiones plano axial
-
+!
 
          write(cadena, '(I1)') 1
          nombre_dataset1="/axial/vel_r_"//cadena
