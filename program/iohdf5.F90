@@ -429,7 +429,7 @@
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
-      hdims2=(/i_Th,i_pN/) !Dimensiones plano radial
+      hdims2=(/i_Th,i_N/) !Dimensiones plano radial
       strow=1  !Creo que no sirve para nada, de momento
      
       
