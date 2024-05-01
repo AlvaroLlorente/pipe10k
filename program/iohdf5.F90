@@ -454,7 +454,7 @@
       p1%Re = ddd
 
 
-      write(*,*) punto2
+      print* 'punto2'
       
          write(cadena, '(I1)') 1
          nombre_dataset1="/radial/vel_r_"//cadena
