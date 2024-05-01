@@ -438,10 +438,12 @@
                p1%Re(i_pZ/2,:,n)=vel_z%Re(i_pZ/2,:,n)+vel_U(n_)
                p2%Re(:,1,n)=vel_z%Re(:,1,n)+vel_U(n_)
          enddo
- 
+
+         if(mpi_rnk==0) then
          write(*,*) size(vel_r%Re, 1)
          write(*,*) size(vel_r%Re, 2)
          write(*,*) size(vel_r%Re, 3)
+         endif
 
       call mpi_reduce(vel_r%Re, ddd, i_pZ*i_Th*i_pN, mpi_double_precision,  &
          mpi_sum, 0, mpi_comm_world, mpi_er)
@@ -453,8 +455,13 @@
          mpi_sum, 0, mpi_comm_world, mpi_er)
       p1%Re = ddd
 
+      call mpi_bcast(vel_r%Re, i_pZ*i_Th*i_pN, mpi_double_precision, 0, mpi_comm_world, mpi_er)
+      call mpi_bcast(vel_t%Re, i_pZ*i_Th*i_pN, mpi_double_precision, 0, mpi_comm_world, mpi_er)
+      call mpi_bcast(p1%Re, i_pZ*i_Th*i_pN, mpi_double_precision, 0, mpi_comm_world, mpi_er)
 
+      if(mpi_rnk==0) then
       print*, 'punto2'
+      endif
       
          write(cadena, '(I1)') 1
          nombre_dataset1="/radial/vel_r_"//cadena
