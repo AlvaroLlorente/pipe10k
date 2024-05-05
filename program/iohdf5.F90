@@ -146,12 +146,12 @@
 
       if (mod(tim_step,s_step)==0) then
           !call io_save_phys_plane()
-          call io_save_phys_field()
+          !call io_save_phys_field()
       endif
       if(modulo(tim_step,i_save_rate1)==0) then
          call io_save_state()
          fnameima=trim(filstt)//'.'//extc//'.'//'sth'
-         !call saveStats(fnameima)
+         call saveStats(fnameima)
          ! call io_save_spectrum()
          ! call io_save_meanprof()
          extn = extn+1
@@ -556,7 +556,7 @@
             p1%Re(:,:,n)=vel_z%Re(:,:,n)+vel_U(n_)
       enddo
 
-         p1%Re = RESHAPE(p1%Re, [i_pZ*_Ns, i_Th, i_pN/_Ns])
+         
 
          call h5dump_parallel(G1,"/sta/vel_r",3, hdims3,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(:,:,:),h5err)
          call h5dump_parallel(G1,"/sta/vel_t",3, hdims3,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(:,:,:),h5err)

@@ -105,7 +105,7 @@
 
    do n = 1, mes_D%pN
       n_ = mes_D%pNi + n - 1
-      mean_ur(n_,csta) = mean_ur(n_,csta) + sum(vel_r%Re(:,:,n))
+      mean_ur(n,csta) = mean_ur(n,csta) + sum(vel_r%Re(:,:,n))
       stdv_ur(n_,csta) = stdv_ur(n_,csta) + sum(vel_r%Re(:,:,n)**2)
       mean_ut(n_,csta) = mean_ut(n_,csta) + sum(vel_t%Re(:,:,n))
       stdv_ut(n_,csta) = stdv_ut(n_,csta) + sum(vel_t%Re(:,:,n)**2)
@@ -1004,13 +1004,14 @@ end subroutine initialiseSTD
 
 subroutine saveStats(fnameima)
 implicit none
-integer:: tam
+integer:: tam,strow
 character(len = 256):: fnameima
 tam = i_N*n_sta
+strow = 1
 
-    call mpi_reduce(mean_ur, dd, tam, mpi_double_precision,  &
-       mpi_sum, 0, mpi_comm_world, mpi_er)
-    mean_ur = dd
+    !call mpi_reduce(mean_ur, dd, tam, mpi_double_precision,  &
+    !   mpi_sum, 0, mpi_comm_world, mpi_er)
+    !mean_ur = dd
     call mpi_reduce(stdv_ur, dd, tam, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
     stdv_ur = dd
@@ -1240,7 +1241,7 @@ tam = i_N*n_sta
        call h5ltmake_dataset_double_f(header_id,"dt",1,hdims,dt,h5err)
       
        hdims2 = (/i_N,n_sta/)
-       call h5ltmake_dataset_double_f(sta_id,"mean_ur",2,hdims2,mean_ur,h5err)
+       !call h5ltmake_dataset_double_f(sta_id,"mean_ur",2,hdims2,mean_ur,h5err)
        call h5ltmake_dataset_double_f(sta_id,"mean_uz",2,hdims2,mean_uz,h5err)
        call h5ltmake_dataset_double_f(sta_id,"mean_ut",2,hdims2,mean_ut,h5err)
 
@@ -1329,7 +1330,12 @@ tam = i_N*n_sta
        call h5fclose_f(fid,h5err)
 
    endif
+      
+      call h5fopen_f(trim(fnameima),H5F_ACC_RDWR_F,fid,h5err)
+      hdims2 = (/i_N,n_sta/)
 
+      call h5dump_parallel(sta_id,"mean_ur",2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,mean_ur,h5err)
+         
 
    ! Once saved, initialise  verything to 0 again. 
    call initialiseSTD()
