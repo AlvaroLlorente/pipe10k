@@ -28,7 +28,7 @@
    integer               :: io_save2,extn, utau, indice
    integer,     private  :: io_KE, io_ID, io_dt, io_pt, io_fr, io_hre, io_cf
    
-   double precision, private :: wk(i_N, 0:i_pH1) ! PAsar luego por cabecera a la rutina o a través de un modulo.
+   !double precision, private :: wk(i_N, 0:i_pH1) ! PAsar luego por cabecera a la rutina o a través de un modulo.
    !double precision :: v1(0:i_Th-1, i_pN) 
    
    ! type (coll), private  :: c1!,c2,c3 ! Three colls are defined here. Why! They are really big. 
@@ -145,13 +145,13 @@
      
 
       if (mod(tim_step,s_step)==0) then
-          !call io_save_phys_plane()
+          call io_save_phys_plane()
           !call io_save_phys_field()
       endif
       if(modulo(tim_step,i_save_rate1)==0) then
          call io_save_state()
          fnameima=trim(filstt)//'.'//extc//'.'//'sth'
-         call saveStats(fnameima)
+         !call saveStats(fnameima)
          ! call io_save_spectrum()
          ! call io_save_meanprof()
          extn = extn+1
