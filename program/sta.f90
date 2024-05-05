@@ -1332,11 +1332,13 @@ strow = 1
    endif
       
       call h5fopen_f(trim(fnameima),H5F_ACC_RDWR_F,fid,h5err)
+      call h5gopen_f(sta_id,H5F_ACC_RDWR_F,fid,h5err)
       hdims2 = (/i_N,n_sta/)
 
       call h5dump_parallel(sta_id,"mean_ur",2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,mean_ur,h5err)
-         
-
+      
+      call h5gclose_f(sta_id,   h5err)
+      call h5fclose_f(fid,h5err)
    ! Once saved, initialise  verything to 0 again. 
    call initialiseSTD()
 
