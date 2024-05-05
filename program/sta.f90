@@ -35,7 +35,7 @@
 
 ! ------------------------- stats  -------------------------------
 
-   double precision :: mean_ur(i_pN,n_sta), stdv_ur(i_N,n_sta)
+   double precision :: mean_ur(i_N,n_sta), stdv_ur(i_N,n_sta)
    double precision :: mean_ut(i_N,n_sta), stdv_ut(i_N,n_sta)
    double precision :: mean_uz(i_N,n_sta), stdv_uz(i_N,n_sta)
    double precision :: stdv_rz(i_N,n_sta), stdv_rt(i_N,n_sta), stdv_tz(i_N,n_sta)
@@ -1012,352 +1012,326 @@ strow = 1
     call mpi_reduce(mean_ur, dd, tam, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
     mean_ur = dd
-   ! call mpi_reduce(stdv_ur, dd, tam, mpi_double_precision,  &
-   !    mpi_sum, 0, mpi_comm_world, mpi_er)
-   ! stdv_ur = dd
-   ! call mpi_reduce(mean_ut, dd, tam, mpi_double_precision,  &
-   !    mpi_sum, 0, mpi_comm_world, mpi_er)
-   ! mean_ut = dd
-   ! call mpi_reduce(stdv_ut, dd, tam, mpi_double_precision,  &
-   !    mpi_sum, 0, mpi_comm_world, mpi_er)
-   ! stdv_ut = dd
-   ! call mpi_reduce(mean_uz, dd, tam, mpi_double_precision,  &
-   !    mpi_sum, 0, mpi_comm_world, mpi_er)
-   ! mean_uz = dd
-   ! call mpi_reduce(stdv_uz, dd, tam, mpi_double_precision,  &
-   !    mpi_sum, 0, mpi_comm_world, mpi_er)
-   ! stdv_uz = dd
-   ! call mpi_reduce(stdv_rz, dd, tam, mpi_double_precision,  &
-   !    mpi_sum, 0, mpi_comm_world, mpi_er)
-   ! stdv_rz = dd
-   ! call mpi_reduce(stdv_rt, dd, tam, mpi_double_precision,  &
-   !    mpi_sum, 0, mpi_comm_world, mpi_er)
-   ! stdv_rt = dd
-   ! call mpi_reduce(stdv_tz, dd, tam, mpi_double_precision,  &
-   !    mpi_sum, 0, mpi_comm_world, mpi_er)
-   ! stdv_tz = dd
-!
-   ! call mpi_reduce(mean_p, dd, tam, mpi_double_precision,  &
-   !    mpi_sum, 0, mpi_comm_world, mpi_er)
-   ! mean_p = dd
-   ! call mpi_reduce(stdv_p, dd, tam, mpi_double_precision,  &
-   !    mpi_sum, 0, mpi_comm_world, mpi_er)
-   ! stdv_p = dd
-!
-   ! call mpi_reduce(stdv_zzr, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !stdv_zzr = dd   
-   !call mpi_reduce(stdv_rtt, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !stdv_rtt = dd   
-   !call mpi_reduce(stdv_rrr, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !stdv_rrr = dd 
-!
-!
-   !call mpi_reduce(durdt, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !durdt = dd
-   !call mpi_reduce(durdz, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !durdz = dd
-   !call mpi_reduce(dutdt, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !dutdt = dd
-   !call mpi_reduce(dutdz, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !dutdz = dd
-   !call mpi_reduce(duzdt, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !duzdt = dd
-   !call mpi_reduce(duzdz, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !duzdz = dd
-   !call mpi_reduce(duzdrsq, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !duzdrsq = dd
-   !call mpi_reduce(dutdrsq, dd, tam, mpi_double_precision,  & 
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !dutdrsq = dd
-   !call mpi_reduce(durdrsq, dd, tam, mpi_double_precision,  & 
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !durdrsq = dd
-   !call mpi_reduce(durdtsq, dd, tam, mpi_double_precision,  &          
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !durdtsq = dd
-   !call mpi_reduce(dutdtsq, dd, tam, mpi_double_precision,  &          
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !dutdtsq = dd
-   !call mpi_reduce(duzdtsq, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !duzdtsq = dd
-   !call mpi_reduce(dutdrsq, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !dutdrsq = dd
-!
-   !call mpi_reduce(duzdzsq, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !duzdzsq = dd
-   !call mpi_reduce(dutdzsq, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !dutdzsq = dd
-   !call mpi_reduce(durdzsq, dd, tam, mpi_double_precision,  &                    
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !durdzsq = dd
-   !call mpi_reduce(d2ur2dz2, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !d2ur2dz2 = dd
-   !call mpi_reduce(d2ut2dz2, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !d2ut2dz2 = dd
-   !call mpi_reduce(d2uz2dz2, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !d2uz2dz2 = dd
-!
-   !call mpi_reduce(dur2dz, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !dur2dz = dd
-   !call mpi_reduce(dut2dz, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !dut2dz = dd
-   !call mpi_reduce(duz2dz, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !duz2dz = dd
-   !call mpi_reduce(duzurdz, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !duzurdz = dd
-   !call mpi_reduce(duzutdz, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !duzutdz = dd
-!
-!
-   !call mpi_reduce(uuCT1, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !uuCT1 = dd   
-   !call mpi_reduce(uuTDT1, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !uuTDT1 = dd  
-   !call mpi_reduce(uuDT3, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !uuDT3 = dd  
-   !call mpi_reduce(uuPST1, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !uuPST1 = dd      
-   !call mpi_reduce(ttPST1, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !ttPST1 = dd   
-   !call mpi_reduce(ttCT1, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !ttCT1 = dd   
-   !call mpi_reduce(ttTDT1, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !ttTDT1 = dd      
-   ! call mpi_reduce(ttDT31, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !ttDT31 = dd  
-!
-   !call mpi_reduce(rrCT1, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !rrCT1 = dd  
-   !call mpi_reduce(rrTDT1, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !rrTDT1 = dd  
-   !call mpi_reduce(rrTDT2, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !rrTDT2 = dd  
-   !call mpi_reduce(rrDT31, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !rrDT31 = dd   
-   !call mpi_reduce(rrPST1, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !rrPST1 = dd 
-   !call mpi_reduce(rrPDT1, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !rrPDT1 = dd 
-!
-   !call mpi_reduce(kCT1, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !kCT1 = dd 
-   !call mpi_reduce(kPDT1, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !kPDT1 = dd 
-   !call mpi_reduce(kTDT1, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !kTDT1 = dd 
-   !call mpi_reduce(kTDT2, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !kTDT2 = dd 
-   !call mpi_reduce(kVDT1, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !kVDT1 = dd 
-   !call mpi_reduce(kDT4, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !kDT4 = dd 
-   !call mpi_reduce(kDT5, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !kDT5 = dd 
-   !call mpi_reduce(kDT61, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !kDT61 = dd 
-   !call mpi_reduce(kDT62, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !kDT62 = dd 
-   !call mpi_reduce(kDT63, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !kDT63 = dd 
-   !call mpi_reduce(kDT73, dd, tam, mpi_double_precision,  &
-   !   mpi_sum, 0, mpi_comm_world, mpi_er)
-   !kDT73 = dd 
+    call mpi_reduce(stdv_ur, dd, tam, mpi_double_precision,  &
+       mpi_sum, 0, mpi_comm_world, mpi_er)
+    stdv_ur = dd
+    call mpi_reduce(mean_ut, dd, tam, mpi_double_precision,  &
+       mpi_sum, 0, mpi_comm_world, mpi_er)
+    mean_ut = dd
+    call mpi_reduce(stdv_ut, dd, tam, mpi_double_precision,  &
+       mpi_sum, 0, mpi_comm_world, mpi_er)
+    stdv_ut = dd
+    call mpi_reduce(mean_uz, dd, tam, mpi_double_precision,  &
+       mpi_sum, 0, mpi_comm_world, mpi_er)
+    mean_uz = dd
+    call mpi_reduce(stdv_uz, dd, tam, mpi_double_precision,  &
+       mpi_sum, 0, mpi_comm_world, mpi_er)
+    stdv_uz = dd
+    call mpi_reduce(stdv_rz, dd, tam, mpi_double_precision,  &
+       mpi_sum, 0, mpi_comm_world, mpi_er)
+    stdv_rz = dd
+    call mpi_reduce(stdv_rt, dd, tam, mpi_double_precision,  &
+       mpi_sum, 0, mpi_comm_world, mpi_er)
+    stdv_rt = dd
+    call mpi_reduce(stdv_tz, dd, tam, mpi_double_precision,  &
+       mpi_sum, 0, mpi_comm_world, mpi_er)
+    stdv_tz = dd
+
+    call mpi_reduce(mean_p, dd, tam, mpi_double_precision,  &
+       mpi_sum, 0, mpi_comm_world, mpi_er)
+    mean_p = dd
+    call mpi_reduce(stdv_p, dd, tam, mpi_double_precision,  &
+       mpi_sum, 0, mpi_comm_world, mpi_er)
+    stdv_p = dd
+
+    call mpi_reduce(stdv_zzr, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   stdv_zzr = dd   
+   call mpi_reduce(stdv_rtt, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   stdv_rtt = dd   
+   call mpi_reduce(stdv_rrr, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   stdv_rrr = dd 
 
 
-   call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+   call mpi_reduce(durdt, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   durdt = dd
+   call mpi_reduce(durdz, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   durdz = dd
+   call mpi_reduce(dutdt, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   dutdt = dd
+   call mpi_reduce(dutdz, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   dutdz = dd
+   call mpi_reduce(duzdt, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   duzdt = dd
+   call mpi_reduce(duzdz, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   duzdz = dd
+   call mpi_reduce(duzdrsq, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   duzdrsq = dd
+   call mpi_reduce(dutdrsq, dd, tam, mpi_double_precision,  & 
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   dutdrsq = dd
+   call mpi_reduce(durdrsq, dd, tam, mpi_double_precision,  & 
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   durdrsq = dd
+   call mpi_reduce(durdtsq, dd, tam, mpi_double_precision,  &          
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   durdtsq = dd
+   call mpi_reduce(dutdtsq, dd, tam, mpi_double_precision,  &          
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   dutdtsq = dd
+   call mpi_reduce(duzdtsq, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   duzdtsq = dd
+   call mpi_reduce(dutdrsq, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   dutdrsq = dd
 
-   call h5pcreate_f(H5P_FILE_ACCESS_F,pid,h5err)
-   call h5pset_fapl_mpio_f(pid,MPI_COMM_WORLD,info,h5err)
-   call h5pset_sieve_buf_size_f(pid, siever, h5err)
-   call h5fcreate_f(trim(fnameima),H5F_ACC_TRUNC_F,fid,h5err,H5P_DEFAULT_F,pid)
-   call h5gcreate_f(fid, '/sta', sta_id, h5err)
-   call h5pclose_f(pid,h5err)
+   call mpi_reduce(duzdzsq, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   duzdzsq = dd
+   call mpi_reduce(dutdzsq, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   dutdzsq = dd
+   call mpi_reduce(durdzsq, dd, tam, mpi_double_precision,  &                    
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   durdzsq = dd
+   call mpi_reduce(d2ur2dz2, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   d2ur2dz2 = dd
+   call mpi_reduce(d2ut2dz2, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   d2ut2dz2 = dd
+   call mpi_reduce(d2uz2dz2, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   d2uz2dz2 = dd
 
-   call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+   call mpi_reduce(dur2dz, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   dur2dz = dd
+   call mpi_reduce(dut2dz, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   dut2dz = dd
+   call mpi_reduce(duz2dz, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   duz2dz = dd
+   call mpi_reduce(duzurdz, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   duzurdz = dd
+   call mpi_reduce(duzutdz, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   duzutdz = dd
 
-      hdims2 = (/i_N,n_sta/)
 
-      call h5dump_parallel(sta_id,"mean_ur",2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,mean_ur,h5err)
+   call mpi_reduce(uuCT1, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   uuCT1 = dd   
+   call mpi_reduce(uuTDT1, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   uuTDT1 = dd  
+   call mpi_reduce(uuDT3, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   uuDT3 = dd  
+   call mpi_reduce(uuPST1, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   uuPST1 = dd      
+   call mpi_reduce(ttPST1, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   ttPST1 = dd   
+   call mpi_reduce(ttCT1, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   ttCT1 = dd   
+   call mpi_reduce(ttTDT1, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   ttTDT1 = dd      
+    call mpi_reduce(ttDT31, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   ttDT31 = dd  
 
-   call h5gclose_f(sta_id,h5err)
-   
-   call h5fclose_f(fid,h5err)
+   call mpi_reduce(rrCT1, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   rrCT1 = dd  
+   call mpi_reduce(rrTDT1, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   rrTDT1 = dd  
+   call mpi_reduce(rrTDT2, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   rrTDT2 = dd  
+   call mpi_reduce(rrDT31, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   rrDT31 = dd   
+   call mpi_reduce(rrPST1, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   rrPST1 = dd 
+   call mpi_reduce(rrPDT1, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   rrPDT1 = dd 
 
-   ! if(mpi_rnk==0)  then
-!
-   !    call h5fcreate_f(trim(fnameima),H5F_ACC_TRUNC_F,fid,h5err)
-   !    
-   !    call h5gcreate_f(fid, '/header', header_id, h5err)
-   !    call h5gcreate_f(fid, '/sta'   , sta_id   , h5err)
-   !    call h5gcreate_f(fid, '/derivatives', derivative_id ,h5err)
-   !    
-   !    hdims = (/1/)
-   !    call h5ltmake_dataset_double_f(header_id,"time",1,hdims,(/tim_t/),h5err)
-   !    call h5ltmake_dataset_double_f(header_id,"Re",1,hdims,(/d_Re/),h5err)
-   !    call h5ltmake_dataset_double_f(header_id,"alpha",1,hdims,(/d_alpha/),h5err)
-!
-   !    call h5ltmake_dataset_int_f(header_id,"N" ,1,hdims,(/i_N/),h5err)
-   !    call h5ltmake_dataset_int_f(header_id,"num" ,1,hdims,(/csta/),h5err)
-   !    call h5ltmake_dataset_int_f(header_id,"M" ,1,hdims,(/i_M/),h5err)
-   !    call h5ltmake_dataset_int_f(header_id,"K" ,1,hdims,(/i_K/),h5err)
-   !    call h5ltmake_dataset_int_f(header_id,"Mp",1,hdims,(/i_Mp/),h5err)
-!
-!
-   !    hdims = (/i_N/)
-   !    call h5ltmake_dataset_double_f(header_id,"r"   ,1,hdims,mes_D%r(1:i_N,1),h5err)
-   !    hdims = (/n_sta/)
-   !    call h5ltmake_dataset_double_f(header_id,"timev",1,hdims,time_sta,h5err)
-   !    call h5ltmake_dataset_double_f(sta_id,"utauv",1,hdims,utauv,h5err)
-   !    call h5ltmake_dataset_double_f(sta_id,"uclv",1,hdims,uclv,h5err)
-   !    call h5ltmake_dataset_double_f(header_id,"dt",1,hdims,dt,h5err)
-   !   
-   !    hdims2 = (/i_N,n_sta/)
-   !    call h5dump_parallel(sta_id,"mean_ur",2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,mean_ur,h5err)
-   !    !call h5ltmake_dataset_double_f(sta_id,"mean_ur",2,hdims2,mean_ur,h5err)
-   !    call h5ltmake_dataset_double_f(sta_id,"mean_uz",2,hdims2,mean_uz,h5err)
-   !    call h5ltmake_dataset_double_f(sta_id,"mean_ut",2,hdims2,mean_ut,h5err)
-!
-   !    call h5ltmake_dataset_double_f(sta_id,"stdv_ur",2,hdims2,stdv_ur,h5err)
-   !    call h5ltmake_dataset_double_f(sta_id,"stdv_ut",2,hdims2,stdv_ut,h5err)
-   !    call h5ltmake_dataset_double_f(sta_id,"stdv_uz",2,hdims2,stdv_uz,h5err)
-   !    call h5ltmake_dataset_double_f(sta_id,"stdv_rz",2,hdims2,stdv_rz,h5err)
-   !    call h5ltmake_dataset_double_f(sta_id,"stdv_rt",2,hdims2,stdv_rt,h5err)
-   !    call h5ltmake_dataset_double_f(sta_id,"stdv_tz",2,hdims2,stdv_tz,h5err)
-   !    call h5ltmake_dataset_double_f(sta_id,"stdv_zzr",2,hdims2,stdv_zzr,h5err)
-   !    call h5ltmake_dataset_double_f(sta_id,"stdv_rtt",2,hdims2,stdv_rtt,h5err)
-   !    call h5ltmake_dataset_double_f(sta_id,"stdv_rrr",2,hdims2,stdv_rrr,h5err)
-!
-!
-   !    call h5ltmake_dataset_double_f(sta_id,"stdv_p",2,hdims2,stdv_p,h5err)
-   !    call h5ltmake_dataset_double_f(sta_id,"mean_p",2,hdims2,mean_p,h5err)
-!
-   !    
-   !   
-   !   call h5ltmake_dataset_double_f(derivative_id,"durdt",2,hdims2,durdt,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"durdz",2,hdims2,durdz,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"dutdt",2,hdims2,dutdt,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"dutdz",2,hdims2,dutdz,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"duzdt",2,hdims2,duzdt,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"duzdz",2,hdims2,duzdz,h5err)
-!
-   !   call h5ltmake_dataset_double_f(derivative_id,"duzdrsq",2,hdims2,duzdrsq,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"dutdrsq",2,hdims2,dutdrsq,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"durdrsq",2,hdims2,durdrsq,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"durdtsq",2,hdims2,durdtsq,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"dutdtsq",2,hdims2,dutdtsq,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"duzdtsq",2,hdims2,duzdtsq,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"duzdzsq",2,hdims2,duzdzsq,h5err)       
-   !   call h5ltmake_dataset_double_f(derivative_id,"dutdzsq",2,hdims2,dutdzsq,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"durdzsq",2,hdims2,durdzsq,h5err)
-   !   
-   !   call h5ltmake_dataset_double_f(derivative_id,"d2ur2dz2",2,hdims2,d2ur2dz2,h5err)   
-   !   call h5ltmake_dataset_double_f(derivative_id,"d2ut2dz2",2,hdims2,d2ut2dz2,h5err)   
-   !   call h5ltmake_dataset_double_f(derivative_id,"d2uz2dz2",2,hdims2,d2uz2dz2,h5err)
-!
-   !   call h5ltmake_dataset_double_f(derivative_id,"dur2dz",2,hdims2,dur2dz,h5err)      
-   !   call h5ltmake_dataset_double_f(derivative_id,"dut2dz",2,hdims2,dut2dz,h5err)      
-   !   call h5ltmake_dataset_double_f(derivative_id,"duz2dz",2,hdims2,duz2dz,h5err)      
-   !   call h5ltmake_dataset_double_f(derivative_id,"duzurdz",2,hdims2,duzurdz,h5err)      
-   !   call h5ltmake_dataset_double_f(derivative_id,"duzutdz",2,hdims2,duzutdz,h5err)      
-!
-   !   call h5ltmake_dataset_double_f(derivative_id,"uuCT1",2,hdims2,uuCT1,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"uuTDT1",2,hdims2,uuTDT1,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"uuDT3",2,hdims2,uuDT3,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"uuPST1",2,hdims2,uuPST1,h5err)
-!
-   !   call h5ltmake_dataset_double_f(derivative_id,"ttCT1",2,hdims2,ttCT1,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"ttTDT1",2,hdims2,ttTDT1,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"ttDT31",2,hdims2,ttDT31,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"ttPST1",2,hdims2,ttPST1,h5err)
-!
-   !   call h5ltmake_dataset_double_f(derivative_id,"rrCT1",2,hdims2,rrCT1,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"rrTDT1",2,hdims2,rrTDT1,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"rrTDT2",2,hdims2,rrTDT2,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"rrDT31",2,hdims2,rrDT31,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"rrPST1",2,hdims2,rrPST1,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"rrPDT1",2,hdims2,rrPDT1,h5err)
-!
-   !   call h5ltmake_dataset_double_f(derivative_id,"kCT1",2,hdims2,kCT1,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"kPDT1",2,hdims2,kPDT1,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"kTDT1",2,hdims2,kTDT1,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"kTDT2",2,hdims2,kTDT2,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"kVDT1",2,hdims2,kVDT1,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"kDT4",2,hdims2,kDT4,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"kDT5",2,hdims2,kDT5,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"kDT61",2,hdims2,kDT61,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"kDT62",2,hdims2,kDT62,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"kDT63",2,hdims2,kDT63,h5err)
-   !   call h5ltmake_dataset_double_f(derivative_id,"kDT73",2,hdims2,kDT73,h5err)
-!
-!
-!
-   !      
-!
-!
-   !    
-   !    call h5gclose_f(header_id,h5err)
-   !    call h5gclose_f(sta_id,   h5err)
-   !    !call h5gclose_f(budget_id,h5err)
-   !    call h5gclose_f(derivative_id ,h5err)
-   !    call h5fclose_f(fid,h5err)
-!
-   !endif
+   call mpi_reduce(kCT1, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   kCT1 = dd 
+   call mpi_reduce(kPDT1, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   kPDT1 = dd 
+   call mpi_reduce(kTDT1, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   kTDT1 = dd 
+   call mpi_reduce(kTDT2, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   kTDT2 = dd 
+   call mpi_reduce(kVDT1, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   kVDT1 = dd 
+   call mpi_reduce(kDT4, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   kDT4 = dd 
+   call mpi_reduce(kDT5, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   kDT5 = dd 
+   call mpi_reduce(kDT61, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   kDT61 = dd 
+   call mpi_reduce(kDT62, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   kDT62 = dd 
+   call mpi_reduce(kDT63, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   kDT63 = dd 
+   call mpi_reduce(kDT73, dd, tam, mpi_double_precision,  &
+      mpi_sum, 0, mpi_comm_world, mpi_er)
+   kDT73 = dd 
+
+
+
+
+    if(mpi_rnk==0)  then
+
+       call h5fcreate_f(trim(fnameima),H5F_ACC_TRUNC_F,fid,h5err)
+       
+       call h5gcreate_f(fid, '/header', header_id, h5err)
+       call h5gcreate_f(fid, '/sta'   , sta_id   , h5err)
+       call h5gcreate_f(fid, '/derivatives', derivative_id ,h5err)
+       
+       hdims = (/1/)
+       call h5ltmake_dataset_double_f(header_id,"time",1,hdims,(/tim_t/),h5err)
+       call h5ltmake_dataset_double_f(header_id,"Re",1,hdims,(/d_Re/),h5err)
+       call h5ltmake_dataset_double_f(header_id,"alpha",1,hdims,(/d_alpha/),h5err)
+
+       call h5ltmake_dataset_int_f(header_id,"N" ,1,hdims,(/i_N/),h5err)
+       call h5ltmake_dataset_int_f(header_id,"num" ,1,hdims,(/csta/),h5err)
+       call h5ltmake_dataset_int_f(header_id,"M" ,1,hdims,(/i_M/),h5err)
+       call h5ltmake_dataset_int_f(header_id,"K" ,1,hdims,(/i_K/),h5err)
+       call h5ltmake_dataset_int_f(header_id,"Mp",1,hdims,(/i_Mp/),h5err)
+
+
+       hdims = (/i_N/)
+       call h5ltmake_dataset_double_f(header_id,"r"   ,1,hdims,mes_D%r(1:i_N,1),h5err)
+       hdims = (/n_sta/)
+       call h5ltmake_dataset_double_f(header_id,"timev",1,hdims,time_sta,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"utauv",1,hdims,utauv,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"uclv",1,hdims,uclv,h5err)
+       call h5ltmake_dataset_double_f(header_id,"dt",1,hdims,dt,h5err)
       
-      !call h5fopen_f(trim(fnameima),H5F_ACC_RDWR_F,fid,h5err)
-      !call h5gopen_f(sta_id,'/sta' ,fid,h5err)
-      !hdims2 = (/i_N,n_sta/)
-!
-      !call h5dump_parallel(sta_id,"mean_ur",2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,mean_ur,h5err)
-!
-      !call h5gclose_f(sta_id,   h5err)
-      !call h5fclose_f(fid,h5err)
-   ! Once saved, initialise  verything to 0 again. 
+       hdims2 = (/i_N,n_sta/)
+
+       call h5ltmake_dataset_double_f(sta_id,"mean_ur",2,hdims2,mean_ur,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"mean_uz",2,hdims2,mean_uz,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"mean_ut",2,hdims2,mean_ut,h5err)
+
+       call h5ltmake_dataset_double_f(sta_id,"stdv_ur",2,hdims2,stdv_ur,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"stdv_ut",2,hdims2,stdv_ut,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"stdv_uz",2,hdims2,stdv_uz,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"stdv_rz",2,hdims2,stdv_rz,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"stdv_rt",2,hdims2,stdv_rt,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"stdv_tz",2,hdims2,stdv_tz,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"stdv_zzr",2,hdims2,stdv_zzr,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"stdv_rtt",2,hdims2,stdv_rtt,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"stdv_rrr",2,hdims2,stdv_rrr,h5err)
+
+
+       call h5ltmake_dataset_double_f(sta_id,"stdv_p",2,hdims2,stdv_p,h5err)
+       call h5ltmake_dataset_double_f(sta_id,"mean_p",2,hdims2,mean_p,h5err)
+
+       
+      
+      call h5ltmake_dataset_double_f(derivative_id,"durdt",2,hdims2,durdt,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"durdz",2,hdims2,durdz,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"dutdt",2,hdims2,dutdt,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"dutdz",2,hdims2,dutdz,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"duzdt",2,hdims2,duzdt,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"duzdz",2,hdims2,duzdz,h5err)
+
+      call h5ltmake_dataset_double_f(derivative_id,"duzdrsq",2,hdims2,duzdrsq,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"dutdrsq",2,hdims2,dutdrsq,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"durdrsq",2,hdims2,durdrsq,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"durdtsq",2,hdims2,durdtsq,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"dutdtsq",2,hdims2,dutdtsq,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"duzdtsq",2,hdims2,duzdtsq,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"duzdzsq",2,hdims2,duzdzsq,h5err)       
+      call h5ltmake_dataset_double_f(derivative_id,"dutdzsq",2,hdims2,dutdzsq,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"durdzsq",2,hdims2,durdzsq,h5err)
+      
+      call h5ltmake_dataset_double_f(derivative_id,"d2ur2dz2",2,hdims2,d2ur2dz2,h5err)   
+      call h5ltmake_dataset_double_f(derivative_id,"d2ut2dz2",2,hdims2,d2ut2dz2,h5err)   
+      call h5ltmake_dataset_double_f(derivative_id,"d2uz2dz2",2,hdims2,d2uz2dz2,h5err)
+
+      call h5ltmake_dataset_double_f(derivative_id,"dur2dz",2,hdims2,dur2dz,h5err)      
+      call h5ltmake_dataset_double_f(derivative_id,"dut2dz",2,hdims2,dut2dz,h5err)      
+      call h5ltmake_dataset_double_f(derivative_id,"duz2dz",2,hdims2,duz2dz,h5err)      
+      call h5ltmake_dataset_double_f(derivative_id,"duzurdz",2,hdims2,duzurdz,h5err)      
+      call h5ltmake_dataset_double_f(derivative_id,"duzutdz",2,hdims2,duzutdz,h5err)      
+
+      call h5ltmake_dataset_double_f(derivative_id,"uuCT1",2,hdims2,uuCT1,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"uuTDT1",2,hdims2,uuTDT1,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"uuDT3",2,hdims2,uuDT3,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"uuPST1",2,hdims2,uuPST1,h5err)
+
+      call h5ltmake_dataset_double_f(derivative_id,"ttCT1",2,hdims2,ttCT1,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"ttTDT1",2,hdims2,ttTDT1,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"ttDT31",2,hdims2,ttDT31,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"ttPST1",2,hdims2,ttPST1,h5err)
+
+      call h5ltmake_dataset_double_f(derivative_id,"rrCT1",2,hdims2,rrCT1,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"rrTDT1",2,hdims2,rrTDT1,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"rrTDT2",2,hdims2,rrTDT2,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"rrDT31",2,hdims2,rrDT31,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"rrPST1",2,hdims2,rrPST1,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"rrPDT1",2,hdims2,rrPDT1,h5err)
+
+      call h5ltmake_dataset_double_f(derivative_id,"kCT1",2,hdims2,kCT1,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"kPDT1",2,hdims2,kPDT1,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"kTDT1",2,hdims2,kTDT1,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"kTDT2",2,hdims2,kTDT2,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"kVDT1",2,hdims2,kVDT1,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"kDT4",2,hdims2,kDT4,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"kDT5",2,hdims2,kDT5,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"kDT61",2,hdims2,kDT61,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"kDT62",2,hdims2,kDT62,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"kDT63",2,hdims2,kDT63,h5err)
+      call h5ltmake_dataset_double_f(derivative_id,"kDT73",2,hdims2,kDT73,h5err)
+
+
+
+         
+
+
+       
+       call h5gclose_f(header_id,h5err)
+       call h5gclose_f(sta_id,   h5err)
+       !call h5gclose_f(budget_id,h5err)
+       call h5gclose_f(derivative_id ,h5err)
+       call h5fclose_f(fid,h5err)
+
+   endif
+
    call initialiseSTD()
 
 end subroutine saveStats
