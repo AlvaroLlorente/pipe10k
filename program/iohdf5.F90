@@ -145,8 +145,8 @@
      
 
       if (mod(tim_step,s_step)==0) then
-          call io_save_phys_plane()
-          !call io_save_phys_field()
+          !call io_save_phys_plane()
+          call io_save_phys_field()
       endif
       if(modulo(tim_step,i_save_rate1)==0) then
          call io_save_state()
