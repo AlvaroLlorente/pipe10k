@@ -1215,7 +1215,7 @@ strow = 1
    call h5pcreate_f(H5P_FILE_ACCESS_F,pid,h5err)
    call h5pset_fapl_mpio_f(pid,MPI_COMM_WORLD,info,h5err)
    call h5pset_sieve_buf_size_f(pid, siever, h5err)
-   call h5fcreate_f(trim(fnamephys),H5F_ACC_TRUNC_F,fid,h5err,H5P_DEFAULT_F,pid)
+   call h5fcreate_f(trim(fnameima),H5F_ACC_TRUNC_F,fid,h5err,H5P_DEFAULT_F,pid)
    call h5gcreate_f(fid, '/sta', sta_id, h5err)
    call h5pclose_f(pid,h5err)
 
