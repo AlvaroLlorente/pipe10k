@@ -1009,9 +1009,9 @@ character(len = 256):: fnameima
 tam = i_N*n_sta
 strow = 1
 
-    !call mpi_reduce(mean_ur, dd, tam, mpi_double_precision,  &
-    !   mpi_sum, 0, mpi_comm_world, mpi_er)
-    !mean_ur = dd
+    call mpi_reduce(mean_ur, dd, tam, mpi_double_precision,  &
+       mpi_sum, 0, mpi_comm_world, mpi_er)
+    mean_ur = dd
    ! call mpi_reduce(stdv_ur, dd, tam, mpi_double_precision,  &
    !    mpi_sum, 0, mpi_comm_world, mpi_er)
    ! stdv_ur = dd
