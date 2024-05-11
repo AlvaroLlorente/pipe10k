@@ -435,7 +435,7 @@
       
          do n = 1, mes_D%pN
             n_ = mes_D%pNi + n - 1	
-               p1%Re(i_pZ/2,:,n)=vel_z%Re(i_pZ/2,:,n)+vel_U(n_)
+               p1%Re(2,:,n)=vel_z%Re(2,:,n)+vel_U(n_)
                p3%Re(:,1,n)=vel_z%Re(:,1,n)+vel_U(n_)
          enddo
 
