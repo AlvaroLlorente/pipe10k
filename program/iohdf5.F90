@@ -452,9 +452,9 @@
 
          
          
-         call h5dump_parallel(G1,nombre_dataset1,2, hdims2,strow,mpi_rnk,mpi_sze/_Ns,MPI_COMM_WORLD,info,vel_r%Re(5,:,i_pN),h5err)
-         call h5dump_parallel(G1,nombre_dataset2,2, hdims2,strow,mpi_rnk,mpi_sze/_Ns,MPI_COMM_WORLD,info,vel_t%Re(5,:,i_pN),h5err)
-         call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,mpi_sze/_Ns,MPI_COMM_WORLD,info,   p1%Re(5,:,i_pN),h5err)
+         call h5dump_parallel2(G1,nombre_dataset1,2, hdims2,strow,mpi_rnk,mpi_sze/_Ns,MPI_COMM_WORLD,info,vel_r%Re(5,:,i_pN),h5err)
+         call h5dump_parallel2(G1,nombre_dataset2,2, hdims2,strow,mpi_rnk,mpi_sze/_Ns,MPI_COMM_WORLD,info,vel_t%Re(5,:,i_pN),h5err)
+         call h5dump_parallel2(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,mpi_sze/_Ns,MPI_COMM_WORLD,info,   p1%Re(5,:,i_pN),h5err)
 
       end if
 
