@@ -430,7 +430,7 @@
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
 
-      do while (mpi_rnk <  15) 
+      if (mpi_rnk <=  15) then
 
       hdims2=(/i_Th,i_pN/) !Dimensiones plano radial
       strow=1  !Creo que no sirve para nada, de momento
@@ -442,12 +442,8 @@
                p3%Re(:,1,n)=vel_z%Re(:,1,n)+vel_U(n_)
          enddo
 
-         if(mpi_rnk==0) then
-            write(*,*) size(vel_r%Re, 1)
-            write(*,*) size(vel_r%Re, 2)
-            write(*,*) size(vel_r%Re, 3)
-         endif
-         write(*,*) hdims2
+
+         write(*,*) 'soy', mpi_rnk
       
          write(cadena, '(I1)') 1
          nombre_dataset1="/radial/vel_r_"//cadena
@@ -456,11 +452,11 @@
 
          
          
-         call h5dump_parallel(G1,nombre_dataset1,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(5,:,:),h5err)
-         call h5dump_parallel(G1,nombre_dataset2,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(5,:,:),h5err)
-         call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,   p1%Re(5,:,:),h5err)
+         call h5dump_parallel(G1,nombre_dataset1,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(5,:,i_pN),h5err)
+         call h5dump_parallel(G1,nombre_dataset2,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(5,:,i_pN),h5err)
+         call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,   p1%Re(5,:,i_pN),h5err)
 
-      end do
+      end if
 
       hdims2=(/i_pZ,i_pN/) !Dimensiones plano axial
 
