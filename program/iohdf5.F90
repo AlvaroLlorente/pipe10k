@@ -146,7 +146,7 @@
 
       if (mod(tim_step,i_save_rate1)==0) then
           call io_save_phys_plane()
-          !call io_save_phys_field()
+          call io_save_phys_field()
       endif
       if(modulo(tim_step,i_save_rate1)==0) then
          call io_save_state()
@@ -445,7 +445,6 @@
          !write(*,*) size(vel_r%Re, 3)
          !endif
 
-         p4%Re(i_pZ/2,:,:) =  transpose(p1%Re(i_pZ/2,:,:))
       
          write(cadena, '(I1)') 1
          nombre_dataset1="/radial/vel_r_"//cadena
@@ -454,13 +453,12 @@
 
          call h5dump_parallel(G1,nombre_dataset1,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(i_pZ/2,:,1:i_pN/_Ns),h5err)
          call h5dump_parallel(G1,nombre_dataset2,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(i_pZ/2,:,1:i_pN/_Ns),h5err)
-         call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,p4%Re(i_pZ/2,:,1:i_pN/_Ns),h5err)
+         call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,p1%Re(i_pZ/2,:,1:i_pN/_Ns),h5err)
   
 
       hdims2=(/i_pZ,i_pN/) !Dimensiones plano axial
 
 
-         p4%Re(:,1,:) =  transpose(p3%Re(:,1,:))
       
          write(cadena, '(I1)') 1
          nombre_dataset1="/axial/vel_r_"//cadena
@@ -468,16 +466,9 @@
          nombre_dataset3="/axial/vel_z_"//cadena
          call h5dump_parallel(G2,nombre_dataset1,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(:,1,:),h5err)
          call h5dump_parallel(G2,nombre_dataset2,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(:,1,:),h5err)
-         call h5dump_parallel(G2,nombre_dataset3,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,p4%Re(:,1,:),h5err)
+         call h5dump_parallel(G2,nombre_dataset3,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,p3%Re(:,1,:),h5err)
          
 
-         !write(cadena, '(I1)') 2
-         !nombre_dataset1="/axial/vel_r_"//cadena
-         !nombre_dataset2="/axial/vel_t_"//cadena
-         !nombre_dataset3="/axial/vel_z_"//cadena
-         !call h5dump_parallel(G2,nombre_dataset1,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(:,(i_Th/2)+1,:),h5err)
-         !call h5dump_parallel(G2,nombre_dataset2,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(:,(i_Th/2)+1,:),h5err)
-         !call h5dump_parallel(G2,nombre_dataset3,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,p3%Re(:,(i_Th/2)+1,:),h5err)
          
 
       call h5gclose_f(G1,h5err)
@@ -781,7 +772,7 @@ subroutine h5dump_parallel(fid,name,ndims,dims,strow,rank,size,comm,info,data,ie
   call h5screate_simple_f(ndims,dims,mspace,ierr)
   call h5sselect_hyperslab_f(mspace,H5S_SELECT_SET_F,nooffset,dims,ierr)
 
-  !Select the hyperslab in the global dataset ! This would be  var_H%pH0_. We can send jus this!
+  !Select the hyperslab in the global dataset ! This would be  var_H%pH0_. We can send just this!
   start(ndims) = sum(lastdims(1:rank+1))-lastdims(rank+1)
   !start(ndims) = strow!!!! CHANGED!!!!!
   call h5sselect_hyperslab_f(dspace,H5S_SELECT_SET_F,start,dims,ierr)
