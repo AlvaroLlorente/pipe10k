@@ -446,7 +446,7 @@
          nombre_dataset2="/radial/vel_t_"//cadena
          nombre_dataset3="/radial/vel_z_"//cadena
 
-         if (mpi_rnk==(_Np/_Ns)) then
+         if (mpi_rnk<=(_Np/_Ns)) then
 
          call h5dump_parallel(G1,nombre_dataset1,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(2,:,:),h5err)
          call h5dump_parallel(G1,nombre_dataset2,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(2,:,:),h5err)
