@@ -452,9 +452,9 @@
          nombre_dataset2="/radial/vel_t_"//cadena
          nombre_dataset3="/radial/vel_z_"//cadena
 
-         call h5dump_parallel(G1,nombre_dataset1,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(i_pZ/2,:,:),h5err)
-         call h5dump_parallel(G1,nombre_dataset2,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(i_pZ/2,:,:),h5err)
-         call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,p1%Re(i_pZ/2,:,:),h5err)
+         call h5dump_parallel(G1,nombre_dataset1,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(i_pZ/2,:,1:i_pN/_Ns),h5err)
+         call h5dump_parallel(G1,nombre_dataset2,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(i_pZ/2,:,1:i_pN/_Ns),h5err)
+         call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,p1%Re(i_pZ/2,:,1:i_pN/_Ns),h5err)
   
 
       hdims2=(/i_pZ,i_pN/) !Dimensiones plano axial
