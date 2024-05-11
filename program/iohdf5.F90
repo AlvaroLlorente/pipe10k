@@ -144,7 +144,7 @@
      implicit none
      
 
-      if (mod(tim_step,s_step)==0) then
+      if (mod(tim_step,i_save_rate1)==0) then
           call io_save_phys_plane()
           !call io_save_phys_field()
       endif
@@ -429,7 +429,7 @@
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
-      hdims2=(/i_Th,i_pN/_Ns/) !Dimensiones plano radial
+      hdims2=(/i_Th,i_pN/) !Dimensiones plano radial
       strow=1  !Creo que no sirve para nada, de momento
      
       
