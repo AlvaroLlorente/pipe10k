@@ -429,14 +429,14 @@
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
-      hdims2=(/i_Th,i_pN/) !Dimensiones plano radial
+      hdims2=(/i_Th,i_pN/_Ns/) !Dimensiones plano radial
       strow=1  !Creo que no sirve para nada, de momento
      
       
          do n = 1, mes_D%pN
             n_ = mes_D%pNi + n - 1	
                p1%Re(i_pZ/2,:,n)=vel_z%Re(i_pZ/2,:,n)+vel_U(n_)
-               p2%Re(:,1,n)=vel_z%Re(:,1,n)+vel_U(n_)
+               p3%Re(:,1,n)=vel_z%Re(:,1,n)+vel_U(n_)
          enddo
 
          !if(mpi_rnk==0) then
@@ -445,7 +445,7 @@
          !write(*,*) size(vel_r%Re, 3)
          !endif
 
-
+         p4%Re(i_pZ/2,:,:) =  transpose(p1%Re(i_pZ/2,:,:))
       
          write(cadena, '(I1)') 1
          nombre_dataset1="/radial/vel_r_"//cadena
@@ -454,11 +454,13 @@
 
          call h5dump_parallel(G1,nombre_dataset1,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(i_pZ/2,:,1:i_pN/_Ns),h5err)
          call h5dump_parallel(G1,nombre_dataset2,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(i_pZ/2,:,1:i_pN/_Ns),h5err)
-         call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,p1%Re(i_pZ/2,:,1:i_pN/_Ns),h5err)
+         call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,p4%Re(i_pZ/2,:,1:i_pN/_Ns),h5err)
   
 
       hdims2=(/i_pZ,i_pN/) !Dimensiones plano axial
 
+
+         p4%Re(:,1,:) =  transpose(p3%Re(:,1,:))
       
          write(cadena, '(I1)') 1
          nombre_dataset1="/axial/vel_r_"//cadena
@@ -466,7 +468,7 @@
          nombre_dataset3="/axial/vel_z_"//cadena
          call h5dump_parallel(G2,nombre_dataset1,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(:,1,:),h5err)
          call h5dump_parallel(G2,nombre_dataset2,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(:,1,:),h5err)
-         call h5dump_parallel(G2,nombre_dataset3,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,p2%Re(:,1,:),h5err)
+         call h5dump_parallel(G2,nombre_dataset3,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,p4%Re(:,1,:),h5err)
          
 
          !write(cadena, '(I1)') 2
