@@ -439,7 +439,9 @@
                p3%Re(:,1,n)=vel_z%Re(:,1,n)+vel_U(n_)
          enddo
 
-   
+         call mpi_reduce(p1%Re(i_pZ/2,:,:), dd2, tam, mpi_double_precision,  &
+         mpi_sum, 0, mpi_comm_world, mpi_er)
+         p1%Re(i_pZ/2,:,:) = dd2 
       
          write(cadena, '(I1)') 1
          nombre_dataset1="/radial/vel_r_"//cadena
@@ -450,8 +452,12 @@
 
          call h5dump_parallel(G1,nombre_dataset1,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(i_pZ/2,:,:),h5err)
          call h5dump_parallel(G1,nombre_dataset2,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(i_pZ/2,:,:),h5err)
-         call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,   p1%Re(i_pZ/2,:,:),h5err)
+         !call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,   p1%Re(i_pZ/2,:,:),h5err)
 
+         hdims2=(/i_Th,i_N/)
+         if(mpi_rnk==0) then
+         call h5ltmake_dataset_double_f(G1,nombre_dataset3,2,hdims2,p1%Re(i_pZ/2,:,:),h5err)
+         end if
 
       hdims2=(/i_pZ,i_pN/) !Dimensiones plano axial
 
