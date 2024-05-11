@@ -443,7 +443,7 @@
          enddo
 
 
-         write(*,*) 'soy', mpi_rnk
+     
       
          write(cadena, '(I1)') 1
          nombre_dataset1="/radial/vel_r_"//cadena
