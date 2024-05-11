@@ -48,10 +48,10 @@
    double precision :: dutdt(i_N,n_sta), dutdz(i_N,n_sta),dutdrsq(i_N,n_sta),dutdtsq(i_N,n_sta),dutdzsq(i_N,n_sta),d2ut2dz2(i_N,n_sta)
    double precision :: duzdt(i_N,n_sta), duzdz(i_N,n_sta),duzdrsq(i_N,n_sta),duzdtsq(i_N,n_sta), duzdzsq(i_N,n_sta),d2uz2dz2(i_N,n_sta)
    double precision :: dur2dz(i_N,n_sta), dut2dz(i_N,n_sta), duz2dz(i_N,n_sta), duzurdz(i_N,n_sta), duzutdz(i_N,n_sta)
-   double precision :: uuCT1(i_N,n_sta), uuPST1(i_N,n_sta), uuTDT1(i_N,n_sta), uuDT3(i_N,n_sta)
-   double precision :: ttCT1(i_N,n_sta), ttPST1(i_N,n_sta), ttTDT1(i_N,n_sta), ttDT31(i_N,n_sta)
-   double precision :: rrCT1(i_N,n_sta), rrTDT1(i_N,n_sta), rrTDT2(i_N,n_sta), rrDT31(i_N,n_sta), rrPST1(i_N,n_sta), rrPDT1(i_N,n_sta)
-   double precision :: kCT1(i_N,n_sta),kPDT1(i_N,n_sta),kVDT1(i_N,n_sta),kTDT1(i_N,n_sta) ,kTDT2(i_N,n_sta),kDT4(i_N,n_sta),kDT5(i_N,n_sta)
+   double precision :: uuPST1(i_N,n_sta), uuTDT1(i_N,n_sta), uuDT3(i_N,n_sta)
+   double precision :: ttPST1(i_N,n_sta), ttTDT1(i_N,n_sta), ttDT31(i_N,n_sta)
+   double precision :: rrTDT1(i_N,n_sta), rrTDT2(i_N,n_sta), rrDT31(i_N,n_sta), rrPST1(i_N,n_sta), rrPDT1(i_N,n_sta)
+   double precision :: kPDT1(i_N,n_sta),kVDT1(i_N,n_sta),kTDT1(i_N,n_sta) ,kTDT2(i_N,n_sta),kDT4(i_N,n_sta),kDT5(i_N,n_sta)
    double precision :: kDT61(i_N,n_sta), kDT62(i_N,n_sta), kDT63(i_N,n_sta),kDT73(i_N,n_sta)
    double precision :: time
    double precision :: time_sta(n_sta), utauv(n_sta), uclv(n_sta), dt(n_sta)
@@ -516,35 +516,6 @@ enddo
 
 !--------Turbulent kinetic energy budget-------!!
 
-! Convection term
-p1%Re = vel_r%Re * vel_r%Re
-p3%Re = vel_t%Re * vel_t%Re
-p4%Re = vel_z%Re * vel_z%Re
-
-call tra_phys2coll1d(p1,c1) !r
-call tra_phys2coll1d(p3,c3) !t
-call tra_phys2coll1d(p4,c4) !z
-
-_loop_km_begin
-c1%Re(:,nh) = -c1%Im(:,nh)*d_alpha*k
-c1%Im(:,nh) =  c1%Re(:,nh)*d_alpha*k
-
-c3%Re(:,nh) = -c3%Im(:,nh)*d_alpha*k
-c3%Im(:,nh) =  c3%Re(:,nh)*d_alpha*k
-
-c4%Re(:,nh) = -c4%Im(:,nh)*d_alpha*k
-c4%Im(:,nh) =  c4%Re(:,nh)*d_alpha*k
-_loop_km_end
-
-call tra_coll2phys1d(c1,p1)
-call tra_coll2phys1d(c3,p3)
-call tra_coll2phys1d(c4,p4)
-
-do n = 1, mes_D%pN
-   n_ = mes_D%pNi + n - 1
-   kCT1(n_,csta) = kCT1(n_,csta) + sum(p1%Re(:,:,n)+p3%Re(:,:,n)+p4%Re(:,:,n))
-   
-enddo
 
 
 
@@ -712,40 +683,6 @@ enddo
 
 !--------Reynolds normal stresses budget-------!!
 
-! Convection term
-
-p1%Re = vel_r%Re * vel_r%Re
-p3%Re = vel_t%Re * vel_t%Re
-p4%Re = vel_z%Re * vel_z%Re
-
-call tra_phys2coll1d(p1,c1) !r
-call tra_phys2coll1d(p3,c3) !t
-call tra_phys2coll1d(p4,c4) !z
-
-_loop_km_begin
-c1%Re(:,nh) = -c1%Im(:,nh)*d_alpha*k
-c1%Im(:,nh) =  c1%Re(:,nh)*d_alpha*k
-
-c3%Re(:,nh) = -c3%Im(:,nh)*d_alpha*k
-c3%Im(:,nh) =  c3%Re(:,nh)*d_alpha*k
-
-c4%Re(:,nh) = -c4%Im(:,nh)*d_alpha*k
-c4%Im(:,nh) =  c4%Re(:,nh)*d_alpha*k
-_loop_km_end
-
-call tra_coll2phys1d(c1,p1)
-call tra_coll2phys1d(c3,p3)
-call tra_coll2phys1d(c4,p4)
-
-do n = 1, mes_D%pN
-   n_ = mes_D%pNi + n - 1
-uuCT1(n_,csta)=uuCT1(n_,csta)+sum(p4%Re(:,:,n))
-
-ttCT1(n_,csta)=ttCT1(n_,csta)+sum(p3%Re(:,:,n))
-
-rrCT1(n_,csta)=rrCT1(n_,csta)+sum(p1%Re(:,:,n))
-
-enddo
 
 
 !  Pressure strain term 
@@ -861,8 +798,6 @@ enddo
 _loop_km_begin   
 c1%Re(:,nh) = mes_D%r(:,-1)*(-vel_ut%Im(:,nh)*m*i_Mp+vel_ur%Re(:,nh))
 c1%Im(:,nh) = mes_D%r(:,-1)*( vel_ut%Re(:,nh)*m*i_Mp+vel_ur%Im(:,nh))
-
-
 _loop_km_end
 
 
@@ -965,18 +900,15 @@ implicit none
    d2ut2dz2=0d0
    d2uz2dz2=0d0
 
-   uuCT1=0d0
    uuTDT1=0d0
    uuPST1=0d0
    uuDT3=0d0
 
-   ttCT1=0d0
    ttTDT1=0d0
    ttPST1=0d0
    ttDT31=0d0
 
 
-   rrCT1=0d0
    rrPST1=0d0
    rrPDT1=0d0
    rrTDT1=0d0
@@ -984,8 +916,6 @@ implicit none
    rrDT31=0d0
 
 
-
-   kCT1=0d0
    kPDT1=0d0
    kTDT1=0d0
    kTDT2=0d0
@@ -1130,10 +1060,7 @@ strow = 1
       mpi_sum, 0, mpi_comm_world, mpi_er)
    duzutdz = dd
 
-
-   call mpi_reduce(uuCT1, dd, tam, mpi_double_precision,  &
-      mpi_sum, 0, mpi_comm_world, mpi_er)
-   uuCT1 = dd   
+ 
    call mpi_reduce(uuTDT1, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    uuTDT1 = dd  
@@ -1146,9 +1073,6 @@ strow = 1
    call mpi_reduce(ttPST1, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    ttPST1 = dd   
-   call mpi_reduce(ttCT1, dd, tam, mpi_double_precision,  &
-      mpi_sum, 0, mpi_comm_world, mpi_er)
-   ttCT1 = dd   
    call mpi_reduce(ttTDT1, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    ttTDT1 = dd      
@@ -1156,9 +1080,7 @@ strow = 1
       mpi_sum, 0, mpi_comm_world, mpi_er)
    ttDT31 = dd  
 
-   call mpi_reduce(rrCT1, dd, tam, mpi_double_precision,  &
-      mpi_sum, 0, mpi_comm_world, mpi_er)
-   rrCT1 = dd  
+
    call mpi_reduce(rrTDT1, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    rrTDT1 = dd  
@@ -1175,9 +1097,7 @@ strow = 1
       mpi_sum, 0, mpi_comm_world, mpi_er)
    rrPDT1 = dd 
 
-   call mpi_reduce(kCT1, dd, tam, mpi_double_precision,  &
-      mpi_sum, 0, mpi_comm_world, mpi_er)
-   kCT1 = dd 
+
    call mpi_reduce(kPDT1, dd, tam, mpi_double_precision,  &
       mpi_sum, 0, mpi_comm_world, mpi_er)
    kPDT1 = dd 
@@ -1289,24 +1209,24 @@ strow = 1
       call h5ltmake_dataset_double_f(derivative_id,"duzurdz",2,hdims2,duzurdz,h5err)      
       call h5ltmake_dataset_double_f(derivative_id,"duzutdz",2,hdims2,duzutdz,h5err)      
 
-      call h5ltmake_dataset_double_f(derivative_id,"uuCT1",2,hdims2,uuCT1,h5err)
+
       call h5ltmake_dataset_double_f(derivative_id,"uuTDT1",2,hdims2,uuTDT1,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"uuDT3",2,hdims2,uuDT3,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"uuPST1",2,hdims2,uuPST1,h5err)
 
-      call h5ltmake_dataset_double_f(derivative_id,"ttCT1",2,hdims2,ttCT1,h5err)
+
       call h5ltmake_dataset_double_f(derivative_id,"ttTDT1",2,hdims2,ttTDT1,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"ttDT31",2,hdims2,ttDT31,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"ttPST1",2,hdims2,ttPST1,h5err)
 
-      call h5ltmake_dataset_double_f(derivative_id,"rrCT1",2,hdims2,rrCT1,h5err)
+
       call h5ltmake_dataset_double_f(derivative_id,"rrTDT1",2,hdims2,rrTDT1,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"rrTDT2",2,hdims2,rrTDT2,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"rrDT31",2,hdims2,rrDT31,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"rrPST1",2,hdims2,rrPST1,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"rrPDT1",2,hdims2,rrPDT1,h5err)
 
-      call h5ltmake_dataset_double_f(derivative_id,"kCT1",2,hdims2,kCT1,h5err)
+
       call h5ltmake_dataset_double_f(derivative_id,"kPDT1",2,hdims2,kPDT1,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"kTDT1",2,hdims2,kTDT1,h5err)
       call h5ltmake_dataset_double_f(derivative_id,"kTDT2",2,hdims2,kTDT2,h5err)
