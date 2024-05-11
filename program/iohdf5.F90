@@ -439,7 +439,7 @@
                p3%Re(:,1,n)=vel_z%Re(:,1,n)+vel_U(n_)
          enddo
 
-         call mpi_reduce(p1%Re(i_pZ/2,:,:), dd2, tam, mpi_double_precision,  &
+         call mpi_reduce(p1%Re(i_pZ/2,:,:), dd2, i_Th*i_N, mpi_double_precision,  &
          mpi_sum, 0, mpi_comm_world, mpi_er)
          p1%Re(i_pZ/2,:,:) = dd2 
       
