@@ -452,9 +452,9 @@
 
          
          
-         call h5dump_parallel(G1,nombre_dataset1,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(200,:,:),h5err)
-         call h5dump_parallel(G1,nombre_dataset2,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(200,:,:),h5err)
-         call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,   p1%Re(200,:,:),h5err)
+         call h5dump_parallel(G1,nombre_dataset1,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(20,:,:),h5err)
+         call h5dump_parallel(G1,nombre_dataset2,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(20,:,:),h5err)
+         call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,   p1%Re(20,:,:),h5err)
 
 
 
@@ -751,7 +751,7 @@ subroutine h5dump_parallel(fid,name,ndims,dims,strow,rank,size,comm,info,data,ie
   integer:: mpierr
   integer:: lastdim
 
-  write(*,*) 'primer paso'
+
 
   start = 0
   nooffset = 0
@@ -763,9 +763,9 @@ subroutine h5dump_parallel(fid,name,ndims,dims,strow,rank,size,comm,info,data,ie
 
   totaldims(ndims) = sum(lastdims)
 
-  if (mpi_rnk==0) write(*,*) 'lastdims',lastdims
-   write(*,*) mpi_rnk
-  stop
+  !if (mpi_rnk==0) write(*,*) 'lastdims',lastdims
+  ! write(*,*) mpi_rnk
+  !stop
 
   !Create the global dataspace
   call h5screate_simple_f(ndims,totaldims,dspace,ierr)
