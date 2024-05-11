@@ -446,9 +446,8 @@
             write(*,*) size(vel_r%Re, 1)
             write(*,*) size(vel_r%Re, 2)
             write(*,*) size(vel_r%Re, 3)
-            write(*,*) hdims2
          endif
-
+         write(*,*) hdims2
       
          write(cadena, '(I1)') 1
          nombre_dataset1="/radial/vel_r_"//cadena
