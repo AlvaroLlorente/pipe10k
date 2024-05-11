@@ -452,9 +452,9 @@
 
          
          
-         call h5dump_parallel(G1,nombre_dataset1,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(5,:,i_pN),h5err)
-         call h5dump_parallel(G1,nombre_dataset2,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(5,:,i_pN),h5err)
-         call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,   p1%Re(5,:,i_pN),h5err)
+         call h5dump_parallel(G1,nombre_dataset1,2, hdims2,strow,mpi_rnk,mpi_sze/_Ns,MPI_COMM_WORLD,info,vel_r%Re(5,:,i_pN),h5err)
+         call h5dump_parallel(G1,nombre_dataset2,2, hdims2,strow,mpi_rnk,mpi_sze/_Ns,MPI_COMM_WORLD,info,vel_t%Re(5,:,i_pN),h5err)
+         call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,mpi_sze/_Ns,MPI_COMM_WORLD,info,   p1%Re(5,:,i_pN),h5err)
 
       end if
 
@@ -466,9 +466,9 @@
          nombre_dataset1="/axial/vel_r_"//cadena
          nombre_dataset2="/axial/vel_t_"//cadena
          nombre_dataset3="/axial/vel_z_"//cadena
-         call h5dump_parallel2(G2,nombre_dataset1,2,hdims2,strow,mpi_rnk,mpi_sze/_Ns,MPI_COMM_WORLD,info,vel_r%Re(:,1,:),h5err)
-         call h5dump_parallel2(G2,nombre_dataset2,2,hdims2,strow,mpi_rnk,mpi_sze/_Ns,MPI_COMM_WORLD,info,vel_t%Re(:,1,:),h5err)
-         call h5dump_parallel2(G2,nombre_dataset3,2,hdims2,strow,mpi_rnk,mpi_sze/_Ns,MPI_COMM_WORLD,info,   p3%Re(:,1,:),h5err)
+         call h5dump_parallel(G2,nombre_dataset1,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(:,1,:),h5err)
+         call h5dump_parallel(G2,nombre_dataset2,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(:,1,:),h5err)
+         call h5dump_parallel(G2,nombre_dataset3,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,   p3%Re(:,1,:),h5err)
          
 
          
@@ -751,6 +751,8 @@ subroutine h5dump_parallel(fid,name,ndims,dims,strow,rank,size,comm,info,data,ie
   integer:: mpierr
   integer:: lastdim
 
+  write(*,*) 'primer paso'
+
   start = 0
   nooffset = 0
   totaldims = dims
@@ -818,6 +820,8 @@ subroutine h5dump_parallel2(fid,name,ndims,dims,strow,rank,size,comm,info,data,i
    integer, dimension(size):: lastdims
    integer:: mpierr
    integer:: lastdim
+
+   write(*,*) 'primer paso'
 
    if (mpi_rnk<=15) then
  
