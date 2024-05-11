@@ -430,7 +430,8 @@
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
 
-      if (mpi_rnk<=15) then
+      if (0==(mpi_rnk/_Nr)) then
+
       hdims2=(/i_Th,i_pN/) !Dimensiones plano radial
       strow=1  !Creo que no sirve para nada, de momento
      
@@ -441,6 +442,11 @@
                p3%Re(:,1,n)=vel_z%Re(:,1,n)+vel_U(n_)
          enddo
 
+         if(mpi_rnk==0) then
+            write(*,*) size(vel_r%Re, 1)
+            write(*,*) size(vel_r%Re, 2)
+            write(*,*) size(vel_r%Re, 3)
+         endif
 
       
          write(cadena, '(I1)') 1
