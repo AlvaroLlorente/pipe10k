@@ -761,9 +761,9 @@ subroutine h5dump_parallel(fid,name,ndims,dims,strow,rank,size,comm,info,data,ie
 
   totaldims(ndims) = sum(lastdims)
 
-!  if (mpi_rnk==0) write(*,*) 'lastdims',lastdims
-!   write(*,*) mpi_rnk,strow
-!  stop
+  if (mpi_rnk==0) write(*,*) 'lastdims',lastdims
+   write(*,*) mpi_rnk
+  stop
 
   !Create the global dataspace
   call h5screate_simple_f(ndims,totaldims,dspace,ierr)
