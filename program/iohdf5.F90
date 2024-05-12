@@ -418,7 +418,7 @@
       ! Save header, only master do this.
      
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
-      
+
       call h5pcreate_f(H5P_FILE_ACCESS_F,pid,h5err)
       call h5pset_fapl_mpio_f(pid,MPI_COMM_WORLD,info,h5err)
       call h5pset_sieve_buf_size_f(pid, siever, h5err)
@@ -440,7 +440,7 @@
       
          do n = 1, mes_D%pN
             n_ = mes_D%pNi + n - 1	
-               p1%Re(20,:,n)=vel_z%Re(20,:,n)+vel_U(n_)
+               p1%Re(i_pZ/2,:,n)=vel_z%Re(i_pZ/2,:,n)+vel_U(n_)
                p3%Re(:,1,n)=vel_z%Re(:,1,n)+vel_U(n_)
          enddo
 
@@ -454,9 +454,9 @@
 
          
          !if (mpi_rnk<core_rad) then  
-         call h5dump_parallel(G1,nombre_dataset1,2, hdims2,strow,mpi_rnk,core_rad,MPI_COMM_WORLD,info,vel_r%Re(20,:,:),h5err)
-         call h5dump_parallel(G1,nombre_dataset2,2, hdims2,strow,mpi_rnk,core_rad,MPI_COMM_WORLD,info,vel_t%Re(20,:,:),h5err)
-         call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,core_rad,MPI_COMM_WORLD,info,   p1%Re(20,:,:),h5err)
+         call h5dump_parallel(G1,nombre_dataset1,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(i_pZ/2,:,:),h5err)
+         call h5dump_parallel(G1,nombre_dataset2,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(i_pZ/2,:,:),h5err)
+         call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,   p1%Re(i_pZ/2,:,:),h5err)
          call h5gclose_f(G1,h5err)
          !end if
         
