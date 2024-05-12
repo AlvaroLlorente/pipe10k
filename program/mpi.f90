@@ -24,16 +24,16 @@
    subroutine mpi_precompute()
       mpi_rnk = 0
       mpi_sze = 1
-      subset_group = (/ (i, i=0, 14) /)
-      mpi_rnk_2 = 0
+     integer :: subset_group = (/ (i, i=0, 15) /)
+     integer :: mpi_rnk_2 = 0
 #ifdef _MPI
       call mpi_init(mpi_er)
       call mpi_comm_rank(mpi_comm_world, mpi_rnk, mpi_er)
       call mpi_comm_size(mpi_comm_world, mpi_sze, mpi_er)
       if(mpi_sze /= _Np) stop 'mpi_precompute: incorrect num procs'
 
-      call MPI_COMM_RANK(MPI_COMM_WORLD, mpi_rnk_2, ierr)
-      call MPI_COMM_SIZE(new_comm, subset_size, ierr)
+      call MPI_COMM_RANK(MPI_COMM_WORLD, mpi_rnk_2, mpi_er)
+      call MPI_COMM_SIZE(new_comm, subset_size, mpi_er)
 
 #endif
    end subroutine mpi_precompute
