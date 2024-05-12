@@ -11,10 +11,11 @@
 #ifdef _MPI
    include 'mpif.h'
    integer :: mpi_er, mpi_tg, mpi_rq(0:2*_Np), mpi_st(mpi_status_size)
-   integer ::  subset_group, new_ comm
+   integer ::  subset_group, new_comm
    
 #endif
-   integer :: mpi_rnk, mpi_sze, mpi_rnk_2, subset_size
+   integer :: mpi_rnk, mpi_sze, mpi_rnk_2, 
+   integer, allocatable :: subset_size(:)
    
  contains
 
@@ -24,7 +25,7 @@
    subroutine mpi_precompute()
       mpi_rnk = 0
       mpi_sze = 1
-      subset_group = (/ (i, i=0, 15) /)
+      allocate(subset_group = (/ (i, i=0, 15) /))
       mpi_rnk_2 = 0
 #ifdef _MPI
       call mpi_init(mpi_er)
