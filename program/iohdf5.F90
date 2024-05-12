@@ -459,6 +459,7 @@
          !call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,core_rad,MPI_COMM_WORLD,info,   p1%Re(20,:,:),h5err)
 
          write(*,*) 10
+         call h5gclose_f(G1,h5err)
       end if
       hdims2=(/i_pZ,i_pN/) !Dimensiones plano axial
 
@@ -475,7 +476,7 @@
 
          
 
-      call h5gclose_f(G1,h5err)
+
       call h5gclose_f(G2,h5err)
 
       call h5fclose_f(fid,h5err)
