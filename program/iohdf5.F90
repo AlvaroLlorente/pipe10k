@@ -444,7 +444,7 @@
                p3%Re(:,1,n)=vel_z%Re(:,1,n)+vel_U(n_)
          enddo
 
-      write(*,*) mpi_rnk
+      write(*,*) 'Soy' mpi_rnk
      
       
          write(cadena, '(I1)') 1
@@ -833,9 +833,12 @@ subroutine h5dump_parallel2(fid,name,ndims,dims,strow,rank,size,comm,info,data,i
  
    lastdim = dims(ndims) ! Don't mess with ints and longs
  
-   !if (mpi_rnk<mpi_sze) then
+   write(*,*) 'previo 1'
+
+   if (mpi_rnk<mpi_sze) then
+      write(*,*) 'dentro del if'
    call MPI_ALLGATHER(lastdim,1,MPI_INTEGER,lastdims,1,MPI_INTEGER,comm,mpierr)
-   !end if
+   end if
  
    totaldims(ndims) = sum(lastdims)
  
