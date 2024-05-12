@@ -431,7 +431,7 @@
 
       core_rad=(mpi_sze/_Ns)
 
- 
+      if (mpi_rnk<core_rad) then
     
    
       hdims2=(/i_Th,i_pN/) !Dimensiones plano radial
@@ -458,11 +458,11 @@
          !call h5dump_parallel(G1,nombre_dataset2,2, hdims2,strow,mpi_rnk,core_rad,MPI_COMM_WORLD,info,vel_t%Re(20,:,:),h5err)
          !call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,core_rad,MPI_COMM_WORLD,info,   p1%Re(20,:,:),h5err)
 
-         write(*,*) '10'
-
+         write(*,*) 10
+      end if
       hdims2=(/i_pZ,i_pN/) !Dimensiones plano axial
 
-
+         write(*,*) 11
       
          write(cadena, '(I1)') 1
          nombre_dataset1="/axial/vel_r_"//cadena
