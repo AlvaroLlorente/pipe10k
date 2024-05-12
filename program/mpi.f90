@@ -25,7 +25,7 @@
    subroutine mpi_precompute()
       mpi_rnk = 0
       mpi_sze = 1
-      allocate(subset_group = (/ (i, i=0, 15) /))
+      allocate(subset_group = (/ (i, i=0, (_Nr-1)) /))
       mpi_rnk_2 = 0
 #ifdef _MPI
       call mpi_init(mpi_er)
