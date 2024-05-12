@@ -15,7 +15,7 @@
    
 #endif
    integer :: mpi_rnk, mpi_sze, mpi_rnk_2, i
-   integer subset_size(_Nr)
+   integer, dimension(_Nr) :: subset_group
    
  contains
 
