@@ -434,7 +434,7 @@
       if (mpi_rnk<core_rad) then
     
    
-      hdims2=(/i_Th,i_pN/_Ns/) !Dimensiones plano radial
+      hdims2=(/i_Th,i_pN/) !Dimensiones plano radial
       strow=1  !Creo que no sirve para nada, de momento
      
       
@@ -455,8 +455,8 @@
          
          
          call h5dump_parallel(G1,nombre_dataset1,2, hdims2,strow,mpi_rnk,core_rad,MPI_COMM_WORLD,info,vel_r%Re(20,:,:),h5err)
-         call h5dump_parallel(G1,nombre_dataset2,2, hdims2,strow,mpi_rnk,core_rad,MPI_COMM_WORLD,info,vel_t%Re(20,:,:),h5err)
-         call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,core_rad,MPI_COMM_WORLD,info,   p1%Re(20,:,:),h5err)
+         !call h5dump_parallel(G1,nombre_dataset2,2, hdims2,strow,mpi_rnk,core_rad,MPI_COMM_WORLD,info,vel_t%Re(20,:,:),h5err)
+         !call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,core_rad,MPI_COMM_WORLD,info,   p1%Re(20,:,:),h5err)
 
       end if
 
@@ -765,9 +765,9 @@ subroutine h5dump_parallel(fid,name,ndims,dims,strow,rank,size,comm,info,data,ie
 
   totaldims(ndims) = sum(lastdims)
 
-  !if (mpi_rnk==0) write(*,*) 'lastdims',lastdims
-  ! write(*,*) mpi_rnk
-  !stop
+ write(*,*) 'lastdims',lastdims
+ write(*,*) mpi_rnk
+  
 
   !Create the global dataspace
   call h5screate_simple_f(ndims,totaldims,dspace,ierr)
