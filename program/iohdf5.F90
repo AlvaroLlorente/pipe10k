@@ -414,10 +414,10 @@
       fnamephys=trim(dirinp)//trim(filinp)//'.'//extc//'.'//index
       fnamephys=trim(fnamephys)//'.'//'spp'
 
-      if (mpi_rnk<core_rad) then
+     ! if (mpi_rnk<core_rad) then
       ! Save header, only master do this.
      
-      call MPI_BARRIER(new_comm,ierr)
+      call MPI_BARRIER(MPI_COMM_WORLD,ierr)
       write(*,*) 'Soy', mpi_rnk
       call h5pcreate_f(H5P_FILE_ACCESS_F,pid,h5err)
       call h5pset_fapl_mpio_f(pid,MPI_COMM_WORLD,info,h5err)
@@ -427,7 +427,7 @@
       !call h5gcreate_f(fid, '/axial', G2, h5err)
       call h5pclose_f(pid,h5err)
 
-      call MPI_BARRIER(new_comm,ierr)
+      call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
      
     
@@ -454,7 +454,7 @@
 
          
          
-         call h5dump_parallel2(G1,nombre_dataset1,2, hdims2,strow,mpi_rnk,core_rad,MPI_COMM_WORLD,info,vel_r%Re(20,:,:),h5err)
+         call h5dump_parallel2(G1,nombre_dataset1,2, hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(20,:,:),h5err)
          !call h5dump_parallel(G1,nombre_dataset2,2, hdims2,strow,mpi_rnk,core_rad,MPI_COMM_WORLD,info,vel_t%Re(20,:,:),h5err)
          !call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,core_rad,MPI_COMM_WORLD,info,   p1%Re(20,:,:),h5err)
 
@@ -480,7 +480,7 @@
       !call h5gclose_f(G2,h5err)
 
       call h5fclose_f(fid,h5err)
-      end if
+      !end if
       
 
       if(mpi_rnk==0) then
