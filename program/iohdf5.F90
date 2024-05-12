@@ -405,7 +405,7 @@
       character(len=20) ::cadena, nombre_dataset1, nombre_dataset2, nombre_dataset3
 
 
-   
+      if (mpi_rnk<core_rad) then
      
      write(extc,'(I4.4)') extn
      write(index,'(I3.3)') indice
@@ -424,14 +424,14 @@
       call h5pset_sieve_buf_size_f(pid, siever, h5err)
       call h5fcreate_f(trim(fnamephys),H5F_ACC_TRUNC_F,fid,h5err,H5P_DEFAULT_F,pid)
       call h5gcreate_f(fid, '/radial', G1, h5err)
-      call h5gcreate_f(fid, '/axial', G2, h5err)
+      !call h5gcreate_f(fid, '/axial', G2, h5err)
       call h5pclose_f(pid,h5err)
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
       core_rad=(mpi_sze/_Ns)
 
-      if (mpi_rnk<core_rad) then
+      
     
    
       hdims2=(/i_Th,i_pN/) !Dimensiones plano radial
@@ -460,27 +460,27 @@
 
          write(*,*) 10
          call h5gclose_f(G1,h5err)
-      end if
-      hdims2=(/i_pZ,i_pN/) !Dimensiones plano axial
+      
+     ! hdims2=(/i_pZ,i_pN/) !Dimensiones plano axial
 
          write(*,*) 11
       
-         write(cadena, '(I1)') 1
-         nombre_dataset1="/axial/vel_r_"//cadena
-         nombre_dataset2="/axial/vel_t_"//cadena
-         nombre_dataset3="/axial/vel_z_"//cadena
-         call h5dump_parallel(G2,nombre_dataset1,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(:,1,:),h5err)
-         call h5dump_parallel(G2,nombre_dataset2,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(:,1,:),h5err)
-         call h5dump_parallel(G2,nombre_dataset3,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,   p3%Re(:,1,:),h5err)
+        ! write(cadena, '(I1)') 1
+        ! nombre_dataset1="/axial/vel_r_"//cadena
+        ! nombre_dataset2="/axial/vel_t_"//cadena
+        ! nombre_dataset3="/axial/vel_z_"//cadena
+        ! call h5dump_parallel(G2,nombre_dataset1,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(:,1,:),h5err)
+        ! call h5dump_parallel(G2,nombre_dataset2,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(:,1,:),h5err)
+        ! call h5dump_parallel(G2,nombre_dataset3,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,   p3%Re(:,1,:),h5err)
          
 
          
 
 
-      call h5gclose_f(G2,h5err)
+      !call h5gclose_f(G2,h5err)
 
       call h5fclose_f(fid,h5err)
-       
+      end if
       
 
       if(mpi_rnk==0) then
