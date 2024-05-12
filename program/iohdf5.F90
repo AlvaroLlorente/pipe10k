@@ -869,11 +869,12 @@ subroutine h5dump_parallel2(fid,name,ndims,dims,strow,rank,size,comm,info,data,i
  
    !Close property list                                                                                                                                              
    call h5pclose_f(plist_id,ierr)
- 
-   !Close datasets and dataspaces
+   write(*,*) '8'
+   !Close datasets and datas-paces
    call h5sclose_f(mspace,ierr)
    call h5dclose_f(dset,ierr)
    call h5sclose_f(dspace,ierr)
+   write(*,*) '9'
  
  end subroutine h5dump_parallel2
 
