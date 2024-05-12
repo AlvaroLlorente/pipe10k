@@ -14,8 +14,8 @@
    integer ::  subset_group, new_comm
    
 #endif
-   integer :: mpi_rnk, mpi_sze, mpi_rnk_2, 
-   integer, allocatable :: subset_size(:)
+   integer :: mpi_rnk, mpi_sze, mpi_rnk_2
+   integer subset_size(_Nr-1)
    
  contains
 
@@ -25,7 +25,7 @@
    subroutine mpi_precompute()
       mpi_rnk = 0
       mpi_sze = 1
-      allocate(subset_group = (/ (i, i=0, (_Nr-1)) /))
+      subset_group = (/ (i, i=0, (_Nr-1)) /) 
       mpi_rnk_2 = 0
 #ifdef _MPI
       call mpi_init(mpi_er)
