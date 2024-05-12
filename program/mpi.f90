@@ -11,10 +11,10 @@
 #ifdef _MPI
    include 'mpif.h'
    integer :: mpi_er, mpi_tg, mpi_rq(0:2*_Np), mpi_st(mpi_status_size)
-   integer :: mpi_rnk_2, subset_group, new_comm
+   integer ::  subset_group, new_  comm
    
 #endif
-   integer :: mpi_rnk, mpi_sze
+   integer :: mpi_rnk, mpi_sze, mpi_rnk_2
    
  contains
 
