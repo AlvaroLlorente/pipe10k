@@ -403,9 +403,9 @@
       integer :: n, n_, strow, core_rad
       integer(hid_t) :: G1, G2
       character(len=20) ::cadena, nombre_dataset1, nombre_dataset2, nombre_dataset3
-      core_rad=(mpi_sze/_Ns)
+      
 
-      if (mpi_rnk<core_rad) then
+      core_rad=(mpi_sze/_Ns)  !numero de cores radiales +1
      
      write(extc,'(I4.4)') extn
      write(index,'(I3.3)') indice
@@ -430,7 +430,7 @@
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
       
-
+      if (mpi_rnk<core_rad) then
       
     
    
@@ -444,7 +444,7 @@
                p3%Re(:,1,n)=vel_z%Re(:,1,n)+vel_U(n_)
          enddo
 
-      write(*,*) 'inicio'
+      write(*,*) mpi_rnk
      
       
          write(cadena, '(I1)') 1
