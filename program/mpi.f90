@@ -11,7 +11,7 @@
 #ifdef _MPI
    include 'mpif.h'
    integer :: mpi_er, mpi_tg, mpi_rq(0:2*_Np), mpi_st(mpi_status_size)
-   integer ::  subset_group, new_comm
+   integer :: new_comm
    
 #endif
    integer :: mpi_rnk, mpi_sze, mpi_rnk_2, i
