@@ -418,7 +418,7 @@
       ! Save header, only master do this.
      
       call MPI_BARRIER(new_comm,ierr)
-
+      write(*,*) 'Soy', mpi_rnk
       call h5pcreate_f(H5P_FILE_ACCESS_F,pid,h5err)
       call h5pset_fapl_mpio_f(pid,MPI_COMM_WORLD,info,h5err)
       call h5pset_sieve_buf_size_f(pid, siever, h5err)
