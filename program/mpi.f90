@@ -12,7 +12,7 @@
    include 'mpif.h'
    integer :: mpi_er, mpi_tg, mpi_rq(0:2*_Np), mpi_st(mpi_status_size)
    integer :: mpi_rnk_2, subset_group, new_comm
-   subset_group = (/ (i, i=0, 14) /)
+   
 #endif
    integer :: mpi_rnk, mpi_sze
    
@@ -24,6 +24,8 @@
    subroutine mpi_precompute()
       mpi_rnk = 0
       mpi_sze = 1
+      subset_group = (/ (i, i=0, 14) /)
+      mpi_rnk_2 = 0
 #ifdef _MPI
       call mpi_init(mpi_er)
       call mpi_comm_rank(mpi_comm_world, mpi_rnk, mpi_er)
