@@ -400,12 +400,12 @@
 
    subroutine io_save_phys_plane()
       integer :: info
-      integer :: n, n_, strow, core_rad
+      integer :: n, n_, strow ! core_rad
       integer(hid_t) :: G1, G2
       character(len=20) ::cadena, nombre_dataset1, nombre_dataset2, nombre_dataset3
       
 
-      core_rad=(mpi_sze/_Ns)  !numero de cores radiales +1
+      !core_rad=(mpi_sze/_Ns)  !numero de cores radiales +1
      
      write(extc,'(I4.4)') extn
      write(index,'(I3.3)') indice
@@ -414,17 +414,17 @@
       fnamephys=trim(dirinp)//trim(filinp)//'.'//extc//'.'//index
       fnamephys=trim(fnamephys)//'.'//'spp'
 
-     ! if (mpi_rnk<core_rad) then
+  
       ! Save header, only master do this.
      
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
-      write(*,*) 'Soy', mpi_rnk
+      
       call h5pcreate_f(H5P_FILE_ACCESS_F,pid,h5err)
       call h5pset_fapl_mpio_f(pid,MPI_COMM_WORLD,info,h5err)
       call h5pset_sieve_buf_size_f(pid, siever, h5err)
       call h5fcreate_f(trim(fnamephys),H5F_ACC_TRUNC_F,fid,h5err,H5P_DEFAULT_F,pid)
       call h5gcreate_f(fid, '/radial', G1, h5err)
-      !call h5gcreate_f(fid, '/axial', G2, h5err)
+      call h5gcreate_f(fid, '/axial', G2, h5err)
       call h5pclose_f(pid,h5err)
 
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
@@ -444,7 +444,7 @@
                p3%Re(:,1,n)=vel_z%Re(:,1,n)+vel_U(n_)
          enddo
 
-      write(*,*) 'Soy', mpi_rnk
+
      
       
          write(cadena, '(I1)') 1
@@ -453,32 +453,33 @@
          nombre_dataset3="/radial/vel_z_"//cadena
 
          
-         if (mpi_rnk<core_rad) then  
-         call h5dump_parallel2(G1,nombre_dataset1,2, hdims2,strow,mpi_rnk,core_rad,MPI_COMM_WORLD,info,vel_r%Re(20,:,:),h5err)
-         !call h5dump_parallel(G1,nombre_dataset2,2, hdims2,strow,mpi_rnk,core_rad,MPI_COMM_WORLD,info,vel_t%Re(20,:,:),h5err)
-         !call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,core_rad,MPI_COMM_WORLD,info,   p1%Re(20,:,:),h5err)
+         !if (mpi_rnk<core_rad) then  
+         call h5dump_parallel(G1,nombre_dataset1,2, hdims2,strow,mpi_rnk,core_rad,MPI_COMM_WORLD,info,vel_r%Re(20,:,:),h5err)
+         call h5dump_parallel(G1,nombre_dataset2,2, hdims2,strow,mpi_rnk,core_rad,MPI_COMM_WORLD,info,vel_t%Re(20,:,:),h5err)
+         call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,core_rad,MPI_COMM_WORLD,info,   p1%Re(20,:,:),h5err)
          call h5gclose_f(G1,h5err)
-         end if
-         write(*,*) 10
+         !end if
+        
          
       
-     ! hdims2=(/i_pZ,i_pN/) !Dimensiones plano axial
+      hdims2=(/i_pZ,i_pN/) !Dimensiones plano axial
 
-         write(*,*) 11
+    
       
-        ! write(cadena, '(I1)') 1
-        ! nombre_dataset1="/axial/vel_r_"//cadena
-        ! nombre_dataset2="/axial/vel_t_"//cadena
-        ! nombre_dataset3="/axial/vel_z_"//cadena
-        ! call h5dump_parallel(G2,nombre_dataset1,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(:,1,:),h5err)
-        ! call h5dump_parallel(G2,nombre_dataset2,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(:,1,:),h5err)
-        ! call h5dump_parallel(G2,nombre_dataset3,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,   p3%Re(:,1,:),h5err)
+         write(cadena, '(I1)') 1
+         nombre_dataset1="/axial/vel_r_"//cadena
+         nombre_dataset2="/axial/vel_t_"//cadena
+         nombre_dataset3="/axial/vel_z_"//cadena
+         call h5dump_parallel(G2,nombre_dataset1,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_r%Re(:,1,:),h5err)
+         call h5dump_parallel(G2,nombre_dataset2,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,vel_t%Re(:,1,:),h5err)
+         call h5dump_parallel(G2,nombre_dataset3,2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,   p3%Re(:,1,:),h5err)
          
 
          
 
-
-      !call h5gclose_f(G2,h5err)
+      
+      call h5gclose_f(G1,h5err)
+      call h5gclose_f(G2,h5err)
 
       call h5fclose_f(fid,h5err)
       
