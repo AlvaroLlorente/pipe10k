@@ -434,7 +434,7 @@
       if (mpi_rnk<core_rad) then
     
    
-      hdims2=(/i_Th,i_pN/) !Dimensiones plano radial
+      hdims2=(/i_Th,i_pN/_Ns/) !Dimensiones plano radial
       strow=1  !Creo que no sirve para nada, de momento
      
       
@@ -444,7 +444,7 @@
                p3%Re(:,1,n)=vel_z%Re(:,1,n)+vel_U(n_)
          enddo
 
-
+      write(*,*) hdims2
      
       
          write(cadena, '(I1)') 1
