@@ -444,7 +444,7 @@
                p3%Re(:,1,n)=vel_z%Re(:,1,n)+vel_U(n_)
          enddo
 
-      write(*,*) 'Soy' mpi_rnk
+      write(*,*) 'Soy', mpi_rnk
      
       
          write(cadena, '(I1)') 1
