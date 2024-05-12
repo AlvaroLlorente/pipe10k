@@ -416,7 +416,7 @@
 
 
       ! Save header, only master do this.
-
+      if (mpi_rnk<core_rad) then
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
       call h5pcreate_f(H5P_FILE_ACCESS_F,pid,h5err)
@@ -430,7 +430,7 @@
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
       
-      if (mpi_rnk<core_rad) then
+    
       
     
    
