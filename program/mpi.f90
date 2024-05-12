@@ -14,7 +14,7 @@
    integer :: new_comm
    
 #endif
-   integer :: mpi_rnk, mpi_sze, mpi_rnk_2, i
+   integer :: mpi_rnk, mpi_sze, mpi_rnk_2,subset_size, i
    integer, dimension(_Nr) :: subset_group
    
  contains
@@ -27,6 +27,7 @@
       mpi_sze = 1
       subset_group = (/ (i, i=0, (_Nr-1)) /) 
       mpi_rnk_2 = 0
+      subset_size = 1
 #ifdef _MPI
       call mpi_init(mpi_er)
       call mpi_comm_rank(mpi_comm_world, mpi_rnk, mpi_er)
