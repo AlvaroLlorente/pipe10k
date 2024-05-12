@@ -844,23 +844,28 @@ subroutine h5dump_parallel2(fid,name,ndims,dims,strow,rank,size,comm,info,data,i
  
    !Create the global dataspace
    call h5screate_simple_f(ndims,totaldims,dspace,ierr)
+
+   write(*,*) '1'
    !Create the global dataset
    call h5dcreate_f(fid,name,H5T_IEEE_F64BE,dspace,dset,ierr)
- 
+   write(*,*) '2'
    !Create the local dataset
    call h5screate_simple_f(ndims,dims,mspace,ierr)
    call h5sselect_hyperslab_f(mspace,H5S_SELECT_SET_F,nooffset,dims,ierr)
- 
+   write(*,*) '3'
    !Select the hyperslab in the global dataset ! This would be  var_H%pH0_. We can send just this!
    start(ndims) = sum(lastdims(1:rank+1))-lastdims(rank+1)
+   write(*,*) '4'
    !start(ndims) = strow!!!! CHANGED!!!!!
    call h5sselect_hyperslab_f(dspace,H5S_SELECT_SET_F,start,dims,ierr)
+   write(*,*) '5'
    !Create data transfer mode property list                                                                                                                          
    call h5pcreate_f(H5P_DATASET_XFER_F,plist_id,ierr)
    call h5pset_dxpl_mpio_f(plist_id,H5FD_MPIO_COLLECTIVE_F,ierr)
- 
+   write(*,*) '6'
    !Commit the memspace to the disk
    call h5dwrite_f(dset,H5T_NATIVE_DOUBLE,data,dims,ierr,mspace,dspace,plist_id)
+   write(*,*) '7'
  
    !Close property list                                                                                                                                              
    call h5pclose_f(plist_id,ierr)
