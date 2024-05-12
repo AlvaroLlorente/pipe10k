@@ -835,11 +835,11 @@ subroutine h5dump_parallel2(fid,name,ndims,dims,strow,rank,size,comm,info,data,i
  
    write(*,*) 'previo 1'
 
-   if (mpi_rnk<mpi_sze) then
+   !if (mpi_rnk<mpi_sze) then
       write(*,*) 'dentro del if'
    call MPI_ALLGATHER(lastdim,1,MPI_INTEGER,lastdims,1,MPI_INTEGER,comm,mpierr)
-   end if
- 
+   !end if
+   write(*,*) 'fuera del if'
    totaldims(ndims) = sum(lastdims)
  
   write(*,*) 'lastdims',lastdims
