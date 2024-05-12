@@ -444,7 +444,7 @@
                p3%Re(:,1,n)=vel_z%Re(:,1,n)+vel_U(n_)
          enddo
 
-      write(*,*) hdims2
+      !write(*,*) hdims2
      
       
          write(cadena, '(I1)') 1
@@ -454,7 +454,7 @@
 
          
          
-         call h5dump_parallel(G1,nombre_dataset1,2, hdims2,strow,mpi_rnk,core_rad,MPI_COMM_WORLD,info,vel_r%Re(20,:,:),h5err)
+         call h5dump_parallel2(G1,nombre_dataset1,2, hdims2,strow,mpi_rnk,core_rad,MPI_COMM_WORLD,info,vel_r%Re(20,:,:),h5err)
          !call h5dump_parallel(G1,nombre_dataset2,2, hdims2,strow,mpi_rnk,core_rad,MPI_COMM_WORLD,info,vel_t%Re(20,:,:),h5err)
          !call h5dump_parallel(G1,nombre_dataset3,2, hdims2,strow,mpi_rnk,core_rad,MPI_COMM_WORLD,info,   p1%Re(20,:,:),h5err)
 
@@ -765,9 +765,10 @@ subroutine h5dump_parallel(fid,name,ndims,dims,strow,rank,size,comm,info,data,ie
 
   totaldims(ndims) = sum(lastdims)
 
- write(*,*) 'lastdims',lastdims
- write(*,*) mpi_rnk
-  
+  !if (mpi_rnk==0) write(*,*) 'lastdims',lastdims
+  ! write(*,*) mpi_rnk
+  !stop
+
 
   !Create the global dataspace
   call h5screate_simple_f(ndims,totaldims,dspace,ierr)
