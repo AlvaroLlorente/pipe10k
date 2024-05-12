@@ -414,10 +414,10 @@
       fnamephys=trim(dirinp)//trim(filinp)//'.'//extc//'.'//index
       fnamephys=trim(fnamephys)//'.'//'spp'
 
-
-      ! Save header, only master do this.
       if (mpi_rnk<core_rad) then
-      call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+      ! Save header, only master do this.
+     
+      call MPI_BARRIER(new_comm,ierr)
 
       call h5pcreate_f(H5P_FILE_ACCESS_F,pid,h5err)
       call h5pset_fapl_mpio_f(pid,MPI_COMM_WORLD,info,h5err)
@@ -427,9 +427,9 @@
       !call h5gcreate_f(fid, '/axial', G2, h5err)
       call h5pclose_f(pid,h5err)
 
-      call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+      call MPI_BARRIER(new_comm,ierr)
 
-      
+     
     
       
     
