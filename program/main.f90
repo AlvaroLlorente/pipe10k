@@ -42,7 +42,7 @@
       ! Estadisticas on the fly aquí!!!!
       if (tim_step>1) then
          if (mod(tim_step,s_step)==0) then
-            call compute_sta()
+            !call compute_sta()
          endif
          call io_write2files()
       endif
@@ -62,7 +62,7 @@
       tim_t    = tim_t    + tim_dt
       tim_step = tim_step + 1
 
-      if (mod(tim_step,s_step)==1) then 
+      if (mod(tim_step,1)==1) then 
          steptimer = MPI_Wtime()-steptimer
          call io_write_friction(tim_step,tim_t,steptimer,retau)
          if (mpi_rnk==0) then 

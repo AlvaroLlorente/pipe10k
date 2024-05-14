@@ -144,7 +144,7 @@
      implicit none
      
 
-      if (mod(tim_step,i_save_rate1)==0) then
+      if (mod(tim_step,s_step)==0) then
           !call io_save_phys_plane()
           call io_save_phys_field()
       endif
@@ -161,7 +161,7 @@
       if(modulo(tim_step,i_save_rate2)==0) then
          !if(io_KE/=0) call io_write_energy()
          !if(io_ID/=0) call io_write_totEID()
-         if(io_pt/=0) call io_write_pointvel()
+         !if(io_pt/=0) call io_write_pointvel()
          !if(io_fr/=0) call io_write_friction()
          if(io_dt/=0 .and. d_timestep>0d0) call io_write_timestep()
          io_save2 = io_save2+1
