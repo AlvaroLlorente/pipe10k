@@ -48,7 +48,7 @@
    integer,          parameter :: i_save_rate1  = 10
    integer,          parameter :: i_save_rate2  = 10
    integer,          parameter :: i_maxtstep    = 11
-   integer,          parameter :: s_step        = 1 ! interval to take statistics. 
+   integer,          parameter :: s_step        = 5 ! interval to take statistics. 
    integer,          parameter :: n_sta         = i_save_rate1/s_step ! número de estadísticas 
    integer,          parameter :: f_step        = 1d8 ! Steps
    !double precision, parameter :: f_step        = 1d99 ! Steps, modification

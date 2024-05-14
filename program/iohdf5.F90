@@ -144,7 +144,7 @@
      implicit none
      
 
-      if (mod(tim_step,s_step)==0) then
+      if (mod(tim_step,1)==0) then
           !call io_save_phys_plane()
           call io_save_phys_field()
       endif
@@ -590,6 +590,8 @@
       
       
       call MPI_BARRIER(MPI_COMM_WORLD,ierr) 
+      
+      indice=indice+1
    
    end subroutine io_save_phys_field
 
