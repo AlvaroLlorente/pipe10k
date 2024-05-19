@@ -146,12 +146,12 @@
 
       if (mod(tim_step,1)==0) then
           !call io_save_phys_plane()
-          call io_save_phys_field()
+          !call io_save_phys_field()
       endif
       if(modulo(tim_step,i_save_rate1)==0) then
          call io_save_state()
-         !fnameima=trim(filstt)//'.'//extc//'.'//'sth'
-         !call saveStats(fnameima)
+         fnameima=trim(filstt)//'.'//extc//'.'//'sth'
+         call saveStats(fnameima)
          ! call io_save_spectrum()
          ! call io_save_meanprof()
          extn = extn+1
