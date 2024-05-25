@@ -864,7 +864,7 @@ subroutine h5dump_parallel(fid,name,ndims,dims,strow,rank,size,comm,info,data,ie
    integer(hsize_t), dimension(ndims), intent(in):: dims
    integer, intent(in):: rank,size
    integer, intent(in):: comm,info, strow
-   real(kind = 8),intent(in):: data
+   real(kind = 8), dimension(:,:),intent(in):: data
    integer:: ierr
  
    integer(hid_t):: dset
