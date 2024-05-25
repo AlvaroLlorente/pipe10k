@@ -898,16 +898,16 @@ subroutine h5dump_parallel2D(fid, name, ndims, dims, strow, rank, size, comm, in
    call h5dcreate_f(fid, name, H5T_IEEE_F64BE, dspace, dset, ierr)
 
    ! Create the local dataspace
-   call h5screate_simple_f(ndims, (/local_rows, dims(2)/), mspace, ierr)
+   call h5screate_simple_f(ndims, [local_rows, dims(2)], mspace, ierr)
    ! Select the hyperslab in the global dataset
-   call h5sselect_hyperslab_f(dspace, H5S_SELECT_SET_F, start, (/local_rows, dims(2)/), ierr)
+   call h5sselect_hyperslab_f(dspace, H5S_SELECT_SET_F, start, [local_rows, dims(2)], ierr)
 
    ! Create data transfer mode property list
    call h5pcreate_f(H5P_DATASET_XFER_F, plist_id, ierr)
    call h5pset_dxpl_mpio_f(plist_id, H5FD_MPIO_COLLECTIVE_F, ierr)
 
    ! Commit the memspace to the disk
-   call h5dwrite_f(dset, H5T_NATIVE_DOUBLE, data, (/local_rows, dims(2)/), ierr, mspace, dspace, plist_id)
+   call h5dwrite_f(dset, H5T_NATIVE_DOUBLE, data, [local_rows, dims(2)], ierr, mspace, dspace, plist_id)
 
    ! Close property list
    call h5pclose_f(plist_id, ierr)
