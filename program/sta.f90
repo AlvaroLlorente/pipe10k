@@ -715,8 +715,12 @@ subroutine saveStats(fnameima)
 implicit none
 integer:: tam,strow
 character(len = 256):: fnameima
+double precision :: writetimer
+writetimer = 0d0
 tam = i_N*n_sta
 strow = 1
+
+if(mpi_rnk==0) writetimer=MPI_Wtime()-writetimer
 
     call mpi_reduce(mean_ur, dd, tam, mpi_double_precision,  &
        mpi_sum, 0, mpi_comm_world, mpi_er)
@@ -948,6 +952,13 @@ strow = 1
        call h5fclose_f(fid,h5err)
 
    endif
+
+   if (mpi_rnk.eq.0) then
+      writetimer = MPI_Wtime() - writetimer
+      write(*,*)
+      write(*,*) 'Done writing fields'
+      write(*,'(a24,f10.3,a3)') 'Time spend writing sth:',writetimer,'s'
+  endif
 
    call initialiseSTD()
 
