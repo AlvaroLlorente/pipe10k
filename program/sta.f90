@@ -35,11 +35,11 @@
 
 ! ------------------------- stats  -------------------------------
 
-   double precision :: mean_ur(i_pN,n_sta), stdv_ur(i_N,n_sta)
-   double precision :: mean_ut(i_N,n_sta), stdv_ut(i_N,n_sta)
-   double precision :: mean_uz(i_N,n_sta), stdv_uz(i_N,n_sta)
-   double precision :: stdv_rz(i_N,n_sta), stdv_rt(i_N,n_sta), stdv_tz(i_N,n_sta)
-   double precision :: stdv_zzr(i_N,n_sta),stdv_rtt(i_N,n_sta),stdv_rrr(i_N,n_sta)
+   double precision :: mean_ur(i_pN,n_sta), stdv_ur(i_pN,n_sta)
+   double precision :: mean_ut(i_pN,n_sta), stdv_ut(i_pN,n_sta)
+   double precision :: mean_uz(i_pN,n_sta), stdv_uz(i_pN,n_sta)
+   double precision :: stdv_rz(i_pN,n_sta), stdv_rt(i_pN,n_sta), stdv_tz(i_pN,n_sta)
+   double precision :: stdv_zzr(i_pN,n_sta),stdv_rtt(i_pN,n_sta),stdv_rrr(i_pN,n_sta)
   
    double precision :: mean_p(i_N,n_sta), stdv_p(i_N,n_sta)
 
