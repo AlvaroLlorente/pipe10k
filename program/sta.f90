@@ -738,7 +738,7 @@ call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 hdims2 = (/i_N,n_sta/)
 
 
-call h5dump_parallel(G2,"mean_ur",2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,mean_ur,h5err)
+call h5dump_parallel(G2,"mean_ur",2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,mean_ur(:,:),h5err)
 call h5dump_parallel(G2,"mean_uz",2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,mean_uz,h5err)
 call h5dump_parallel(G2,"mean_ut",2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,mean_ut,h5err)
 
