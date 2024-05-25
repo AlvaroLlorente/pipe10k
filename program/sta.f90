@@ -872,6 +872,7 @@ subroutine h5dump_parallel2D(fid, name, ndims, dims, strow, rank, size, comm, in
    integer(hsize_t), dimension(ndims) :: start, nooffset, totaldims
    integer :: mpierr
    integer :: local_rows, global_rows, rows_per_rank
+   integer, dimension(2) :: dims_2
 
    ! Obtener el número total de filas
    global_rows = dims(1)
@@ -891,6 +892,10 @@ subroutine h5dump_parallel2D(fid, name, ndims, dims, strow, rank, size, comm, in
        local_rows = rows_per_rank
    end if
 
+   ! Crear un array temporal con tipo de datos especificado explícitamente
+   dims_2(1) = local_rows
+   dims_2(2) = dims(2)
+
    ! Create the global dataspace
    call h5screate_simple_f(ndims, totaldims, dspace, ierr)
 
@@ -898,16 +903,16 @@ subroutine h5dump_parallel2D(fid, name, ndims, dims, strow, rank, size, comm, in
    call h5dcreate_f(fid, name, H5T_IEEE_F64BE, dspace, dset, ierr)
 
    ! Create the local dataspace
-   call h5screate_simple_f(ndims, [local_rows, dims(2)], mspace, ierr)
+   call h5screate_simple_f(ndims, dims_2, mspace, ierr)
    ! Select the hyperslab in the global dataset
-   call h5sselect_hyperslab_f(dspace, H5S_SELECT_SET_F, start, [local_rows, dims(2)], ierr)
+   call h5sselect_hyperslab_f(dspace, H5S_SELECT_SET_F, start, dims_2, ierr)
 
    ! Create data transfer mode property list
    call h5pcreate_f(H5P_DATASET_XFER_F, plist_id, ierr)
    call h5pset_dxpl_mpio_f(plist_id, H5FD_MPIO_COLLECTIVE_F, ierr)
 
    ! Commit the memspace to the disk
-   call h5dwrite_f(dset, H5T_NATIVE_DOUBLE, data, [local_rows, dims(2)], ierr, mspace, dspace, plist_id)
+   call h5dwrite_f(dset, H5T_NATIVE_DOUBLE, data, dims_2, ierr, mspace, dspace, plist_id)
 
    ! Close property list
    call h5pclose_f(plist_id, ierr)
