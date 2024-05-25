@@ -893,8 +893,7 @@ subroutine h5dump_parallel2D(fid, name, ndims, dims, strow, rank, size, comm, in
    end if
 
    ! Crear un array temporal con tipo de datos especificado explícitamente
-   dims_2(1) = local_rows
-   dims_2(2) = dims(2)
+   dims_2 = (/local_rows, dims(2)/)
 
    ! Create the global dataspace
    call h5screate_simple_f(ndims, totaldims, dspace, ierr)
