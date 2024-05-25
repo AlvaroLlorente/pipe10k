@@ -738,19 +738,19 @@ call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 hdims2 = (/i_pN,n_sta/)
 
 
-call h5dump_parallel(G2,"mean_ur",2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,mean_ur,h5err)
-call h5dump_parallel(G2,"mean_uz",2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,mean_uz,h5err)
-call h5dump_parallel(G2,"mean_ut",2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,mean_ut,h5err)
+call h5dump_parallel2D(G2,"mean_ur",2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,mean_ur,h5err)
+call h5dump_parallel2D(G2,"mean_uz",2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,mean_uz,h5err)
+call h5dump_parallel2D(G2,"mean_ut",2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,mean_ut,h5err)
 
-call h5dump_parallel(G2,"stdv_ur",2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,stdv_ur,h5err)
-call h5dump_parallel(G2,"stdv_ut",2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,stdv_ut,h5err)
-call h5dump_parallel(G2,"stdv_uz",2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,stdv_uz,h5err)
-call h5dump_parallel(G2,"stdv_rz",2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,stdv_rz,h5err)
-call h5dump_parallel(G2,"stdv_rt",2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,stdv_rt,h5err)
-call h5dump_parallel(G2,"stdv_tz",2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,stdv_tz,h5err)
-call h5dump_parallel(G2,"stdv_zzr",2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,stdv_zzr,h5err)
-call h5dump_parallel(G2,"stdv_rtt",2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,stdv_rtt,h5err)
-call h5dump_parallel(G2,"stdv_rrr",2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,stdv_rrr,h5err)
+call h5dump_parallel2D(G2,"stdv_ur",2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,stdv_ur,h5err)
+call h5dump_parallel2D(G2,"stdv_ut",2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,stdv_ut,h5err)
+call h5dump_parallel2D(G2,"stdv_uz",2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,stdv_uz,h5err)
+call h5dump_parallel2D(G2,"stdv_rz",2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,stdv_rz,h5err)
+call h5dump_parallel2D(G2,"stdv_rt",2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,stdv_rt,h5err)
+call h5dump_parallel2D(G2,"stdv_tz",2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,stdv_tz,h5err)
+call h5dump_parallel2D(G2,"stdv_zzr",2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,stdv_zzr,h5err)
+call h5dump_parallel2D(G2,"stdv_rtt",2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,stdv_rtt,h5err)
+call h5dump_parallel2D(G2,"stdv_rrr",2,hdims2,strow,mpi_rnk,mpi_sze,MPI_COMM_WORLD,info,stdv_rrr,h5err)
 
 call h5gclose_f(G2,h5err)
 call h5fclose_f(fid,h5err)
@@ -851,75 +851,67 @@ call h5fclose_f(fid,h5err)
 end subroutine saveStats
 
 
-subroutine h5dump_parallel(fid,name,ndims,dims,strow,rank,size,comm,info,data,ierr)
+subroutine h5dump_parallel2D(fid, name, ndims, dims, strow, rank, size, comm, info, data, ierr)
    use h5lt
    use hdf5
    use mpif
    implicit none
- 
-   
-   integer(hid_t), intent(in):: fid
-   character(len=*), intent(in):: name
-   integer, intent(in):: ndims
-   integer(hsize_t), dimension(ndims), intent(in):: dims
-   integer, intent(in):: rank,size
-   integer, intent(in):: comm,info, strow
-   real(kind = 8), dimension(:,:),intent(in):: data
-   integer:: ierr
- 
-   integer(hid_t):: dset
-   integer(hid_t):: dspace,mspace
-   integer(hid_t):: plist_id
-   integer(hsize_t), dimension(ndims):: start,nooffset,totaldims
-   integer, dimension(size):: lastdims
-   integer:: mpierr
-   integer:: lastdim
- 
- 
- 
+
+   integer(hid_t), intent(in) :: fid
+   character(len=*), intent(in) :: name
+   integer, intent(in) :: ndims
+   integer(hsize_t), dimension(ndims), intent(in) :: dims
+   integer, intent(in) :: rank, size
+   integer, intent(in) :: comm, info, strow
+   real(kind=8), dimension(:,:), intent(in) :: data
+   integer :: ierr
+
+   integer(hid_t) :: dset
+   integer(hid_t) :: dspace, mspace
+   integer(hid_t) :: plist_id
+   integer(hsize_t), dimension(ndims) :: start, nooffset, totaldims
+   integer, dimension(size) :: lastdims
+   integer :: mpierr
+   integer :: lastdim
+
    start = 0
    nooffset = 0
    totaldims = dims
- 
+
    lastdim = dims(ndims) ! Don't mess with ints and longs
- 
-   call MPI_ALLGATHER(lastdim,1,MPI_INTEGER,lastdims,1,MPI_INTEGER,comm,mpierr)
- 
+
+   call MPI_ALLGATHER(lastdim, 1, MPI_INTEGER, lastdims, 1, MPI_INTEGER, comm, mpierr)
+
    totaldims(ndims) = sum(lastdims)
- 
-   !if (mpi_rnk==0) write(*,*) 'lastdims',lastdims
-   ! write(*,*) mpi_rnk
-   !stop
- 
- 
-   !Create the global dataspace
-   call h5screate_simple_f(ndims,totaldims,dspace,ierr)
-   !Create the global dataset
-   call h5dcreate_f(fid,name,H5T_IEEE_F64BE,dspace,dset,ierr)
- 
-   !Create the local dataset
-   call h5screate_simple_f(ndims,dims,mspace,ierr)
-   call h5sselect_hyperslab_f(mspace,H5S_SELECT_SET_F,nooffset,dims,ierr)
- 
-   !Select the hyperslab in the global dataset ! This would be  var_H%pH0_. We can send just this!
-   start(ndims) = sum(lastdims(1:rank+1))-lastdims(rank+1)
-   !start(ndims) = strow!!!! CHANGED!!!!!
-   call h5sselect_hyperslab_f(dspace,H5S_SELECT_SET_F,start,dims,ierr)
-   !Create data transfer mode property list                                                                                                                          
-   call h5pcreate_f(H5P_DATASET_XFER_F,plist_id,ierr)
-   call h5pset_dxpl_mpio_f(plist_id,H5FD_MPIO_COLLECTIVE_F,ierr)
- 
-   !Commit the memspace to the disk
-   call h5dwrite_f(dset,H5T_NATIVE_DOUBLE,data,dims,ierr,mspace,dspace,plist_id)
- 
-   !Close property list                                                                                                                                              
-   call h5pclose_f(plist_id,ierr)
- 
-   !Close datasets and dataspaces
-   call h5sclose_f(mspace,ierr)
-   call h5dclose_f(dset,ierr)
-   call h5sclose_f(dspace,ierr)
- 
- end subroutine h5dump_parallel
+
+   ! Create the global dataspace
+   call h5screate_simple_f(ndims, totaldims, dspace, ierr)
+   ! Create the global dataset
+   call h5dcreate_f(fid, name, H5T_IEEE_F64BE, dspace, dset, ierr)
+
+   ! Create the local dataspace
+   call h5screate_simple_f(ndims, dims, mspace, ierr)
+   call h5sselect_hyperslab_f(mspace, H5S_SELECT_SET_F, nooffset, dims, ierr)
+
+   ! Select the hyperslab in the global dataspace
+   start(ndims) = sum(lastdims(1:rank + 1)) - lastdims(rank + 1)
+   call h5sselect_hyperslab_f(dspace, H5S_SELECT_SET_F, start, dims, ierr)
+
+   ! Create data transfer mode property list
+   call h5pcreate_f(H5P_DATASET_XFER_F, plist_id, ierr)
+   call h5pset_dxpl_mpio_f(plist_id, H5FD_MPIO_COLLECTIVE_F, ierr)
+
+   ! Commit the memspace to the disk
+   call h5dwrite_f(dset, H5T_NATIVE_DOUBLE, data, dims, ierr, mspace, dspace, plist_id)
+
+   ! Close property list
+   call h5pclose_f(plist_id, ierr)
+
+   ! Close datasets and dataspaces
+   call h5sclose_f(mspace, ierr)
+   call h5dclose_f(dset, ierr)
+   call h5sclose_f(dspace, ierr)
+
+end subroutine h5dump_parallel2D
 
 end module sta
