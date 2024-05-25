@@ -729,7 +729,6 @@ call h5pcreate_f(H5P_FILE_ACCESS_F,pid,h5err)
 call h5pset_fapl_mpio_f(pid,MPI_COMM_WORLD,info,h5err)
 call h5pset_sieve_buf_size_f(pid, siever, h5err)
 call h5fcreate_f(trim(fnameima),H5F_ACC_TRUNC_F,fid,h5err,H5P_DEFAULT_F,pid)
-call h5gcreate_f(fid, '/header', G1, h5err)
 call h5gcreate_f(fid, '/sta', G2, h5err)
 
 call h5pclose_f(pid,h5err)
@@ -760,7 +759,8 @@ call h5fclose_f(fid,h5err)
     if(mpi_rnk==0)  then
  
       call h5fopen_f(trim(fnameima),H5F_ACC_RDWR_F,fid,h5err)
-      call h5gcreate_f(fid, '/sta', G2, h5err)
+      call h5gopen_f(fid, '/sta', G2, h5err)
+      call h5gcreate_f(fid, '/header', G1, h5err)
        
        hdims = (/1/)
        call h5ltmake_dataset_double_f(G1,"time",1,hdims,(/tim_t/),h5err)
@@ -783,7 +783,7 @@ call h5fclose_f(fid,h5err)
        call h5ltmake_dataset_double_f(G1,"dt",1,hdims,dt,h5err)
 
        call h5gclose_f(G1,h5err)
-       call h5gclose_f(G2,   h5err)
+       call h5gclose_f(G2,h5err)
        call h5fclose_f(fid,h5err)
    
    endif
