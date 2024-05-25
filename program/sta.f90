@@ -894,7 +894,7 @@ subroutine h5dump_parallel2D(fid, name, ndims, dims, strow, rank, size, comm, in
    call h5sselect_hyperslab_f(mspace, H5S_SELECT_SET_F, nooffset, dims, ierr)
 
    ! Select the hyperslab in the global dataspace
-   start(ndims) = sum(lastdims(1:rank + 1)) - lastdims(rank + 1)
+   start(1) = rank * dims(1)  ! Adjust the start index for each process
    call h5sselect_hyperslab_f(dspace, H5S_SELECT_SET_F, start, dims, ierr)
 
    ! Create data transfer mode property list
