@@ -93,7 +93,7 @@
      call MPI_BCAST(filinp,256,MPI_CHARACTER,0,MPI_COMM_WORLD,ierr)
      call MPI_BCAST(dirinp,256,MPI_CHARACTER,0,MPI_COMM_WORLD,ierr)
      call MPI_BCAST(filstt,256,MPI_CHARACTER,0,MPI_COMM_WORLD,ierr)
-     write(extc,'(i5.5)') extn-1
+     write(extc,'(i4.4)') extn-1
 
 
    end subroutine io_precompute 
@@ -325,7 +325,7 @@
       integer(hid_t) :: G1, G2, G3
       
 
-      write(extc,'(i5.5)') extn
+      write(extc,'(i4.4)') extn
 
       info = MPI_INFO_NULL
       fnameima=trim(dirinp)//trim(filinp)//'.'//extc//'.'//'h5'
@@ -407,7 +407,7 @@
 
       !core_rad=(mpi_sze/_Ns)  !numero de cores radiales +1
      
-     write(extc,'(i5.5)') extn
+     write(extc,'(i4.4)') extn
      write(index,'(I3.3)') indice
 
       info = MPI_INFO_NULL
@@ -522,7 +522,7 @@
       integer :: strow, n, n_
       integer(hid_t) :: G1, G2
       
-      write(extc,'(i5.5)') extn
+      
       write(index,'(I4.4)') indice
  
 
@@ -603,7 +603,7 @@
       integer :: n
 
       if(mpi_rnk/=0) return
-      write(extc,'(i5.5)') extn
+      write(extc,'(i4.4)') extn
       fnameima=trim(filstt)//'.'//extc//'_prof'
       
       open(11, status='unknown', file=fnameima)
