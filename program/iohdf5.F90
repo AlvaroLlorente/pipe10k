@@ -21,7 +21,7 @@
    save
 
    character(len=256) text
-   character*4 extc
+   character*5 extc
    character(len = 256):: fnameima,filinp, dirinp, filstt, fnamephys, filename, index
 
 
